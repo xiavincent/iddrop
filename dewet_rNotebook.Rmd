@@ -1,0 +1,208 @@
+---
+title: "R Notebook - lubricin analysis"
+output: 
+  html_notebook: 
+    toc: yes
+    fig_caption: yes
+editor_options: 
+  chunk_output_type: inline
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Type "ggsave("name.png")" underneath the code portion for the graph that you want to save
+
+
+<!-- CHECK AND LOAD PACKAGES; MAY TAKE SOME TIME IF FIRST TIME INSTALLING -->
+
+```{r Setup, include=FALSE, warning = FALSE}
+  pkgs_needed <- c("tidyverse","ggpubr", "")
+  letsinstall = setdiff(pkgs_needed, installed.packages()) 
+  if (length(letsinstall) > 0) {
+    BiocManager::install(letsinstall)
+  }
+  library("tidyr")
+  library("tidyverse")
+  library("ggpubr")
+```
+
+
+
+```{r read in data and clean, include = FALSE, warning = FALSE}
+data <- read.csv("TestggplotPlotting_Lubricin.csv") #change file name here
+
+colnames(data) <- c("type", "conc", "DOT")
+
+clean <- data %>% 
+          drop_na() %>%
+            arrange(type, conc, DOT) %>%
+                group_by(type,conc)
+
+tally <- tally(clean)
+
+## Add new column to table with 'n=' values
+# g <- clean %>% group_modify(~ {.x %>% 
+                                # mutate(conc_labelled = tally[which(tally$type == .y$type &
+                                                                     # tally$conc == .y$conc),]$n)})
+clean <- clean %>%
+                  mutate(conc_labelled = 
+                           paste0(conc, " (n = ", tally[which(tally$type == type 
+                                                            & tally$conc == conc),]$n , 
+                                  ")",sep = ""))
+
+clean$conc <- as.character(clean$conc) #convert concentration to a factor variable
+```
+
+# Plotting
+## Single sample type
+### *Box and whisker plot:*
+
+```{r ,message = FALSE, warning = FALSE}
+DS <- filter(clean, type == "DS") %>% group_by(conc)
+DSplot <- ggplot(DS, aes(factor(conc), DOT))
+
+WilcoxCompare <- list(c("1","5"))
+
+# DSplot + geom_boxplot(aes(x = factor(conc),y = DOT), outlier.shape=NA) +
+#   labs(x = "Concentration (ug/mL)", y = "DOT (s)") + 
+#   geom_point(position = "jitter", width = 0.2, height = 0) + 
+#   stat_compare_means(method = "wilcox.test", comparisons = WilcoxCompare, 
+#                      aes(label = paste0("p =", ..p.format..)), label.y = 110) +
+#   stat_compare_means(label.y = 275) +  
+#   theme_bw()
+
+#---------------
+# ggpubr version
+ggboxplot(DS, x = "conc", y = "DOT", add = "jitter", xlab = "Concentration (ug/mL)", 
+          ylab = "DOT (s)") +
+   stat_compare_means(method = "wilcox.test", comparisons = WilcoxCompare, label = "p.signif", 
+                      label.y = 130)
+
+ggsave(path = "output", filename = "boxplot_1type.png")
+
+```
+
+### *Bar plot of means w/ error bars:*
+
+```{r, warning = FALSE, message = FALSE}
+
+# summ <- DS %>% 
+#             summarize(avg = mean(DOT),sd = sd(DOT),  ln = length(DOT), sem = sd(DOT)/sqrt(length(DOT)))
+# 
+# 
+# summ %>% ggplot(aes(x = conc, y = avg)) +
+#     geom_col() + labs(x = "Concentration (ug/mL)", y = "Mean DOT (s)") +
+#     geom_errorbar(aes(ymin=avg-sem, ymax=avg+sem), width=.2) +
+#     geom_jitter(data = DS,aes(conc,DOT), width = 0.25, height = 0) +
+#     scale_y_continuous(expand = expand_scale(mult = c(0, .1))) +
+#     # geom_text(aes(label = numObs, y = avg + 15), position = position_dodge(0.9), vjust = 0, size = 5.5) +
+#     theme_minimal() +
+#     theme(text = element_text(size=16), axis.text.x = element_text(hjust=.5),
+#           axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+#           axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) 
+# 
+
+
+    # scale_x_discrete(labels = c(".5 (n = 3)", "1 (n = 5)", "5 (n = 1)", "10 (n = 2)", "100 (n = 4)"))
+
+
+#------ ggpubr version ---------
+
+
+# Basic bar plots of means +/- se with jittered points using ggpubr package. Much quicker.
+ggbarplot(DS, x = "conc", y = "DOT", 
+          add = c("mean_se", "jitter"), add.params = list(size = 1),
+          error.plot = "upper_errorbar",
+          xlab = "Concentration (ug/mL)", 
+          ylab = "DOT (s)", width = .3, size = 1) +
+          stat_compare_means(label = "p.signif", method = "wilcox.test",
+                     ref.group = ".all.", label.y = 300, size = 7) + 
+          stat_compare_means(method = "wilcox.test", comparisons = WilcoxCompare, label = "p.signif", 
+                             label.y = 120, bracket.size = 1, size = 7, vjust = -.5) +
+          scale_y_continuous(expand = expand_scale(mult = c(0, .1))) + 
+          theme_pubr() +
+          theme(text = element_text(size=18), 
+                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)), 
+                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+                axis.text.x = element_text(margin = margin(t = .3, unit = "cm")),
+                axis.text.y = element_text(margin = margin(r = .3, unit = "cm")))
+
+
+
+      # scale_x_discrete(labels = c(".5 (n = 3)", "1 (n = 5)", "5 (n = 1)", "10 (n = 2)", "100 (n = 4)")) +
+
+
+
+ggsave(path = "output", filename = "bar_1type.png")
+
+
+```
+
+```{r}
+# Create error plot
+DS$conc <- as.numeric(DS$conc)
+
+# ggerrorplot(DS, x = "conc", y = "DOT", ylab = "DOT (s)", xlab = "Concentration (ug/mL)", add = "mean_sd") + scale_x_continuous(trans='log2')
+
+
+# option1
+ggplot(DS, aes(x=conc, y=DOT)) + 
+    stat_summary(fun.data = "mean_se", geom="errorbar", color="black", width=0) +
+    stat_summary(fun.y=mean, geom="point", color="black") +
+    coord_trans(x="log10") + labs(x = "Concentration (ug/mL) (log scale)")
+
+# option2
+ggplot(DS, aes(x=conc, y=DOT)) + 
+    stat_summary(fun.data = "mean_se", geom="errorbar", color="black", width=0) +
+    stat_summary(fun.y=mean, geom="point", color="black") +
+    scale_x_log10() + labs(x = "Concentration (ug/mL) (log scale)")
+
+ggsave(path = "output", filename = "errorPlot_1type.png")
+
+
+```
+
+
+## Multiple sample types
+### *Box and whisker plot:*
+
+```{r, warning = FALSE, message = FALSE}
+# ggplot(clean, aes(factor(conc), DOT, colour = type)) +
+#   geom_boxplot(outlier.shape = NA) +
+#   geom_point(position = position_jitterdodge(jitter.width=0)) +
+#   labs(x = "Concentration (ug/mL)", y = "DOT (s)", colour = "sample type")
+
+all <- clean %>% group_by(conc,type)
+
+ggboxplot(all, x = "conc", y = "DOT", add = "jitter", color = "type",
+          xlab = "Concentration (ug/mL)", ylab = "DOT (s)")
+
+ggsave(path = "output", filename = "boxplot_multType.png")
+
+
+```
+
+### *Bar graph with means and error bars:*
+
+```{r, warning=FALSE, message = FALSE}
+summ <- all %>% 
+            summarize(avg = mean(DOT),sd = sd(DOT))
+
+# ggplot(summ, aes(ymin=avg-sd, ymax=avg+sd, fill = type)) +
+#   geom_col(aes(x = factor(conc), y = avg), position=position_dodge2(padding = .1)) +
+#   geom_errorbar(aes(x = factor(conc), y = avg), width=.2, position=position_dodge(width=0.9)) +
+#   labs(x = "Concentration (ug/mL)", y = "Mean DOT (s)", fill = "sample type") +
+#   theme_light()
+
+bar <- ggbarplot(all, x = "conc", y = "DOT", color = "type", palette = get_palette("jco",3),
+          add = c("mean_se", "jitter"), xlab = "Concentration (ug/mL)", ylab = "DOT (s)", 
+          position = position_dodge(0.8)) +
+        theme_pubr()
+ggpar(bar, legend.title = "sample type", main = "Bar chart of DOT vs concentration ")
+
+
+ggsave(path = "output", filename = "bar_multType.png")
+
+
+
+```
