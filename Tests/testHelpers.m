@@ -10,23 +10,22 @@ function testEdgeAlg(testCase)
     gray_frame = testCase.TestData.gray_frame;
     area_center = testCase.TestData.area_center;
     area_radius = testCase.TestData.area_radius;
+    area_fit_type = testCase.TestData.area_fit_type;
 
-    [final_mask, dewet_area] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius);
+    [final_mask, dewet_area] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius,area_fit_type);
     final_mask = im2uint8(final_mask~=0);
     imshow(final_mask);
     
-%     dewet_area;
 end
-
 
 %% Optional file fixtures  
 function setupOnce(testCase)  % do not change function name
     %initialize param's
     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-    cur_frame_num = 2500; % change
+    cur_frame_num = 2500;
     remove_Pixels = 250;
     area_frame_num = 1940;
-    area_fit_type = 0; %freehand fit
+    area_fit_type = 0; % freehand fit
     hueThresholdLow = .422;
     hueThresholdHigh = .500;
     saturationThresholdLow = .104; 
@@ -75,6 +74,7 @@ function setupOnce(testCase)  % do not change function name
     testCase.TestData.area_center = [500 439];
     testCase.TestData.area_radius = 230.3845;
     testCase.TestData.gray_frame = gray_frame;
+    testCase.TestData.area_fit_type = 0; % freehand fit
 end
 
 

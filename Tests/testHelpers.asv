@@ -10,8 +10,13 @@ function testEdgeAlg(testCase)
     gray_frame = testCase.TestData.gray_frame;
     area_center = testCase.TestData.area_center;
     area_radius = testCase.TestData.area_radius;
+    area_fit_type = testCase.TestData.area_fit_type
 
-    [final_mask, dewet_area(cur_frame_num)] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius);       
+    [final_mask, dewet_area] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius,area_fit_type);
+    final_mask = im2uint8(final_mask~=0);
+    imshow(final_mask);
+    
+%     dewet_area;
 end
 
 
@@ -19,10 +24,10 @@ end
 function setupOnce(testCase)  % do not change function name
     %initialize param's
     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-    cur_frame_num = 500; % change
+    cur_frame_num = 2500;
     remove_Pixels = 250;
     area_frame_num = 1940;
-    area_fit_type = 1; %circle fit
+    area_fit_type = 0; % freehand fit
     hueThresholdLow = .422;
     hueThresholdHigh = .500;
     saturationThresholdLow = .104; 
@@ -36,7 +41,7 @@ function setupOnce(testCase)  % do not change function name
     background_frame = read(video, background_frame_num); %gets background frame in video (used for deleting background). background frame is when dome crosses interface
     background_frame_cropped = imcrop(rgb2gray(background_frame),[0,0,1024,768]); % Converts to grayscale and crops size                                                              
     
-    % setup area 
+    % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
     totalareaframecropped = imcrop(totalareaframe,[0,0,1024,768]);     % Crop area frame
     totalareaframegray    = rgb2gray(totalareaframecropped);           % Grayscale area frame
@@ -44,7 +49,9 @@ function setupOnce(testCase)  % do not change function name
       
     orig_frame=read(video,cur_frame_num); % reading individual frames from input video
     crop_frame=imcrop(orig_frame,[0,0,1024,768]); 
-    testCase.TestData.gray_frame=rgb2gray(crop_frame); % grayscale frame from video
+    gray_frame=rgb2gray(crop_frame); % grayscale frame from video
+
+    
     subtract_frame=gray_frame - background_frame_cropped; % Subtract background frame from current frame
     subtract_frame(shadowMask) = 0; %clear every subtract_frame pixel inside the shadowMask | applies the camera mask
     subtract_frame(~mask) = 0; %apply area mask
@@ -65,9 +72,11 @@ function setupOnce(testCase)  % do not change function name
 	HSV_mask_rmv_maskHoles = ~bwareaopen(~HSV_mask, remove_Pixels); % Fill in the holes of the mask 
     HSV_mask_rmv_obj = bwareaopen(HSV_mask_rmv_maskHoles, remove_Pixels); %fill in holes smaller than 250 pixels in size
     testCase.TestData.HSV_bw_mask = HSV_mask_rmv_obj & bw_frame_mask_clean;  % apply binarization mask
-    
+   
     testCase.TestData.area_center = [500 439];
     testCase.TestData.area_radius = 230.3845;
+    testCase.TestData.gray_frame = gray_frame;
+    testCase.TestData.area_fit_type = 0; % freehand fit
 end
 
 
@@ -80,11 +89,10 @@ end
 
 %% Optional fresh fixtures  
 function setup(testCase)  % do not change function name
-%     figure;
+    figure;
 % open a figure, for example
 end
 
 function teardown(testCase)  % do not change function name
-%     close;
 % close figure, for example
 end

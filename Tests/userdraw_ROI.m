@@ -1,3 +1,6 @@
+% HELPER FUNCTION -- Vincent Xia -- Nov 2020
+
+% Handles circular and freehand ROI drawing for a single video frame
 function [area_mask, max_area, shadow_mask, camera_area, center, radius] = userdraw_ROI(totalareaframecropped,area_fit_type)
     %set the total area mask
     roi = showAreaROI(totalareaframecropped,area_fit_type); %show the frame and return an roi that we can calculate things from
