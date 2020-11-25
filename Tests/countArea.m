@@ -25,7 +25,8 @@ function clean_mask = processComponents(HSV_bw_mask,img_size,totalAreaCenter,tot
             if (area_fit_type == 1) % circle fit
                 clean_mask = edgeAlgCirc(HSV_bw_mask,img_size,totalAreaCenter,totalAreaRadius,linear_indices);                                  
             elseif (area_fit_type == 0) % freehand assisted fit
-                clean_mask = edgeAlgFree(HSV_bw_mask,img_size,linear_indices);
+                outer_region = scaleMask(HSV_bw_mask);
+                clean_mask = edgeAlgFree(HSV_bw_mask,outer_region,img_size,linear_indices);
             end
 
         end
@@ -48,18 +49,15 @@ function clean_mask = edgeAlgCirc(HSV_bw_mask,img_size,totalAreaCenter,totalArea
 end
 
 % run the freehand edge algorithm for a single connected component
-function clean_mask = edgeAlgFree(HSV_bw_mask,img_size,linear_indices)
-
-    outer_region = scaleMask(HSV_bw_mask);
+function clean_mask = edgeAlgFree(HSV_bw_mask,outer_region,img_size,linear_indices)
     
     [row,col] = ind2sub(img_size, linear_indices); % get the coordinates of each pixel in connected component
     
-    component_mask = zeros(img_size); % create a mask from the linear indices of the connected component  % make a blank image
-                                                                                     % turn on every pixel with matching linear_indices
+    component_mask = zeros(img_size); % create a mask from the linear indices of the connected component
     component_mask(linear_indices) = 1;
 
     union = outer_region & component_mask; % overlap between the component and the outer_region    
-    if (nnz(union) == nnz(outer_region) + nnz(component_mask)) % if there was no change in pixel count after taking the union, that means our component had no overlap with the outer region
+    if (nnz(union) == 0) % if the component had no overlap with the outer region
         HSV_bw_mask(linear_indices) = 0; % set the pixels to 0 (black) in the original mask
     end
 
@@ -67,7 +65,8 @@ function clean_mask = edgeAlgFree(HSV_bw_mask,img_size,linear_indices)
 end
 
 
-% scale the mask and return a binary mask of the anti-intersection outer region
+% scale the mask and return a binary mask of the anti-intersection outer region 
+% TODO: this needs to be done on area_mask, not the HSV_bw_mask!
 function outer_region = scaleMask(HSV_bw_mask)
     boundaries = bwboundaries(HSV_bw_mask); % returns a cell array of the boundary pixel locations
     coord = boundaries{1}; % copy the vector of x/y coordinates for the boundary of our single region
@@ -85,7 +84,6 @@ function outer_region = scaleMask(HSV_bw_mask)
     [scale_x,scale_y] = boundary(pgon_scale);
    
     scaled_poly_mask = poly2mask(scale_x, scale_y, 768,  1024);  % convert the scaled ROI polygon into a mask
-    
     
     % debugging plot
     orig_fig = gcf; 
