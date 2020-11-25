@@ -65,34 +65,7 @@ function clean_mask = edgeAlgFree(HSV_bw_mask,outer_region,img_size,linear_indic
 end
 
 
-% scale the mask and return a binary mask of the anti-intersection outer region 
-% TODO: this needs to be done on area_mask, not the HSV_bw_mask!
-function outer_region = scaleMask(HSV_bw_mask)
-    boundaries = bwboundaries(HSV_bw_mask); % returns a cell array of the boundary pixel locations
-    coord = boundaries{1}; % copy the vector of x/y coordinates for the boundary of our single region
-    
-    % debugging plot
-    orig_fig = gcf; 
-        figure; % new figure
-        plot(coord(:,2),coord(:,1),'g','LineWidth',3); % plot the boundary
-    figure(orig_fig); % go back to the old figure
-    
-    pgon_orig = polyshape(coord(:,2),coord(:,1)); % turn the boundary into a polyshape
-    [orig_centroid_x, orig_centroid_y] = centroid(pgon_orig); % get the centroid of the polyshape
-    
-    pgon_scale = scale(pgon_orig, .5, [orig_centroid_x orig_centroid_y]); % scale the polyshape to half its size
-    [scale_x,scale_y] = boundary(pgon_scale);
-   
-    scaled_poly_mask = poly2mask(scale_x, scale_y, 768,  1024);  % convert the scaled ROI polygon into a mask
-    
-    % debugging plot
-    orig_fig = gcf; 
-       imshow(scaled_poly_mask);
-       title("Scaled mask");
-    figure(orig_fig); % go back to the old figure
 
-    outer_region = xor(scaled_poly_mask, HSV_bw_mask); % get non-overlapping region between the scaled mask and the original mask
-end
 
 
 

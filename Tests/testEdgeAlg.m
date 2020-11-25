@@ -1,5 +1,5 @@
 %% Main function
-function tests = testHelpers
+function tests = testEdgeAlg
     tests = functiontests(localfunctions);
 end
 
@@ -12,7 +12,7 @@ function testEdgeAlg(testCase)
     area_radius = testCase.TestData.area_radius;
     area_fit_type = testCase.TestData.area_fit_type;
 
-    [final_mask, dewet_area] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius,area_fit_type);
+    [final_mask, ~] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius,area_fit_type);
     final_mask = im2uint8(final_mask~=0);
     imshow(final_mask);
     
@@ -25,7 +25,7 @@ function setupOnce(testCase)  % do not change function name
     cur_frame_num = 2500;
     remove_Pixels = 250;
     area_frame_num = 1940;
-    area_fit_type = 0; % freehand fit
+    area_fit_type = 1; % freehand fit
     hueThresholdLow = .422;
     hueThresholdHigh = .500;
     saturationThresholdLow = .104; 
@@ -42,8 +42,7 @@ function setupOnce(testCase)  % do not change function name
     % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
     totalareaframecropped = imcrop(totalareaframe,[0,0,1024,768]);     % Crop area frame
-    totalareaframegray    = rgb2gray(totalareaframecropped);           % Grayscale area frame
-    [mask, max_area, shadowMask, camera_area, area_center, area_radius] = userdraw_ROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
+    [mask, outer_region, ~, shadowMask, ~, ~, ~] = userdraw_ROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
       
     orig_frame=read(video,cur_frame_num); % reading individual frames from input video
     crop_frame=imcrop(orig_frame,[0,0,1024,768]); 
@@ -74,13 +73,19 @@ function setupOnce(testCase)  % do not change function name
     testCase.TestData.area_center = [500 439];
     testCase.TestData.area_radius = 230.3845;
     testCase.TestData.gray_frame = gray_frame;
-    testCase.TestData.area_fit_type = 0; % freehand fit
+    testCase.TestData.area_fit_type = 1; % freehand fit
+    testCase.TestData.outer_region = outer_region;
 end
 
 
 
 function teardownOnce(testCase)  % do not change function name
-    % change back to original path, for example
+    % clear all test case data
+    delete(testCase.TestData.area_center);
+    delete(testCase.TestData.area_radius);
+    delete(testCase.TestData.gray_frame);
+    delete(testCase.TestData.area_fit_type); 
+    delete(testCase.TestData.outer_region);
 end
 
 

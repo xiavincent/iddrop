@@ -127,7 +127,6 @@ background_frame_cropped = imcrop(rgb2gray(background_frame),[0,0,1024,768]); % 
 
 totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
 totalareaframecropped = imcrop(totalareaframe,[0,0,1024,768]);     % Crop area frame
-totalareaframegray    = rgb2gray(totalareaframecropped);           % Grayscale area frame
 
 [mask, max_area, shadowMask, camera_area, area_center, area_radius] = userdraw_ROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
 %% Analyze video
