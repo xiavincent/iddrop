@@ -2,14 +2,18 @@
 
 % Segments the provided mask using an edge algorithm that throws away central dewetted regions
 % then calculates the dewetted area array and returns the cleaned image
-function [clean_label_img, total_area] = countArea(HSV_bw_mask,outer_region,img_size,area_fit_type)
+function [clean_label_img, total_area] = countArea(orig_mask,outer_region,img_size,area_fit_type)
  
-    clean_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_fit_type); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
+    rm_center_mask = processComponents(orig_mask,outer_region,img_size,area_fit_type); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
 %     opened_mask = bwareaopen(clean_mask,250);
-    
-    clean_mask_components = bwconncomp(clean_mask); % find connected components again, since now we've removed objects in our clearing region
+
+    rm_euler_mask = rmNegEuler(rm_center_mask); % remove small Euler characteristic objects
+
+    clean_mask_components = bwconncomp(rm_euler_mask); % find connected components again, since now we've removed objects in our clearing region
+
     clean_label_img = labelmatrix(clean_mask_components); % creates matrix that labels each dewetted object in the image
     
+
     
     area_data = regionprops(clean_mask_components, 'Area'); % area of each connected component
     total_area = sum([area_data.Area]); % sum of areas in our cleaned image to be used when calculating wet vs dry area  
@@ -25,6 +29,13 @@ function HSV_bw_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_
     if (num_components ~= 0)
         for k = 1:num_components % iterate through each connected component
             linear_indices = connected_components.PixelIdxList{k}; % locations of pixels in the k'th component
+            
+            euler_nums = regionprops(, 'Area');
+
+            
+                % If the Euler characteristic (see regionprops documentation) for any connected component
+                % is negative, then get rid of the connected component
+                        
             if (area_fit_type == 1) % circle fit
                 HSV_bw_mask = edgeAlgCirc(HSV_bw_mask,outer_region,linear_indices,component_mask);  % remove inside components                                
             elseif (area_fit_type == 0) % freehand assisted fit
@@ -41,7 +52,7 @@ function HSV_bw_mask = edgeAlgCirc(HSV_bw_mask,outer_region,linear_indices,compo
     union = outer_region & component_mask; % overlap between the component and the outer_region
 %     union = (outer_region - component_mask) == 0;
 
-    if (nnz(union) <= 10) % if the component had less than 10 pixels overlap with the outer region
+    if (nnz(union) <= 50) % if the component had less than 50 pixels overlap with the outer region
         HSV_bw_mask(linear_indices) = 0; % set the pixels to 0 (black) in the original mask
     end
     
@@ -62,6 +73,12 @@ end
 %     clean_mask = HSV_bw_mask; % return the cleaned output
 % end
 
+
+
+function rmNegEuler(connected_components)
+
+
+end
 
 
 

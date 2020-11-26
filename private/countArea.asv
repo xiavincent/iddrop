@@ -2,13 +2,14 @@
 
 % Segments the provided mask using an edge algorithm that throws away central dewetted regions
 % then calculates the dewetted area array and returns the cleaned image
-function [clean_label_img, total_area] = countArea(HSV_bw_mask,outer_region,img_size,area_fit_type)
+function [clean_label_img, total_area] = countArea(orig_mask,outer_region,img_size,area_fit_type)
  
-    clean_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_fit_type); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
+    clean_mask = processComponents(orig_mask,outer_region,img_size,area_fit_type); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
+%     opened_mask = bwareaopen(clean_mask,250);
+    
     clean_mask_components = bwconncomp(clean_mask); % find connected components again, since now we've removed objects in our clearing region
     clean_label_img = labelmatrix(clean_mask_components); % creates matrix that labels each dewetted object in the image
     
-    clean_
     
     area_data = regionprops(clean_mask_components, 'Area'); % area of each connected component
     total_area = sum([area_data.Area]); % sum of areas in our cleaned image to be used when calculating wet vs dry area  

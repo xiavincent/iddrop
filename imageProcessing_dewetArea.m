@@ -154,38 +154,31 @@ for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
     crop_frame = imcrop(orig_frame,crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
     subtract_frame = gray_frame - background_frame_cropped; % Subtract background frame from current frame
+    
 % Masking and binarization: 
-    subtract_frame(shadow_mask) = 0; %clear every subtract_frame pixel inside the shadowMask | applies the camera mask
-    subtract_frame(~area_mask) = 0; %apply area mask
+    subtract_frame(shadow_mask) = 0; % apply the camera mask
+    subtract_frame(~area_mask) = 0; % apply area mask
     bw_frame_mask=imbinarize(subtract_frame);
- 
-% Area mask
-    bw_frame_mask_clean = bwareaopen(bw_frame_mask, remove_Pixels); % remove connected objects that are smaller than 250 pixels in size
-    bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean, remove_Pixels); % remove holes that are smaller than 20 pixels in size
 
 % HSV Masking
     hsv_frame = rgb2hsv(crop_frame); % convert to hsv image
-    hsv_frame(shadow_mask) = 0; % apply camera mask
-    hsv_frame(~area_mask) = 0; % apply area mask
     
     % Apply each color band's particular thresholds to the color band
 	hue_mask = (hsv_frame(:,:,1) >= H_thresh_low) & (hsv_frame(:,:,1) <= H_thresh_high); %makes mask of the hue image within theshold values
 	sat_mask = (hsv_frame(:,:,2) >= S_thresh_low) & (hsv_frame(:,:,2) <= S_thresh_high); %makes mask of the saturation image within theshold values
 	val_mask = (hsv_frame(:,:,3) >= V_thresh_low) & (hsv_frame(:,:,3) <= V_thresh_high); %makes mask of the value image within theshold values
-    
     HSV_mask = hue_mask & sat_mask & val_mask; % defines area that fits within hue mask, saturation mask, and value mask    
-	HSV_mask_rm_holes = ~bwareaopen(~HSV_mask, remove_Pixels); % Fill in the holes of the mask 
-    HSV_mask_rm_obj = bwareaopen(HSV_mask_rm_holes, remove_Pixels); % get rid of small objects
     
-    HSV_bw_mask = HSV_mask_rm_obj & bw_frame_mask_clean; % apply binarization mask
+    combined_mask = HSV_mask & bw_frame_mask; % apply binarization mask
+    combined_mask(shadow_mask) = 0; % apply camera mask
+    combined_mask(~area_mask) = 0; % apply area mask
+    combined_mask_open = bwareaopen(combined_mask, remove_Pixels); % remove small components
 
 % Count Area; use *Edge Algorithm 2* to throw away inside regions
-    img_size = size(gray_frame);
-    [label_dewet_img, dewet_area(cur_frame_num)] = countArea(HSV_bw_mask,outer_region,img_size,area_fit_type);       
+    [label_dewet_img, dewet_area(cur_frame_num)] = countArea(combined_mask_open,outer_region,size(gray_frame),area_fit_type);       
  
 % Write final videos  
         % TODO: don't convert to label matrix!
-        % Only write video after dome has crossed the interface (i.e., background frame)
         
         wet_area(cur_frame_num) = writeOutputVids(output_false_color,output_analyzed_frames,output_all_masks,output_black_white_mask,...
                                                           gray_frame,crop_frame,orig_frame,HSV_mask,HSV_mask_rm_obj,bw_frame_mask_clean,label_dewet_img,...
