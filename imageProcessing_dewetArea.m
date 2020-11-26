@@ -147,7 +147,7 @@ num_it = floor(num_frames/skip_frame); % number of times we iterate through the 
 dewet_area = zeros(1,num_it*skip_frame); % stores the area for every frame index (formerly called 'grain_areas')
 wet_area = zeros(size(dewet_area)); % stores normalized wet area for every frame index
 
-final_frame_num = 2000; % dictates the last frame of the video to be analyzed
+final_frame_num = 3000; % dictates the last frame of the video to be analyzed
 for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
     waitbar(cur_frame_num/final_frame_num,wait_bar); % update wait bar to show analysis progress
     orig_frame = read(video,cur_frame_num); % reading individual frames from input video
@@ -181,15 +181,14 @@ for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
 
 % Count Area; use *Edge Algorithm 2* to throw away inside regions
     img_size = size(gray_frame);
-    [final_mask, dewet_area(cur_frame_num)] = countArea(HSV_bw_mask,outer_region,img_size,area_fit_type);       
+    [label_dewet_img, dewet_area(cur_frame_num)] = countArea(HSV_bw_mask,outer_region,img_size,area_fit_type);       
  
 % Write final videos  
         % TODO: don't convert to label matrix!
         % Only write video after dome has crossed the interface (i.e., background frame)
-        final_mask = im2uint8(final_mask~=0); % convert mask
         
         wet_area(cur_frame_num) = writeOutputVids(output_false_color,output_analyzed_frames,output_all_masks,output_black_white_mask,...
-                                                          gray_frame,crop_frame,orig_frame,HSV_mask,HSV_mask_rm_obj,bw_frame_mask_clean,final_mask,...
+                                                          gray_frame,crop_frame,orig_frame,HSV_mask,HSV_mask_rm_obj,bw_frame_mask_clean,label_dewet_img,...
                                                           bw_vid,false_color_vid,analyzed_frames_vid,all_masks_vid,...
                                                           dewet_area(cur_frame_num),...
                                                           t0_frame_num,cur_frame_num,...
@@ -214,7 +213,7 @@ if(~output_animated_plot) % initialize video of animated plot
     open(animated_vid);
 end
 
-figure;
+figure('Name','Area Plot'   );
 hold on;
 formatAreaPlot(); % Create and format area plot
 
@@ -285,13 +284,14 @@ fclose(file_id);
 % types
 
 function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks,output_black_white_mask,...
-                              gray_frame,crop_frame,orig_frame,HSV_mask,HSV_mask_rmv_obj,bw_frame_mask_clean,finalMask, ...
+                              gray_frame,crop_frame,orig_frame,HSV_mask,HSV_mask_rmv_obj,bw_frame_mask_clean,label_dewet_img, ...
                               output_vid,falseColorVideo,analyzedVideo,allMasksVideo, ...
                               dewet_area,...
                               t0_frame_num,cur_frame_num,...
                               max_area,camera_area,...
                               input_fps)
 
+                        
         vid_time = cur_frame_num/input_fps; % raw video time
         graph_time = vid_time - t0_frame_num/input_fps; % adjusts time for skipped frames and initial frame rate  
         wet_area = 1-(dewet_area./(max_area-camera_area)); % normalize dry area based on total area minus camera shadow area. subtract from 1 to get total wet area            
@@ -301,15 +301,17 @@ function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks
 %% 
 % Output black & white mask video:
 
-        if (~output_black_white_mask) % make a movie of the black/white final mask frames               
-            output_text = insertText(finalMask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
+        if (~output_black_white_mask) % make a movie of the black/white final mask frames       
+            final_mask = label_dewet_img > 0;
+            output_text = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
             writeVideo(output_vid,output_text); % writes video with analyzed frames  
         end
 %% 
 % Output falsecolor:        
 
         if (~outputFalseColor)  % make a falsecolor overlay of our final mask over the original grayscale image 
-            FinalImgFuse = imfuse(finalMask,gray_frame,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of binary mask over original image    
+            FinalImgFuse = labeloverlay(gray_frame,label_dewet_img);
+%             FinalImgFuse = imfuse(finalMask,gray_frame,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of binary mask over original image    
             falseColorInfo = sprintf('red = binary mask | green = original img | yellow = both'); % prints false color info                
             output_text = insertText(FinalImgFuse,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
             output_text = insertText(output_text,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
@@ -334,7 +336,7 @@ function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks
                 fuse = imfuse(im2uint8(HSV_mask),im2uint8(bw_frame_mask_clean),'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of area mask with HSV mask
             im2 = insertText(fuse, [100 50],'HSV w/ binarize overlay','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             im3 = insertText(im2uint8(bw_frame_mask_clean),[100 50],"Binarize mask (contains area mask)",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');            
-            im6 = insertText(finalMask,[100 50],'final mask','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
+            im6 = insertText(label_dewet_img,[100 50],'final mask','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             
             im7 = insertText(im2uint8(HSV_mask_rmv_obj),[100 50],"HSV mask after removing small objects and small mask holes",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             

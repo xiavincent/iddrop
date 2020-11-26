@@ -23,7 +23,7 @@ end
 function setupOnce(testCase)  % do not change function name
     %initialize param's
     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-    cur_frame_num = 856;
+    cur_frame_num = 916; % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
     area_fit_type = 1; % freehand fit
@@ -46,33 +46,41 @@ function setupOnce(testCase)  % do not change function name
     
     % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
-    totalareaframecropped = imcrop(totalareaframe,crop_rect]);     % Crop area frame
-    [mask, outer_region, ~, shadowMask, ~] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
+    totalareaframecropped = imcrop(totalareaframe,crop_rect);     % Crop area frame
+    [area_mask, outer_region, ~, shadowMask, ~] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
       
     orig_frame=read(video,cur_frame_num); % reading individual frames from input video
     crop_frame=imcrop(orig_frame,crop_rect); 
     gray_frame=rgb2gray(crop_frame); % grayscale frame from video
 
-    subtract_frame=gray_frame - background_frame_cropped; % Subtract background frame from current frame
-    subtract_frame(shadowMask) = 0; %clear every subtract_frame pixel inside the shadowMask | applies the camera mask
-    subtract_frame(~mask) = 0; %apply area mask
+    subtract_frame = gray_frame - background_frame_cropped; % Subtract background frame from current frame
+    subtract_frame(shadowMask) = 0; %apply the camera mask
+    subtract_frame(~area_mask) = 0; %apply area mask
     bw_frame_mask=imbinarize(subtract_frame);
-    bw_frame_mask_clean = bwareaopen(bw_frame_mask, remove_Pixels); % remove connected objects that are smaller than 250 pixels in size
-    bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean, remove_Pixels); % remove holes that are smaller than 20 pixels in size
-
-    hsv_frame=rgb2hsv(crop_frame); % convert to hsv image
-    hsv_frame(shadowMask) = 0; % apply camera mask
-    hsv_frame(~mask) = 0; % apply area mask
+    
+    hsv_frame = rgb2hsv(crop_frame); % convert to hsv image
     
     % Apply each color band's particular thresholds to the color band
 	hueMask = (hsv_frame(:,:,1) >= hueThresholdLow) & (hsv_frame(:,:,1) <= hueThresholdHigh); %makes mask of the hue image within theshold values
 	saturationMask = (hsv_frame(:,:,2) >= saturationThresholdLow) & (hsv_frame(:,:,2) <= saturationThresholdHigh); %makes mask of the saturation image within theshold values
 	valueMask = (hsv_frame(:,:,3) >= valueThresholdLow) & (hsv_frame(:,:,3) <= valueThresholdHigh); %makes mask of the value image within theshold values
     
-    HSV_mask = hueMask & saturationMask & valueMask; % defines area that fits within hue mask, saturation mask, and value mask   
-	HSV_mask_rmv_maskHoles = ~bwareaopen(~HSV_mask, remove_Pixels); % Fill in the holes of the mask 
-    HSV_mask_rmv_obj = bwareaopen(HSV_mask_rmv_maskHoles, remove_Pixels); %fill in holes smaller than 250 pixels in size
-    testCase.TestData.HSV_bw_mask = HSV_mask_rmv_obj & bw_frame_mask_clean;  % apply binarization mask
+    HSV_mask = hueMask & saturationMask & valueMask; % defines area that fits within hue mask, saturation mask, and value mask 
+    
+%     HSV_mask_rmv_maskHoles = ~bwareaopen(~HSV_mask, remove_Pixels); % Fill in the holes of the mask 
+%     HSV_mask_rmv_obj = bwareaopen(HSV_mask_rmv_maskHoles, remove_Pixels); %fill in holes smaller than 250 pixels in size
+
+    combined_mask = HSV_mask & bw_frame_mask;
+    combined_mask(shadowMask) = 0; % apply camera mask
+    combined_mask(~area_mask) = 0; % apply area mask
+    combined_mask_open = bwareaopen(combined_mask, remove_Pixels);
+    
+%     bw_frame_mask_clean = bwareaopen(bw_frame_mask, remove_Pixels); % remove connected objects that are smaller than 250 pixels in size
+%     bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean, remove_Pixels); % remove holes that are smaller than 250 pixels in size
+    
+    
+    testCase.TestData.HSV_bw_mask = combined_mask_open;  % apply binarization mask
+    
    
     testCase.TestData.area_center = [500 439];
     testCase.TestData.area_radius = 230.3845;
