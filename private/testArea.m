@@ -8,8 +8,6 @@ end
 function testEdgeAlg(testCase)
     HSV_bw_mask = testCase.TestData.HSV_bw_mask;
     gray_frame = testCase.TestData.gray_frame;
-%     area_center = testCase.TestData.area_center;
-%     area_radius = testCase.TestData.area_radius;
     area_fit_type = testCase.TestData.area_fit_type;
     outer_region  = testCase.TestData.outer_region;
     
@@ -25,7 +23,7 @@ end
 function setupOnce(testCase)  % do not change function name
     %initialize param's
     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-    cur_frame_num = 2500;
+    cur_frame_num = 856;
     remove_Pixels = 250;
     area_frame_num = 1940;
     area_fit_type = 1; % freehand fit
@@ -36,22 +34,25 @@ function setupOnce(testCase)  % do not change function name
     valueThresholdLow = .490; 
     valueThresholdHigh = .761;
     
+    crop_start = [150,50]; % upper left hand corner for cropping rectangle
+    crop_size = [700,700]; % crop size
+    crop_rect = [crop_start, crop_size-1]; % cropping rectangle || subtract one to make it exactly 700 by 700 in size
+    
     % setup video 
     video = VideoReader(file_name); % starts reading video
     background_frame_num = 141; % change
     background_frame = read(video, background_frame_num); %gets background frame in video (used for deleting background). background frame is when dome crosses interface
-    background_frame_cropped = imcrop(rgb2gray(background_frame),[0,0,1024,768]); % Converts to grayscale and crops size                                                              
+    background_frame_cropped = imcrop(rgb2gray(background_frame),crop_rect); % Converts to grayscale and crops size                                                              
     
     % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
-    totalareaframecropped = imcrop(totalareaframe,[0,0,1024,768]);     % Crop area frame
+    totalareaframecropped = imcrop(totalareaframe,crop_rect]);     % Crop area frame
     [mask, outer_region, ~, shadowMask, ~] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
       
     orig_frame=read(video,cur_frame_num); % reading individual frames from input video
-    crop_frame=imcrop(orig_frame,[0,0,1024,768]); 
+    crop_frame=imcrop(orig_frame,crop_rect); 
     gray_frame=rgb2gray(crop_frame); % grayscale frame from video
 
-    
     subtract_frame=gray_frame - background_frame_cropped; % Subtract background frame from current frame
     subtract_frame(shadowMask) = 0; %clear every subtract_frame pixel inside the shadowMask | applies the camera mask
     subtract_frame(~mask) = 0; %apply area mask
@@ -84,11 +85,6 @@ end
 
 function teardownOnce(testCase)  % do not change function name
     % clear all test case data
-%     delete(testCase.TestData.area_center);
-%     delete(testCase.TestData.area_radius);
-    delete(testCase.TestData.gray_frame);
-    delete(testCase.TestData.area_fit_type); 
-    delete(testCase.TestData.outer_region);
 end
 
 
@@ -96,7 +92,6 @@ end
 %% Optional fresh fixtures  
 function setup(testCase)  % do not change function name
     figure('Name','Final Processed Frame','NumberTitle','off');
-% open a figure, for example
 end
 
 function teardown(testCase)  % do not change function name

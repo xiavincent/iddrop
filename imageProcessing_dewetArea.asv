@@ -116,9 +116,9 @@ end
 
 %% Video Import
 
-crop_start = [150,50]; % upper left hand corner for cropping rectangle
-crop_size = [700,700]; % crop size
-crop_rect = [crop_start, crop_size-1]; % cropping rectangle || subtract one to make it exactly 700 by 700 in size
+crop_start = [200,100]; % upper left hand corner for cropping rectangle
+crop_size = [640,768
+crop_rect = [200,100,640,768]; % 
 
 video = VideoReader(file_name); % starts reading video
 file_name_short = file_name(1:end-4); % removes .avi or other file extension from filename

@@ -1,7 +1,7 @@
 % HELPER FUNCTION -- Vincent Xia -- Nov 2020
 
 % Segments the provided mask using an edge algorithm that throws away central dewetted regions
-% then calculates the dewetted area array
+% then calculates the dewetted area array and returns the cleaned image
 function [cleaned_img, total_area] = countArea(HSV_bw_mask,outer_region,img_size,area_fit_type)
  
     clean_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_fit_type); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
@@ -13,9 +13,8 @@ function [cleaned_img, total_area] = countArea(HSV_bw_mask,outer_region,img_size
 end
 
 % process all connected components
-function clean_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_fit_type)
+function HSV_bw_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_fit_type)
 
-    clean_mask = HSV_bw_mask; % initialize clean_mask
     connected_components = bwconncomp(HSV_bw_mask,8); % finds connected components within binary image (connectivity of 8)                
     num_components = length(connected_components.PixelIdxList); % number of connected components found by 'bwconncomp'
     
@@ -23,17 +22,16 @@ function clean_mask = processComponents(HSV_bw_mask,outer_region,img_size,area_f
         for k = 1:num_components % iterate through each connected component
             linear_indices = connected_components.PixelIdxList{k}; % locations of pixels in the k'th component
             if (area_fit_type == 1) % circle fit
-                clean_mask = edgeAlgCirc(HSV_bw_mask,outer_region,img_size,linear_indices);                                  
+                HSV_bw_mask = edgeAlgCirc(HSV_bw_mask,outer_region,img_size,linear_indices);  % remove inside components                                
             elseif (area_fit_type == 0) % freehand assisted fit
-                clean_mask = edgeAlgFree(HSV_bw_mask,outer_region,img_size,linear_indices);
+                HSV_bw_mask = edgeAlgFree(HSV_bw_mask,outer_region,img_size,linear_indices); % remove inside components
             end
-
         end
     end
 end
 
 % run the circular edge algorithm for a single connected component
-function clean_mask = edgeAlgCirc(HSV_bw_mask,outer_region,img_size,linear_indices)
+function HSV_bw_mask = edgeAlgCirc(HSV_bw_mask,outer_region,img_size,linear_indices)
 %     radius_rmv = totalAreaRadius - 10; % radius for our clearing region
     
     [row,col] = ind2sub(img_size, linear_indices); % get the coordinates of each pixel in connected component
@@ -52,7 +50,6 @@ function clean_mask = edgeAlgCirc(HSV_bw_mask,outer_region,img_size,linear_indic
         HSV_bw_mask(linear_indices) = 0; % set the pixels to 0 (black) in the original mask
     end
 
-    clean_mask = HSV_bw_mask; % return the cleaned output
 end
 
 % run the freehand edge algorithm for a single connected component
