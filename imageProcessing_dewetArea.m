@@ -125,10 +125,10 @@ background_frame = read(video, background_frame_num); %gets background frame in 
 background_frame_cropped = imcrop(rgb2gray(background_frame),[0,0,1024,768]); % Converts to grayscale and crops size                                                                              
 %% Set total area
 
-totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
-totalareaframecropped = imcrop(totalareaframe,[0,0,1024,768]);     % Crop area frame
+area_frame        = read(video,area_frame_num);                % Read user specified frame for area analysis
+area_frame_cropped = imcrop(area_frame,[0,0,1024,768]);     % Crop area frame
 
-[mask, max_area, shadowMask, camera_area, area_center, area_radius] = userdraw_ROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
+[area_mask, outer_region, max_area, shadow_mask, camera_area] = userdrawROI(area_frame_cropped,area_fit_type); %helper function to handle our ROI drawing
 %% Analyze video
 
 % Define output video parameters; open videos for writing
@@ -151,8 +151,8 @@ for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
     subtract_frame = gray_frame - background_frame_cropped; % Subtract background frame from current frame
 % Masking and binarization: 
 
-    subtract_frame(shadowMask) = 0; %clear every subtract_frame pixel inside the shadowMask | applies the camera mask
-    subtract_frame(~mask) = 0; %apply area mask
+    subtract_frame(shadow_mask) = 0; %clear every subtract_frame pixel inside the shadowMask | applies the camera mask
+    subtract_frame(~area_mask) = 0; %apply area mask
     bw_frame_mask=imbinarize(subtract_frame);
 %% 
 % Area mask
@@ -163,8 +163,8 @@ for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
 % HSV Masking
 
     hsv_frame=rgb2hsv(crop_frame); % convert to hsv image
-    hsv_frame(shadowMask) = 0; % apply camera mask
-    hsv_frame(~mask) = 0; % apply area mask
+    hsv_frame(shadow_mask) = 0; % apply camera mask
+    hsv_frame(~area_mask) = 0; % apply area mask
     
     % Apply each color band's particular thresholds to the color band
 	hueMask = (hsv_frame(:,:,1) >= hueThresholdLow) & (hsv_frame(:,:,1) <= hueThresholdHigh); %makes mask of the hue image within theshold values
@@ -179,8 +179,8 @@ for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
 
 %% 
 % Count Area; use *Edge Algorithm 2* to throw away inside regions
-
-    [final_mask, dewet_area(cur_frame_num)] = countArea(HSV_bw_mask,gray_frame,area_center,area_radius);       
+    img_size = size(gray_frame);
+    [final_mask, dewet_area(cur_frame_num)] = countArea(HSV_bw_mask,img_size,area_fit_type);       
 %% 
 % Write final videos  
 
