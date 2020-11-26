@@ -59,16 +59,18 @@ end
 % end
 
 
-% Remove small euler objects from an image
+% Remove small objects with negative euler numbers from a single image
 % Return the cleaned image
 function mask = rmNegEuler(mask)
     % If the Euler characteristic (see regionprops documentation) for any component is negative
         % then get rid of the connected component
     conn_comp = bwconncomp(mask);
-    euler_nums = regionprops(conn_comp, 'EulerNumber');
+    stats = regionprops(conn_comp, 'EulerNumber','Area');
 
-    for c = 1:length(euler_nums)
-       if (euler_nums(c).EulerNumber < 0)
+    for c = 1:length(stats)
+       cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 2500; % small objects with multiple holes
+       cond2 = stats(c).EulerNumber < -10; % any object with a large number of holes
+       if ( cond1 || cond2 ) % check for both conditions
            linear_indices = conn_comp.PixelIdxList{c};
            mask(linear_indices) = 0;  % remove component from orig image
        end

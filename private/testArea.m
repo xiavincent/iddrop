@@ -23,7 +23,7 @@ end
 function setupOnce(testCase)  % do not change function name
     %initialize param's
     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-    cur_frame_num = 916; %916 % 1576
+    cur_frame_num = 2686; %916 % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
     area_fit_type = 1; % freehand fit
