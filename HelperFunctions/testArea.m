@@ -1,4 +1,4 @@
-%% Main function
+%% Run the dewet area processing for a single video frame
 function tests = testArea
     tests = functiontests(localfunctions);
 end

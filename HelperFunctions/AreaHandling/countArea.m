@@ -2,9 +2,9 @@
 
 % Segments the provided mask using an edge algorithm that throws away central dewetted regions
 % then calculates the dewetted area array and returns the cleaned image
-function [clean_label_img, total_area] = countArea(orig_mask,outer_region,img_size,area_fit_type)
+function [clean_label_img, total_area] = countArea(orig_mask,outer_region,img_size)
  
-    clean_mask = processComponents(orig_mask,outer_region,img_size,area_fit_type); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
+    clean_mask = processComponents(orig_mask,outer_region,img_size); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
     clean_mask_components = bwconncomp(clean_mask); % find connected components again, since now we've removed objects in our clearing region
 
     clean_label_img = labelmatrix(clean_mask_components); % creates matrix that labels each dewetted object in the image
@@ -16,7 +16,7 @@ end
 
 % process all connected components in a mask with the edge algorithm and euler algorithm
 % return the cleaned mask
-function mask = processComponents(mask,outer_region,img_size,~)
+function mask = processComponents(mask,outer_region,img_size)
 
     mask = rmNegEuler(mask); % remove objects with lots of holes
     
@@ -44,20 +44,6 @@ function mask = edgeAlg(mask,outer_region,linear_indices,component_mask)
 
 end
 
-% run the freehand edge algorithm for a single connected component
-% function clean_mask = edgeAlgFree(HSV_bw_mask,outer_region,img_size,linear_indices)
-%         
-%     component_mask = zeros(img_size); % create a mask from the linear indices of the connected component
-%     component_mask(linear_indices) = 1;
-% 
-%     union = outer_region & component_mask; % overlap between the component and the outer_region    
-%     if (nnz(union) == 0) % if the component had no overlap with the outer region
-%         HSV_bw_mask(linear_indices) = 0; % set the pixels to 0 (black) in the original mask
-%     end
-% 
-%     clean_mask = HSV_bw_mask; % return the cleaned output
-% end
-
 
 % Remove small objects with negative euler numbers from a single image
 % Return the cleaned image
@@ -68,7 +54,9 @@ function mask = rmNegEuler(mask)
     stats = regionprops(conn_comp, 'EulerNumber','Area');
 
     for c = 1:length(stats)
-       if (  stats(c).EulerNumber < 0 && stats(c).Area < 2500)
+       cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 2500; % small objects with multiple holes
+       cond2 = stats(c).EulerNumber < -10; % any object with a large number of holes
+       if ( cond1 || cond2 ) % check for both conditions
            linear_indices = conn_comp.PixelIdxList{c};
            mask(linear_indices) = 0;  % remove component from orig image
        end
