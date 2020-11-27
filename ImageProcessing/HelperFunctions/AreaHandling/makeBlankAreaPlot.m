@@ -1,5 +1,9 @@
 %Format the area plot to output
-function formatAreaPlot() 
+function makeBlankAreaPlot() 
+
+    figure('Name','Area Plot');
+    hold on;
+    
     xlim([0 600]);
     ylim([0 1.2]);
     xlabel('Time (s)','FontSize' , 28,'FontName'   , 'Arial');
@@ -7,4 +11,5 @@ function formatAreaPlot()
     set(gca,'FontName', 'Arial','FontSize',18);
     set(gcf, 'PaperPositionMode', 'auto');
     box on;
+    
 end

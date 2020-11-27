@@ -92,21 +92,41 @@ graph_time = zeros(1,length(wet_area)); % time after t0
 output_size = floor((final_frame_num-t0_frame_num)/skip_frame); % number of row entries for the final area+time file output
 area_data_output = zeros(3,output_size); % 2D matrix storing the corresponding area+time output
 
-% TODO: make a matrix to represent frames we analyze and just iterate through the matrix, instead of
+% TODO: make matrix to represent frames we analyze and just iterate through the matrix, instead of
 % changing cur_frame_num each time
 
 for cur_frame_num = t0_frame_num:skip_frame:final_frame_num % set raw video time 
     time(cur_frame_num)=cur_frame_num/vid.FrameRate; %adjusts time for skipped frames and initial frame rate
     graph_time(cur_frame_num) = time(cur_frame_num) - t0_frame_num/vid.FrameRate;
     entry_num = (cur_frame_num-t0_frame_num)/skip_frame + 1; % row entry number for the data output file
-    area_data_output(:,entry_num) = [time(cur_frame_num) ; graph_time(cur_frame_num) ; wet_area(cur_frame_num)];
+    area_data_output(:,entry_num) = [time(cur_frame_num);  graph_time(cur_frame_num) ; wet_area(cur_frame_num)];
 end
+
+
 
 if(~output_animated_plot) % writes video of animated plot 
-    writeAnimatedPlot(file_name_short,output_framerate,area_data_output);
+    writeAnimatedPlot(file_name_short,output_framerate,time,wet_area);
+    
+    animated_vid=VideoWriter(strcat(file_name_short,'_plot'),'MPEG-4');
+    animated_vid.FrameRate = output_framerate;
+    open(animated_vid);
+    
+    for entry:length(area_data_output) % set raw video time 
+%         plot(time(cur_frame_num),wet_area(cur_frame_num),'o');
+        plot(area_data_output(2:3,entry); % get the graph time and the wet area 
+        writeVideo(animated_vid,getframe(gcf));
+    end
+    
+    close(animated_vid);
+    close(); % close the area plot
+    makeAreaPlot(); % make another clean one
 end
 
-plotArea(area_data_output,file_name_short); % Create and format area plot
+
+makeAreaPlot(); % Create and format area plot
+plot(time,wet_area,'o'); % generate plot
+print('-dtiff',strcat(file_name_short,'_graph.tiff')); %save to tiff file
+
 
 % save parameters and data to output files
 storeData(file_name_short,area_data_output,...
