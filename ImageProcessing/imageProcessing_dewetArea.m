@@ -9,18 +9,16 @@
 % Vincent Xia
 
 %% Initialize
-startup(); % close figures
-
-%% Input dialogs:
-%% Analysis settings
+startup(); % close figures, clear command window, add current directory to search path
 
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
 % return a set of video processing parameters based on input
-[remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,...
-    H_thresh_low, H_thresh_high, S_thresh_low, S_thresh_high, V_thresh_low, V_thresh_high,...
+[remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num, ...
+    H_thresh_low, H_thresh_high, ...
+    S_thresh_low, S_thresh_high, ...
+    V_thresh_low, V_thresh_high, ...
     output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot] = getUserInput();
-
 
 %% Video Import
 
@@ -28,19 +26,23 @@ crop_start = [150,50]; % upper left hand corner for cropping rectangle
 crop_size = [700,700]; % crop size
 crop_rect = [crop_start, crop_size-1]; % cropping rectangle || subtract one to make it exactly 700 by 700 in size
 
+
+
 video = VideoReader(file_name); % starts reading video
 num_frames = video.NumFrames; % gets # of frames in video
 input_fps = video.FrameRate; % gets frames/second in initial video
 % TODO: add support for video height/width
 
+
+
                                                                    
 %% Set total area
 
+background_frame = read(video, background_frame_num); %gets background frame in video (used for deleting background). background frame is when dome crosses interface
+background_frame_cropped = imcrop(rgb2gray(background_frame),crop_rect); % Converts to grayscale and crops size  
 
-area_frame        = read(video,area_frame_num);             % Read user specified frame for area analysis
-area_frame_cropped = imcrop(area_frame,crop_rect);     % Crop area frame
+[area_mask, outer_region, max_area, shadow_mask, camera_area] = setAreas(video,crop_rect,area_fit_type); % set the camera shadow area and the total area
 
-[area_mask, outer_region, max_area, shadow_mask, camera_area] = userdrawROI(area_frame_cropped,area_fit_type); %helper function to handle our ROI drawing
 %% Analyze video
 
 % Define output video parameters; open videos for writing
