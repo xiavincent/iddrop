@@ -38,14 +38,17 @@ output_framerate = 20; %output frame rate
 
 % Begin video processing
 wait_bar = waitbar(0,'Analyzing... Go grab a cup of coffee...');
-num_it = floor(vid.NumFrames/skip_frame); % number of times we iterate through the analysis loop
+num_it = floor(vid.NumFrames/skip_frame); % number of times we need to iterate through the analysis loop to get through every frame in the video
 
 dewet_area = zeros(1,num_it*skip_frame); % stores the area for every frame index (formerly called 'grain_areas')
 wet_area = zeros(size(dewet_area)); % stores normalized wet area for every frame index
 
 final_frame_num = 3000; % dictates the last frame of the video to be analyzed
-for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
+max_it = floor((final_frame_num - t0_frame_num)/skip_frame);
+for i = 1 : max_it
+    cur_frame_num = i*skip_frame + t0_frame_num; 
     waitbar(cur_frame_num/final_frame_num,wait_bar); % update wait bar to show analysis progress
+
     orig_frame = read(vid,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
@@ -80,6 +83,12 @@ for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
                                               t0_frame_num,cur_frame_num,...
                                               max_area,camera_area,...
                                               vid.FrameRate);
+    
+    
+end
+
+for cur_frame_num = t0_frame_num: skip_frame: final_frame_num
+    
 end
 
 closeVids(output_black_white_mask, bw_vid, output_analyzed_frames, analyzed_frames_vid, output_all_masks, all_masks_vid, output_falsecolor, false_color_vid);
@@ -87,50 +96,29 @@ close(wait_bar); %closes wait bar
 
 %% Plot time vs area data
 
-time = zeros(1,length(wet_area)); % raw video time
-graph_time = zeros(1,length(wet_area)); % time after t0
+% area_data_output = makeAreaOutput(); % make a matrix that holds all of our time and area information
+
 output_size = floor((final_frame_num-t0_frame_num)/skip_frame); % number of row entries for the final area+time file output
 area_data_output = zeros(3,output_size); % 2D matrix storing the corresponding area+time output
 
-% TODO: make matrix to represent frames we analyze and just iterate through the matrix, instead of
+% TODO: make a matrix to represent frames we analyze and just iterate through the matrix, instead of
 % changing cur_frame_num each time
 
 for cur_frame_num = t0_frame_num:skip_frame:final_frame_num % set raw video time 
-    time(cur_frame_num)=cur_frame_num/vid.FrameRate; %adjusts time for skipped frames and initial frame rate
-    graph_time(cur_frame_num) = time(cur_frame_num) - t0_frame_num/vid.FrameRate;
-    entry_num = (cur_frame_num-t0_frame_num)/skip_frame + 1; % row entry number for the data output file
-    area_data_output(:,entry_num) = [time(cur_frame_num);  graph_time(cur_frame_num) ; wet_area(cur_frame_num)];
+    raw_time = cur_frame_num/vid.FrameRate; %adjusts time for skipped frames and initial frame rate
+    graph_time = raw_time - t0_frame_num/vid.FrameRate; % time after t0
+    entry_num = (cur_frame_num-t0_frame_num)/skip_frame + 1; % column entry number for the data output file
+    area_data_output(entry_num,:) = [raw_time , graph_time , wet_area(cur_frame_num)];
 end
-
-
 
 if(~output_animated_plot) % writes video of animated plot 
-    writeAnimatedPlot(file_name_short,output_framerate,time,wet_area);
-    
-    animated_vid=VideoWriter(strcat(file_name_short,'_plot'),'MPEG-4');
-    animated_vid.FrameRate = output_framerate;
-    open(animated_vid);
-    
-    for entry:length(area_data_output) % set raw video time 
-%         plot(time(cur_frame_num),wet_area(cur_frame_num),'o');
-        plot(area_data_output(2:3,entry); % get the graph time and the wet area 
-        writeVideo(animated_vid,getframe(gcf));
-    end
-    
-    close(animated_vid);
-    close(); % close the area plot
-    makeAreaPlot(); % make another clean one
+    writeAnimatedPlot(file_name_short,output_framerate,area_data_output);
 end
 
-
-makeAreaPlot(); % Create and format area plot
-plot(time,wet_area,'o'); % generate plot
-print('-dtiff',strcat(file_name_short,'_graph.tiff')); %save to tiff file
-
+plotArea(area_data_output,file_name_short); % Create and format area plot
 
 % save parameters and data to output files
 storeData(file_name_short,area_data_output,...
-                   time,wet_area,...
                    rm_pix,t0_frame_num,background_frame_num,area_frame_num,skip_frame,...
                    H_thresh_low, H_thresh_high,...
                    S_thresh_low, S_thresh_high,...

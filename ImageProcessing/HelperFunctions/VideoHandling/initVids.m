@@ -1,6 +1,5 @@
-
 % Initialize and start the output videos
-function [bw_vid, analyzed_frames_vid, all_masks_vid, false_color_vid] = initVids(output_black_white_mask, file_name_short, output_framerate, output_analyzed_frames, output_all_masks, output_false_color)
+function [bw_vid, analyzed_frames_vid, all_masks_vid, false_color_vid] = initVids(file_name_short, output_framerate, output_black_white_mask, output_analyzed_frames, output_all_masks, output_false_color)
     bw_vid = 0; %initialize videos
     analyzed_frames_vid = 0;
     all_masks_vid = 0;
