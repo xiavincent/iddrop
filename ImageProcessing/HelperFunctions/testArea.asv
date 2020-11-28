@@ -26,7 +26,7 @@ function setupOnce(testCase)  % do not change function name
     cur_frame_num = 916; %5146 %916 % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
-    area_fit_type = 1; % freehand fit = 0
+    area_fit_type = 0; % freehand fit = 0
     hueThresholdLow = .422;
     hueThresholdHigh = .500;
     saturationThresholdLow = .104; 
@@ -49,41 +49,35 @@ function setupOnce(testCase)  % do not change function name
     totalareaframecropped = imcrop(totalareaframe,crop_rect);     % Crop area frame
     [area_mask, outer_region, ~, shadow_mask, ~] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
       
-    orig_frame = read(video,cur_frame_num); % reading individual frames from input video
-    crop_frame = imcrop(orig_frame,crop_rect); 
-    gray_frame = rgb2gray(crop_frame); % grayscale frame from video
+    orig_frame=read(video,cur_frame_num); % reading individual frames from input video
+    crop_frame=imcrop(orig_frame,crop_rect); 
+    gray_frame=rgb2gray(crop_frame); % grayscale frame from video
 
-%     subtract_frame = gray_frame - background_frame_cropped; % Subtract background frame from current frame
-%     subtract_frame(shadow_mask) = 0; %apply the camera mask
-%     subtract_frame(~area_mask) = 0; %apply area mask
-%     bw_frame_mask=imbinarize(subtract_frame);
-
-%     gray_frame(shadow_mask) = 0;
-%     gray_frame(~area_mask) = 0; % apply the 
-
-    gray_frame_rm_shadow = imfill(gray_frame);
-    bw_frame_mask = imbinarize(gray_frame_rm_shadow); % split gray_frame into 1's and 0's
+    subtract_frame = gray_frame - background_frame_cropped; % Subtract background frame from current frame
+    subtract_frame(shadow_mask) = 0; %apply the camera mask
+    subtract_frame(~area_mask) = 0; %apply area mask
+    bw_frame_mask=imbinarize(subtract_frame);
     
-    % Apply each color band's particular thresholds to the color band
     hsv_frame = rgb2hsv(crop_frame); % convert to hsv image
     
+    % Apply each color band's particular thresholds to the color band
 	hueMask = (hsv_frame(:,:,1) >= hueThresholdLow) & (hsv_frame(:,:,1) <= hueThresholdHigh); %makes mask of the hue image within theshold values
 	saturationMask = (hsv_frame(:,:,2) >= saturationThresholdLow) & (hsv_frame(:,:,2) <= saturationThresholdHigh); %makes mask of the saturation image within theshold values
 	valueMask = (hsv_frame(:,:,3) >= valueThresholdLow) & (hsv_frame(:,:,3) <= valueThresholdHigh); %makes mask of the value image within theshold values   
     HSV_mask = hueMask & saturationMask & valueMask; % defines area that fits within hue mask, saturation mask, and value mask 
 
     combined_mask = HSV_mask & bw_frame_mask;
-%     combined_mask(shadow_mask) = 0; % apply camera mask
-    
+    combined_mask(shadow_mask) = 0; % apply camera mask
     combined_mask(~area_mask) = 0; % apply area mask
     combined_mask_open = bwareaopen(combined_mask, remove_Pixels);
+    
     
     testCase.TestData.orig_mask = combined_mask_open;  
     
     testCase.TestData.area_center = [500 439];
     testCase.TestData.area_radius = 230.3845;
     testCase.TestData.gray_frame = gray_frame;
-    testCase.TestData.area_fit_type = 1; % freehand fit
+    testCase.TestData.area_fit_type = 0; % freehand fit
     testCase.TestData.outer_region = outer_region;
 end
 

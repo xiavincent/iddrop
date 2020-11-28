@@ -10,55 +10,28 @@
 % Vincent Xia
 
 %% Initializations
-startup(); % close figures, clear command window, add current directory to search path
-
+startup(); % add helper files to path
 
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
-% return a set of video processing parameters based on input
-% [params.rm_pix,params.skip,params.t0,params.area,params.bg, ...
-%     params.H_low, H_thresh_high, ...
-%     S_thresh_low, S_thresh_high, ...
-%     V_thresh_low, V_thresh_high, ...
-%     output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot,...
-%     params.fit_type] = getUserInput();
+% get user processing selections
+[params,output] = getUserInput(); % struct fields defined in 'getUserInput.m'
 
 
-% return structs that hold all of our user's selections
-[params,output] = getUserInput(); %'params' and 'output' struct fields defined in 'getUserInput.m'
+% Get masks and area values
+analys = fillAnalysStruct(); % make a blank struct with empty fields
+                             % fields defined in 'fillAnalysStruct.m'
 
+[analys.crop_rect, anlys.bg_cropped, vid] = startVideo(file_name,params.bg); % Initialize video
 
-
-% Make a struct to hold analysis masks and area values
-f1 = 'crop_rect' ; v1 = 0;
-f2 = 'bg_cropped' ; v2 = 0;
-f3 = 'area_mask'; v3 = 0;
-f4 = 'outer_region'; v4 = 0; 
-f5 = 'max_area'; v5 = 0;
-f6 = 'shadow'; v6 = 0;
-f7 = 'cam_area'; v7 = 0;
-
-analys = struct(f1,v1,f2,v2,f3,v3,f4,v4,f5,v5,f6,v6,f7,v7); % default field values are 0
-
-
-% Initialize video
-[analys.crop_rect, anlys.bg_cropped, vid] = startVideo(file_name,params.bg);  
-
-                                                               
 %% Set total area
-[analys.area_mask,analys.outer_region, analys.max_area, analys.shadow , analys.cam_area] = setAreas(vid, analys.crop_rect, params.area, params.fit_type); % set the camera shadow area and the total area
+
+[analys.area_mask,analys.outer_region, analys.max_area, analys.shadow , analys.cam_area] = ...
+    setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
 %% Analyze video
 
 [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,params,output);
-
-% analyzeVideo(file_name_short, output_black_white_mask, output_analyzed_frames, output_all_masks, output_falsecolor,...
-%                                                     area_mask, outer_region, max_area, shadow_mask, camera_area,...
-%                                                     crop_rect, vid, bg_cropped,...
-%                                                     params.rm_pix, params.t0, params.skip,...
-%                                                     params.H_low, H_thresh_high,...
-%                                                     S_thresh_low, S_thresh_high,...
-%                                                     V_thresh_low, V_thresh_high);
 
 %% Plot time vs area data
 
@@ -73,18 +46,14 @@ for cur_frame_num = params.t0 : params.skip:final_frame_num % set raw video time
     raw_time = cur_frame_num/vid.FrameRate; %adjusts time for skipped frames and initial frame rate
     graph_time = raw_time - params.t0/vid.FrameRate; % time after t0
     entry_num = (cur_frame_num-params.t0)/params.skip + 1; % column entry number for the data output file
-    area_data_output(entry_num,:) = [raw_time , graph_time , wet_area(cur_frame_num)];
+    area_data_output(:,entry_num) = [raw_time ; graph_time ; wet_area(cur_frame_num)];
 end
 
-if(~output_animated_plot) % writes video of animated plot 
+if(~output.animated_plot) % writes video of animated plot 
     writeAnimatedPlot(file_name_short,output_framerate,area_data_output);
 end
 
 plotArea(area_data_output,file_name_short); % Create and format area plot
 
-% save parameters and data to output files
-storeData(file_name_short,area_data_output,...
-                   params.rm_pix,params.t0,params.bg,params.area,params.skip,...
-                   params.H_low, H_thresh_high,...
-                   S_thresh_low, S_thresh_high,...
-                   V_thresh_low, V_thresh_high);
+%% Save parameters and data to output files
+storeData(file_name_short,area_data_output,params);

@@ -9,7 +9,6 @@ function [clean_label_img, total_area] = countArea(orig_mask,outer_region,img_si
 
     clean_label_img = labelmatrix(clean_mask_components); % creates matrix that labels each dewetted object in the image
     
-    
     area_data = regionprops(clean_mask_components, 'Area'); % area of each connected component
     total_area = sum([area_data.Area]); % sum of areas in our cleaned image to be used when calculating wet vs dry area  
 end
@@ -54,8 +53,8 @@ function mask = rmNegEuler(mask)
     stats = regionprops(conn_comp, 'EulerNumber','Area');
 
     for c = 1:length(stats)
-       cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 2500; % small objects with multiple holes
-       cond2 = stats(c).EulerNumber < -10; % any object with a large number of holes
+       cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 1000; % small objects with multiple holes
+       cond2 = stats(c).EulerNumber < -20 && stats(c).Area < 5000; % medium objects with a large number of holes
        if ( cond1 || cond2 ) % check for both conditions
            linear_indices = conn_comp.PixelIdxList{c};
            mask(linear_indices) = 0;  % remove component from orig image

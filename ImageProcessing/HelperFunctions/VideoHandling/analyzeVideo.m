@@ -3,18 +3,12 @@
 % analys: struct containing key analysis masks and area values
 % params: struct containing user-specified video processing information
 % output: struct containing video output information
+%% Outputs
+% wet_area: vector of fraction of wet area for each analyzed frame
+% final_frame_num: the frame of the video we stopped analyzing at
+
 %%
 function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,params,output)
-
-
-% file_name_short, output_black_white_mask, output_analyzed_frames, output_all_masks, output_falsecolor,...
-%                                                     area_mask, outer_region, max_area, shadow_mask, camera_area,...
-%                                                     crop_rect, vid, bg_cropped,...
-%                                                     rm_pix, t0_frame_num, params.skip ,...
-%                                                     H_thresh_low, H_thresh_high, ...
-%                                                     S_thresh_low, S_thresh_high, ...
-%                                                     V_thresh_low, V_thresh_high)
-
 
     % Define output video parameters; open videos for writing
     output_framerate = 20; %output frame rate
@@ -28,18 +22,22 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     wet_area = zeros(size(dewet_area)); % stores normalized wet area for every frame index
 
     final_frame_num = 3000; % dictates the last frame of the video to be analyzed
+    
+    % TODO: fix iteration parameters
 %     max_it = floor((final_frame_num - t0_frame_num) / params.skip); % maximum iteration we want to hit
 %     for i = 1 : max_it
+%     for cur_frame_num = params.t0 : params.skip : final_frame_num % set raw video time 
     for cur_frame_num = params.t0 : params.skip : final_frame_num % set raw video time 
 %         cur_frame_num = i * params.skip + t0_frame_num; 
+
         waitbar(cur_frame_num/final_frame_num,wait_bar); % update wait bar to show analysis progress
 
         orig_frame = read(vid,cur_frame_num); % reading individual frames from input video
         crop_frame = imcrop(orig_frame,analys.crop_rect); 
         gray_frame = rgb2gray(crop_frame); % grayscale frame from video
-        subtract_frame = gray_frame - analys.bg_cropped; % Subtract background frame from current frame
 
         % Binarization of frame
+        subtract_frame = gray_frame - analys.bg_cropped; % Subtract background frame from current frame
         subtract_frame(analys.shadow) = 0; % apply the camera mask
         subtract_frame(~analys.area_mask) = 0; % apply area mask
         bw_frame_mask=imbinarize(subtract_frame);
@@ -57,7 +55,7 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
         combined_mask(~analys.area_mask) = 0; % apply area mask
         combined_mask_open = bwareaopen(combined_mask, params.rm_pix); % remove small components
 
-        % Count Area; use *Edge Algorithm 2* to throw away inside regions
+        % Clean the image and count the area
         [label_dewet_img, dewet_area(cur_frame_num)] = countArea(combined_mask_open,analys.outer_region,size(gray_frame));       
 
         % Write final videos          
@@ -67,7 +65,6 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
                                                   params.t0,cur_frame_num,...
                                                   analys.max_area,analys.cam_area,...
                                                   vid.FrameRate, output);
-
 
     end
 

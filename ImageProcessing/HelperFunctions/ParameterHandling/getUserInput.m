@@ -6,8 +6,6 @@
 %%
 function [params,outputs] = getUserInput()
         
-        
-        
         % Parameters for area analysis
         analysis_settings = inputdlg({'Remove objects smaller than X pixels 100-1000', ... % will not designate pixels smaller than 'X' as wet/dry (reduces variation)
                                 'Skip Frames [1-1000]',... % # of frames skipped between each frame analysis (larger number = faster)
