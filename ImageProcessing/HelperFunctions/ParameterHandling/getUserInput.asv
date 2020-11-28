@@ -1,5 +1,10 @@
 % return a structure containing analysis parameters and output parameters based on user input
-function [params,outputs] = getUserInput()
+function [remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,...
+            H_thresh_low, H_thresh_high,...
+            S_thresh_low, S_thresh_high,...
+            V_thresh_low, V_thresh_high,...
+            output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot,...
+            area_fit_type] = getUserInput()
         
         
         
@@ -40,10 +45,10 @@ function [params,outputs] = getUserInput()
         % make a struct to hold all of our processing parameters
         field1 = 'rm_pix';  val1 = remove_Pixels;
         field2 = 'skip';  val2 = skip_frame;
-        field3 = 't0';  val3 = t0_frame_num;
-        field4 = 'area';  val4 = area_frame_num;
-        field5 = 'bg';  val5 = background_frame_num;
-        field6 = 'fit_type';  val6 = area_fit_type;
+        field3 = 't0_fnum';  val3 = t0_frame_num;
+        field4 = 'area_fnum';  val4 = area_frame_num;
+        field5 = 'bg_fnum';  val5 = background_frame_num;
+        field6 = 'area_fit';  val6 = area_fit_type;
         field7 = 'H_low'; val7 = H_thresh_low;
         field8 = 'H_high';  val8 = H_thresh_high;
         field9 = 'S_low';  val9 = S_thresh_low;
@@ -55,22 +60,19 @@ function [params,outputs] = getUserInput()
                         field6,val6,field7,val7,field8,val8,field9,val9,field10,val10,...
                         field11,val11,field12,val12);
                     
-        field1 = 'falsecolor'; val1 = output_falsecolor;
-        field2 = 'analyzed'; val2 = output_analyzed_frames;
-        field3 = 'masks'; val3 = output_all_masks;
-        field4 = 'bw_mask'; val4 = output_black_white_mask;
-        field5 = 'animated_plot'; val5 = output_animated_plot;       
+        field1 = 'falsecolor'; val1 = o
         
-        outputs = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5);
+        output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot
         
         
-        % old parameters that we returned
-%         remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,...
-%             H_thresh_low, H_thresh_high,...
-%             S_thresh_low, S_thresh_high,...
-%             V_thresh_low, V_thresh_high,...
-%             output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot,...
-%             area_fit_type
+        
+        
+        
+        output = struct;
+            
+
+
+        
         
         
 end
