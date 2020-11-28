@@ -1,5 +1,5 @@
 % Get video parameters, set cropping rectangle, and save background frame
-function [crop_rect, vid, bg_frame_cropped] = startVideo(file_name,background_frame_num)
+function [crop_rect, bg_frame_cropped, vid] = startVideo(file_name,background_frame_num)
 
     crop_start = [150,50]; % upper left hand corner for cropping rectangle
     crop_size = [700,700]; % crop size

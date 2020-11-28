@@ -12,6 +12,7 @@
 %% Initializations
 startup(); % close figures, clear command window, add current directory to search path
 
+
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
 % return a set of video processing parameters based on input
@@ -23,25 +24,39 @@ startup(); % close figures, clear command window, add current directory to searc
 %     params.fit_type] = getUserInput();
 
 
+% return structs that hold all of our user's selections
+[params,output] = getUserInput(); %'params' and 'output' struct fields defined in 'getUserInput.m'
 
-[params,outputs] = getUserInput(); % 2 structs that hold all of our processing/output selections
 
 % Initialize video
-[crop_rect, vid, bg_cropped] = startVideo(file_name,params.bg);  
+
+% make a struct to hold analysis masks and area values
+f1 = 'crop_rect' ; v1 = 0;
+f2 = 'bg_cropped' ; v2 = 0;
+f3 = 'area_mask'; v3 = 0;
+f4 = 'outer_region'; v4 = 0; 
+f5 = 'max_area'; v5 = 0;
+f6 = 'shadow'; v6 = 0;
+f7 = 'cam_area'; v7 = 0;
+
+analys = struct(f1,v1,f2,; % 
+[analys.crop_rect, vid, anlys.bg_cropped] = startVideo(file_name,params.bg);  
 
                                                                 
 %% Set total area
-[area_mask, outer_region, max_area, shadow_mask, camera_area] = setAreas(vid,crop_rect , params.area , params.fit_type); % set the camera shadow area and the total area
+[analys.area_mask,analys.outer_region, analys.max_area, analys.shadow , analys.cam_area] = setAreas(vid, analys.crop_rect, params.area, params.fit_type); % set the camera shadow area and the total area
 
 %% Analyze video
 
-[wet_area,final_frame_num] = analyzeVideo(file_name_short, output_black_white_mask, output_analyzed_frames, output_all_masks, output_falsecolor,...
-                                                    area_mask, outer_region, max_area, shadow_mask, camera_area,...
-                                                    crop_rect, vid, bg_cropped,...
-                                                    params.rm_pix, params.t0, params.skip,...
-                                                    params.H_low, H_thresh_high,...
-                                                    S_thresh_low, S_thresh_high,...
-                                                    V_thresh_low, V_thresh_high);
+[wet_area,final_frame_num] = analyzeVideo(file_name_short,analys,params,output);
+
+% analyzeVideo(file_name_short, output_black_white_mask, output_analyzed_frames, output_all_masks, output_falsecolor,...
+%                                                     area_mask, outer_region, max_area, shadow_mask, camera_area,...
+%                                                     crop_rect, vid, bg_cropped,...
+%                                                     params.rm_pix, params.t0, params.skip,...
+%                                                     params.H_low, H_thresh_high,...
+%                                                     S_thresh_low, S_thresh_high,...
+%                                                     V_thresh_low, V_thresh_high);
 
 %% Plot time vs area data
 

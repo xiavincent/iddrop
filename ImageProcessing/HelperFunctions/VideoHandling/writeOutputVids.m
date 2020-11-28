@@ -1,12 +1,11 @@
 % Writes the output videos for a given frame based on user-specified output types 
 % return the wet area
-function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks,output_black_white_mask,...
-                              gray_frame,crop_frame,orig_frame,HSV_mask,bw_frame_mask,label_dewet_img, ...
+function [wet_area] = writeOutputVids(gray_frame,crop_frame,orig_frame,HSV_mask,bw_frame_mask,label_dewet_img, ...
                               output_vid,falseColorVideo,analyzedVideo,allMasksVideo, ...
                               dewet_area,...
                               t0_frame_num,cur_frame_num,...
                               max_area,camera_area,...
-                              input_fps)
+                              input_fps,output)
                           
         vid_time = cur_frame_num/input_fps; % raw video time
         graph_time = vid_time - t0_frame_num/input_fps; % adjusts time for skipped frames and initial frame rate  
@@ -17,7 +16,7 @@ function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks
 %% 
 % Output black & white mask video:
 
-        if (~output_black_white_mask) % make a movie of the black/white final mask frames       
+        if (~output.bw_mask) % make a movie of the black/white final mask frames       
             final_mask = label_dewet_img > 0;
             output_text = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
             writeVideo(output_vid,output_text); % writes video with analyzed frames  
@@ -25,7 +24,7 @@ function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks
 %% 
 % Output falsecolor:        
 
-        if (~outputFalseColor)  % make a falsecolor overlay of our final mask over the original grayscale image 
+        if (~output.falsecolor)  % make a falsecolor overlay of our labelled final mask over the original grayscale image 
             FinalImgFuse = labeloverlay(gray_frame,label_dewet_img);
 %             FinalImgFuse = imfuse(finalMask,gray_frame,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of binary mask over original image    
             falseColorInfo = sprintf('red = binary mask | green = original img | yellow = both'); % prints false color info                
@@ -35,8 +34,7 @@ function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks
         end        
 %% 
 % Output analyzed frames:
-
-        if (~outputAnalyze) 
+        if (~output.analyzed) 
             frame_info = sprintf('Frame: %d | Time: %.3f sec ', cur_frame_num , graph_time); % prints frame #, time stamp, and area for each mp4 frame
             image = insertText(orig_frame,[30 725],frame_info,'FontSize',55,'BoxColor','white','AnchorPoint','LeftBottom'); %requires Matlab Computer Vision Toolbox
             writeVideo(analyzedVideo,image);
@@ -44,7 +42,7 @@ function [wet_area] = writeOutputVids(outputFalseColor,outputAnalyze,outputMasks
 %% 
 % Output individual masks:       
 
-        if(~outputMasks) 
+        if(~output.masks) 
             box_color = 'green';
            
             im0 = insertText(crop_frame,[100 50],"orig image",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');

@@ -1,4 +1,9 @@
 % return a structure containing analysis parameters and output parameters based on user input
+%% Outputs
+% params: struct containing user-specified processing parameters
+% outputs: struct containing user-specified desired output videos
+
+%%
 function [params,outputs] = getUserInput()
         
         
