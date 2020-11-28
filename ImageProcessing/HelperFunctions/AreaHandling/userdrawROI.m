@@ -1,28 +1,20 @@
 % HELPER FUNCTION -- Vincent Xia -- Nov 2020
 
 % High-level helper function to handle circular and freehand region drawing for a single video frame
-function [area_mask, outer_region, max_area, shadow_mask, camera_area] = userdrawROI(area_frame_cropped,area_fit_type)
+function [area_mask, outer_region, shadow_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
     %set the total area mask
     roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
     area_mask = createMask(roi);
-    max_area = nnz(area_mask);
-    
-%     if (area_fit_type == 1) % circle fit
-%         center = roi.Center;
-%         radius = roi.Radius;
-%     elseif (area_fit_type == 0) % freehand assisted fit
-%         stats = regionprops('table',area_mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
-%             center = stats.Centroid;
-%             diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
-%             radius = diameter/2;
-%     end
     
     outer_region = scaleMask(area_mask); % scale the mask and return the outer region
     
     %set the camera shadow area
     shadowROI = showShadowROI(area_frame_cropped);    
     shadow_mask = createMask(shadowROI);
+    
+    max_area = nnz(area_mask);
     camera_area = nnz(shadow_mask);
+    film_area = max_area - camera_area; % exposed dome area, excluding the camera shadow
     
     close;
 end

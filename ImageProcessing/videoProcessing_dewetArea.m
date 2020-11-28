@@ -12,6 +12,7 @@
 %% Initializations
 startup(); % add helper files to path
 
+%%
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
 % get user processing selections
@@ -26,7 +27,7 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 
 %% Set total area
 
-[analys.area_mask,analys.outer_region, analys.max_area, analys.shadow , analys.cam_area] = ...
+[analys.area_mask, analys.outer_region, analys.shadow, analys.film_area] = ...
     setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
 %% Analyze video
