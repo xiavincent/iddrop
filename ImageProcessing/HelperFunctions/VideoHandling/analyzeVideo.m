@@ -19,24 +19,26 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
         initVids(file_name_short, output_framerate, output.bw_mask , output.analyzed, output.masks, output.falsecolor);
     
     
+    init_frame_num = params.t0; %params.t0 %5176 % frame we start analyzing at
+    final_frame_num = vid.NumFrames; %vid.NumFrames % dictates the last frame of the video to be analyzed
+    
+    num_frames_analys = final_frame_num - params.t0; % how far we will analyze in the video
+    num_it = floor(num_frames_analys/params.skip) + 1; % number of individual video frames to analyze
+    
     wait_bar = waitbar(0,'Analyzing... Go grab a cup of coffee...'); % start video processing
-    num_it = floor(vid.NumFrames/params.skip); % number of times we need to iterate through the analysis loop to get through every frame in the video
     wet_area = zeros(1,num_it * params.skip); % normalized wet area for every frame index
 
-    
-    initial_frame_num = params.t0; %params.t0 %5176
-    final_frame_num = 5000; %vid.NumFrames % dictates the last frame of the video to be analyzed
-    
-    % TODO: fix iteration parameters
-        %     max_it = floor((final_frame_num - t0_frame_num) / params.skip); % maximum iteration we want to hit
-        %     for i = 1 : max_it
-        %     for cur_frame_num = params.t0 : params.skip : final_frame_num % set raw video time 
-        %         cur_frame_num = i * params.skip + t0_frame_num; 
-
-    for cur_frame_num = initial_frame_num : params.skip : final_frame_num % set raw video time 
+%     max_it = (final_frame_num - t0_frame_num) / params.skip; % maximum iteration we want to hit
+    for i = 1 : num_it
+        cur_frame_num = (i-1)*params.skip + init_frame_num;
         waitbar(cur_frame_num/final_frame_num,wait_bar); % update wait bar to show analysis progress
         wet_area(cur_frame_num) = analyzeFrame(vid, cur_frame_num, analys, params, output, output_vids); % run the analysis loop for a single frame
     end
+
+%     for cur_frame_num = initial_frame_num : params.skip : final_frame_num % set raw video time 
+%         waitbar(cur_frame_num/final_frame_num,wait_bar); % update wait bar to show analysis progress
+%         wet_area(cur_frame_num) = analyzeFrame(vid, cur_frame_num, analys, params, output, output_vids); % run the analysis loop for a single frame
+%     end
     
     closeVids(output.bw_mask, output_vids.bw,...
               output.analyzed, output_vids.analyzed,...
@@ -100,33 +102,5 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, label_dewet_img,...
                           params.t0, cur_frame_num, wet_area,...
                           input_vid.FrameRate, output, output_vids);
-
-
-
-
-
-
-
-
-%         orig_frame = read(input_vid,cur_frame_num); % read frame from input video
-%         crop_frame = imcrop(orig_frame,analys.crop_rect); 
-%         gray_frame = rgb2gray(crop_frame); % grayscale frame from video
-%         rm_shadow = imfill(gray_frame); % remove the camera shadow
-%    
-%         bw_frame_mask = imbinarize(rm_shadow); % split grayscale image into binary image
-% 
-%         % HSV Masking. Apply each color band's thresholds
-%         hsv_frame = rgb2hsv(crop_frame); % convert to hsv image
-% 
-%         hue_mask = (hsv_frame(:,:,1) >= params.H_low) & (hsv_frame(:,:,1) <= params.H_high); % mask of the hue image within theshold values
-%         sat_mask = (hsv_frame(:,:,2) >= params.S_low) & (hsv_frame(:,:,2) <= params.S_high); % mask of the saturation image within theshold values
-%         val_mask = (hsv_frame(:,:,3) >= params.V_low) & (hsv_frame(:,:,3) <= params.V_high); % mask of the value image within theshold values
-%         HSV_mask = hue_mask & sat_mask & val_mask; % defines intersection area of hue, saturation, and value masks
-% 
-%         combined_mask = HSV_mask & bw_frame_mask; % apply binarization mask
-% %         combined_mask(analys.shadow) = 0; % apply camera mask
-%         combined_mask(~analys.area_mask) = 0; % apply area mask
-%         combined_mask_open = bwareaopen(combined_mask, params.rm_pix); % remove small components
-% 
 
 end

@@ -11,7 +11,7 @@
 %% Initializations
 startup(); % add helper files to path
 
-%%
+%% Initializations
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
 % get user processing selections
