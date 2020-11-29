@@ -26,10 +26,10 @@ function setupOnce(testCase)  % do not change function name
 %     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
     file_name = '~/Desktop/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
 
-    cur_frame_num = 2896; %1846 %5146 %916 % 1576
+    cur_frame_num = 556; %2896 %1846 %5146 %916 % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
-    area_fit_type = 0; % freehand fit = 0
+    area_fit_type = 1; % freehand fit = 0
     hueThresholdLow = .422;
     hueThresholdHigh = .500;
     saturationThresholdLow = .104; 
@@ -42,10 +42,7 @@ function setupOnce(testCase)  % do not change function name
     crop_rect = [crop_start, crop_size-1]; % cropping rectangle || subtract one to make it exactly 700 by 700 in size
     
     % setup video 
-    video = VideoReader(file_name); % starts reading video
-    background_frame_num = 141; % change
-    background_frame = read(video, background_frame_num); %gets background frame in video (used for deleting background). background frame is when dome crosses interface
-    background_frame_cropped = imcrop(rgb2gray(background_frame),crop_rect); % Converts to grayscale and crops size                                                              
+    video = VideoReader(file_name); % starts reading video                                                         
     
     % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
@@ -56,16 +53,12 @@ function setupOnce(testCase)  % do not change function name
     crop_frame = imcrop(orig_frame,crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
 
-%     subtract_frame = gray_frame - background_frame_cropped; % Subtract background frame from current frame
-%     subtract_frame(shadow_mask) = 0; %apply the camera mask
-%     subtract_frame(~area_mask) = 0; %apply area mask
-%     bw_frame_mask=imbinarize(subtract_frame);
-
-%     gray_frame(shadow_mask) = 0;
-%     gray_frame(~area_mask) = 0; % apply the 
-
     gray_frame_rm_shadow = imfill(gray_frame);
     bw_frame_mask = imbinarize(gray_frame_rm_shadow); % split gray_frame into 1's and 0's
+    
+%     if(nnz(bw_frame_mask) > film_area) % if the binarization fails to split image
+%         bw_frame_mask = zeros(size(bw_frame_mask)); % don't try to analyze the frame for dewetted area
+%     end
     
     % Apply each color band's particular thresholds to the color band
     hsv_frame = rgb2hsv(crop_frame); % convert to hsv image
@@ -77,7 +70,6 @@ function setupOnce(testCase)  % do not change function name
 
     combined_mask = HSV_mask & bw_frame_mask;
 %     combined_mask(shadow_mask) = 0; % apply camera mask
-    
     combined_mask(~area_mask) = 0; % apply area mask
     combined_mask_open = bwareaopen(combined_mask, remove_Pixels);
     
