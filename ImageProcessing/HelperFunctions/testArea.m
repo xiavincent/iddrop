@@ -16,7 +16,6 @@ function testEdgeAlg(testCase)
     [final_mask, ~] = countArea(orig_mask, outer_region, film_area, img_size);
     final_mask = im2uint8(final_mask~=0);
     imshow(final_mask);
-    
 end
 
 %% Optional file fixtures  
@@ -26,7 +25,7 @@ function setupOnce(testCase)  % do not change function name
 %     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
     file_name = '~/Desktop/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
 
-    cur_frame_num = 1816;%556 %2896 %1846 %5146 %916 % 1576
+    cur_frame_num = 2896;%1816 %556 %2896 %1846 %5146 %916 % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
     area_fit_type = 1; % freehand fit = 0
@@ -52,10 +51,14 @@ function setupOnce(testCase)  % do not change function name
     orig_frame = read(video,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
-
-    gray_frame_rm_shadow = imfill(gray_frame);
+% 
+%     gray_frame_rm_shadow = imfill(gray_frame);
     %     binarize_mask = imbinarize(gray_frame_rm_shadow); % split gray_frame into 1's and 0's
-    binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
+    
+    clr_brdr_gray_frame = imclearborder(gray_frame);
+    binarize_mask = imbinarize(clr_brdr_gray_frame,'global'); % ignore the camera shadow for now
+
+%     binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
 
     
 %     if(nnz(bw_frame_mask) > film_area) % if the binarization fails to split image

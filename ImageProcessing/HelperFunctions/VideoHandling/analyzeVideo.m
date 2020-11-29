@@ -25,7 +25,7 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
 
     
     initial_frame_num = params.t0; %params.t0 %5176
-    final_frame_num = vid.NumFrames; % dictates the last frame of the video to be analyzed
+    final_frame_num = 5000; %vid.NumFrames % dictates the last frame of the video to be analyzed
     
     % TODO: fix iteration parameters
         %     max_it = floor((final_frame_num - t0_frame_num) / params.skip); % maximum iteration we want to hit
@@ -56,6 +56,10 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     crop_frame = imcrop(orig_frame,analys.crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video 
     
+    clr_brdr = imclearborder(gray_frame); % remove the image border and leave us with the dome only
+    binarize_mask = imbinarize(clr_brdr,'global');
+    
+    
 %     gray_frame_rm_shadow = imfill(gray_frame); % imfill works best with global thresholding 
                                                    % Do NOT use imfill if using adaptive thresholding
 %     binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive'); % split gray_frame into 1's and 0's
@@ -65,8 +69,9 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     % NOTE: Adaptive thresholding works better for later video times, whereas global thresholding works
                 % better for earlier ties
                 
+                
 
-    binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
+%     binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
 
     binarize_mask_reduced = binarize_mask;
     binarize_mask_reduced(~analys.area_mask) = 0; % apply the area mask to get an accurate count of the area
