@@ -24,8 +24,8 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     wet_area = zeros(1,num_it * params.skip); % normalized wet area for every frame index
 
     
-    initial_frame_num = 3000; %params.t0
-    final_frame_num = 4000; % dictates the last frame of the video to be analyzed
+    initial_frame_num = params.t0; %params.t0 %5176
+    final_frame_num = vid.NumFrames; % dictates the last frame of the video to be analyzed
     
     % TODO: fix iteration parameters
         %     max_it = floor((final_frame_num - t0_frame_num) / params.skip); % maximum iteration we want to hit
@@ -55,11 +55,16 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,analys.crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
-    gray_frame_rm_shadow = imfill(gray_frame);
+    gray_frame_rm_shadow = imfill(gray_frame); % imfill works best with global thresholding 
+                                               % Do NOT use imfill if using adaptive thresholding
 %     binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive'); % split gray_frame into 1's and 0's
-    binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive','ForegroundPolarity','bright','Sensitivity',0.59);
+%     binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62);
+    binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
+
+    binarize_mask_reduced = binarize_mask;
+    binarize_mask_reduced(~analys.area_mask) = 0; % apply the area mask to get an accurate count of the area
     
-    if(nnz(binarize_mask) > analys.film_area) % if the binarization fails to split image
+    if(nnz(binarize_mask_reduced) > analys.film_area + 1000) % if the binarization fails to split image
         binarize_mask = zeros(size(binarize_mask)); % don't try to analyze the frame for dewetted area
     else 
         stop = 0;

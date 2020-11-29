@@ -26,7 +26,7 @@ function setupOnce(testCase)  % do not change function name
 %     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
     file_name = '~/Desktop/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
 
-    cur_frame_num = 556; %2896 %1846 %5146 %916 % 1576
+    cur_frame_num = 1816;%556 %2896 %1846 %5146 %916 % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
     area_fit_type = 1; % freehand fit = 0
@@ -54,7 +54,9 @@ function setupOnce(testCase)  % do not change function name
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
 
     gray_frame_rm_shadow = imfill(gray_frame);
-    bw_frame_mask = imbinarize(gray_frame_rm_shadow); % split gray_frame into 1's and 0's
+    %     binarize_mask = imbinarize(gray_frame_rm_shadow); % split gray_frame into 1's and 0's
+    binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
+
     
 %     if(nnz(bw_frame_mask) > film_area) % if the binarization fails to split image
 %         bw_frame_mask = zeros(size(bw_frame_mask)); % don't try to analyze the frame for dewetted area
@@ -68,7 +70,7 @@ function setupOnce(testCase)  % do not change function name
 	valueMask = (hsv_frame(:,:,3) >= valueThresholdLow) & (hsv_frame(:,:,3) <= valueThresholdHigh); %makes mask of the value image within theshold values   
     HSV_mask = hueMask & saturationMask & valueMask; % defines area that fits within hue mask, saturation mask, and value mask 
 
-    combined_mask = HSV_mask & bw_frame_mask;
+    combined_mask = HSV_mask & binarize_mask;
 %     combined_mask(shadow_mask) = 0; % apply camera mask
     combined_mask(~area_mask) = 0; % apply area mask
     combined_mask_open = bwareaopen(combined_mask, remove_Pixels);
