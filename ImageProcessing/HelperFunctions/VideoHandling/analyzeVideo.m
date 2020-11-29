@@ -54,7 +54,7 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
 
     orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,analys.crop_rect); 
-    gray_frame = rgb2gray(crop_frame); % grayscale frame from video
+    gray_frame = rgb2gray(crop_frame); % grayscale frame from video 
     gray_frame_rm_shadow = imfill(gray_frame); % imfill works best with global thresholding 
                                                % Do NOT use imfill if using adaptive thresholding
 %     binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive'); % split gray_frame into 1's and 0's
