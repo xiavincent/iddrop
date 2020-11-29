@@ -1,15 +1,15 @@
 % Writes the output videos for a given frame based on user-specified output types 
 % return the wet area
-function writeOutputVids(gray_frame,crop_frame,orig_frame,HSV_mask,bw_frame_mask,label_dewet_img, ...
-                              output_vid,falseColorVideo,analyzedVideo,allMasksVideo, ...
-%                               dewet_area,...
-                              t0_frame_num,cur_frame_num,...
-%                               max_area,camera_area,...
-                              input_fps,output)
+%% INPUT:
+% output_vids: structure containing initialized Matlab videos to be outputted 
+
+%% FUNCTION:
+function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, bw_frame_mask, label_dewet_img,...
+                              t0_frame_num, cur_frame_num, wet_area,...
+                              input_fps, output, output_vids)
                           
         vid_time = cur_frame_num/input_fps; % raw video time
         graph_time = vid_time - t0_frame_num/input_fps; % adjusts time for skipped frames and initial frame rate  
-%         wet_area = 1-(dewet_area./(max_area-camera_area)); % normalize dry area based on total area minus camera shadow area. subtract from 1 to get total wet area            
 
         frame_info = sprintf('Frame: %d | Video time: %.3f sec | Graph time: %.3f sec | Area: %.3f', cur_frame_num, vid_time, graph_time, wet_area); % prints frame #, time stamp, and area for each mp4 video frame
 
@@ -19,7 +19,7 @@ function writeOutputVids(gray_frame,crop_frame,orig_frame,HSV_mask,bw_frame_mask
         if (~output.bw_mask) % make a movie of the black/white final mask frames       
             final_mask = label_dewet_img > 0;
             output_text = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
-            writeVideo(output_vid,output_text); % writes video with analyzed frames  
+            writeVideo(output_vids.bw,output_text); % writes video with analyzed frames  
         end
 %% 
 % Output falsecolor:        
@@ -30,14 +30,14 @@ function writeOutputVids(gray_frame,crop_frame,orig_frame,HSV_mask,bw_frame_mask
             falseColorInfo = sprintf('red = binary mask | green = original img | yellow = both'); % prints false color info                
             output_text = insertText(FinalImgFuse,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
             output_text = insertText(output_text,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
-            writeVideo(falseColorVideo,output_text); %writes video with analyzed frames
+            writeVideo(output_vids.falsecolor, output_text); %writes video with analyzed frames
         end        
 %% 
 % Output analyzed frames:
         if (~output.analyzed) 
             frame_info = sprintf('Frame: %d | Time: %.3f sec ', cur_frame_num , graph_time); % prints frame #, time stamp, and area for each mp4 frame
             image = insertText(orig_frame,[30 725],frame_info,'FontSize',55,'BoxColor','white','AnchorPoint','LeftBottom'); %requires Matlab Computer Vision Toolbox
-            writeVideo(analyzedVideo,image);
+            writeVideo(output_vids.analyzed, image);
         end
 %% 
 % Output individual masks:       
@@ -60,6 +60,6 @@ function writeOutputVids(gray_frame,crop_frame,orig_frame,HSV_mask,bw_frame_mask
             concatFinal = cat(2,concat1,concat2);
             
             finalImage = insertText(concatFinal,[300 50],frame_info,'FontSize',20,'AnchorPoint','LeftBottom'); %requires Matlab Computer Vision Toolbox
-            writeVideo(allMasksVideo,finalImage);
+            writeVideo(output_vids.masks,finalImage);
         end     
 end

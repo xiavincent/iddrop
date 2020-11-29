@@ -1,9 +1,8 @@
-%% IMAGE PROCESSING OF DEWETTING FROM i-DDrOP VIDEO 
-% Takes a ".avi" video file, creates a plot of normalized area vs time. Saves 
-% an "_Area.txt" file that stores the analyzed data and can be passed into the 
-% "dataprocessing" file for further processing and analysis.
-
-% NOTE: this program requires Matlab "image processing toolbox" to run
+%% IMAGE PROCESSING OF THIN FILM DEWETTING FROM i-DDrOP VIDEO 
+% Takes '.avi' video file, creates a plot of wet area vs time. 
+% Saves '_Area.txt' file with wet area and time info
+% Can pass '_Area.txt' into data processing file to calculate dewetting onset time
+% Requires Matlab "image processing toolbox" to run
 
 % Nov 2020
 % Version: Matlab 2020a/b                    

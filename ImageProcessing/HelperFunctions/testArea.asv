@@ -9,11 +9,10 @@ function testEdgeAlg(testCase)
     orig_mask = testCase.TestData.orig_mask;
     gray_frame = testCase.TestData.gray_frame;
     outer_region  = testCase.TestData.outer_region;
-    film_area = testCase.TestData.film_area;
     
     img_size = size(gray_frame);
 
-    [final_mask, ~] = countArea(orig_mask, outer_region, film_area, img_size);
+    [final_mask, ~] = countArea(orig_mask,outer_region,img_size);
     final_mask = im2uint8(final_mask~=0);
     imshow(final_mask);
     
@@ -22,14 +21,12 @@ end
 %% Optional file fixtures  
 function setupOnce(testCase)  % do not change function name
     close all;
-%   initialize param's
-%     file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-    file_name = '~/Desktop/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
-
-    cur_frame_num = 2896; %1846 %5146 %916 % 1576
+    %initialize param's
+    file_name = '/Volumes/Extreme SSD/11:5:20/0.25 ug/0.25 ugmL lubricin AS HPL1 NR 37C 1.avi';
+    cur_frame_num = 18; %5146 %916 % 1576
     remove_Pixels = 250;
     area_frame_num = 1940;
-    area_fit_type = 0; % freehand fit = 0
+    area_fit_type = 1; % freehand fit = 0
     hueThresholdLow = .422;
     hueThresholdHigh = .500;
     saturationThresholdLow = .104; 
@@ -50,7 +47,7 @@ function setupOnce(testCase)  % do not change function name
     % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
     totalareaframecropped = imcrop(totalareaframe,crop_rect);     % Crop area frame
-    [area_mask, outer_region, ~, film_area] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
+    [area_mask, outer_region, ~, shadow_mask, ~] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
       
     orig_frame = read(video,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,crop_rect); 
@@ -86,9 +83,8 @@ function setupOnce(testCase)  % do not change function name
     testCase.TestData.area_center = [500 439];
     testCase.TestData.area_radius = 230.3845;
     testCase.TestData.gray_frame = gray_frame;
-    testCase.TestData.area_fit_type = area_fit_type; % freehand fit
+    testCase.TestData.area_fit_type = 1; % freehand fit
     testCase.TestData.outer_region = outer_region;
-    testCase.TestData.film_area = film_area;
 end
 
 

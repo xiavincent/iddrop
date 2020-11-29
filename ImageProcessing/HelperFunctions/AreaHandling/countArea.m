@@ -39,7 +39,7 @@ function mask = edgeAlg(mask,outer_region,linear_indices,component_mask)
     component_mask(linear_indices) = 1; % fill in the connected component
     union = outer_region & component_mask; % overlap between the component and the outer_region
 
-    if (nnz(union) <= 50) % if the component had less than 50 pixels overlap with the outer region
+    if (nnz(union) <= 10) % if the component has less than 10 pixels overlap with the outer region
         mask(linear_indices) = 0; % set the pixels to 0 (black) in the original mask
     end
 end
@@ -55,7 +55,9 @@ function mask = rmNegEuler(mask)
     for c = 1:length(stats)
         % Euler conditions
         cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 1000; % small objects with multiple holes
-        cond2 = stats(c).EulerNumber < -20 && stats(c).Area < 5000; % medium objects with a large number of holes
+%         cond2 = stats(c).EulerNumber < -20 && stats(c).Area < 5000; % medium objects with a large number of holes
+        cond2 = stats(c).EulerNumber < -30; % -30 % large objects with a large number of holes
+
         if ( cond1 || cond2 ) % check for both conditions
            linear_indices = conn_comp.PixelIdxList{c};
            mask(linear_indices) = 0;  % remove component from orig image
