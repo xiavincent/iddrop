@@ -54,9 +54,9 @@ function mask = rmNegEuler(mask)
 
     for c = 1:length(stats)
         % Euler conditions
-%         cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 1000; % small objects with multiple holes
+        cond1 = stats(c).EulerNumber < 0 && stats(c).Area < 500; % small objects with multiple holes
 %         cond2 = stats(c).EulerNumber < -20 && stats(c).Area < 5000; % medium objects with a large number of holes
-        cond2 = stats(c).EulerNumber < -30; % -50 % large objects with a large number of holes
+        cond2 = stats(c).EulerNumber < -50; % -50 % large objects with a large number of holes
 
         if ( cond2 ) % check for both conditions
            linear_indices = conn_comp.PixelIdxList{c};
