@@ -42,7 +42,6 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     combined_mask = HSV_mask & binarize_mask;    
     combined_mask(~analys.area_mask) = 0; % apply area mask
     combined_mask_open = bwareaopen(combined_mask, params.rm_pix);
-    
     combined_mask_fill = ~bwareaopen(~combined_mask_open, 20); % fill in small holes of the binarized mask
     
     % Clean the image and count the area
