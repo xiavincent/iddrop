@@ -76,7 +76,9 @@ function outer_region = scaleMask(area_mask)
     pgon_scale = scale(pgon_orig, .95, [orig_centroid_x orig_centroid_y]); % scale the polyshape and make it smaller
     [scale_x,scale_y] = boundary(pgon_scale);
    
-    scaled_poly_mask = poly2mask(scale_x, scale_y, 700,  700);  % convert the scaled ROI polygon into a mask
+    img_size = size(area_mask);
+    
+    scaled_poly_mask = poly2mask(scale_x, scale_y, img_size(1), img_size(2));  % convert the scaled ROI polygon into a mask
     
     % debugging plot
     orig_fig = gcf; 
