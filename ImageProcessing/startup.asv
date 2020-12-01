@@ -33,7 +33,7 @@ function closeExisting()
     clc;
 end
 
-function setDir() % set current folder to folder containing the active editor file
+function setDir() % set current folder to folder containing the active editor fil
     tmp = matlab.desktop.editor.getActive;  % get active file from Matlab editor API
     cd(fileparts(tmp.Filename)); % move to directory of active file
 end
