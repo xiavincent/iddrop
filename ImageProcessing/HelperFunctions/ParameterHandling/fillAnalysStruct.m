@@ -1,6 +1,5 @@
 function analys = fillAnalysStruct()
     f1 = 'crop_rect' ; v1 = 0;
-    f2 = 'bg_cropped' ; v2 = 0;
     f3 = 'area_mask'; v3 = 0;
     f4 = 'outer_region'; v4 = 0; 
     f5 = 'max_area'; v5 = 0;
