@@ -1,4 +1,4 @@
-% plot the wet area as a function of time
+% Plot wet area as a function of time
 function plotArea(area_data_output,file_name_short)
     
     makeBlankAreaPlot(); %generate blank plot
