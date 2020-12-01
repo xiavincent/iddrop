@@ -56,7 +56,7 @@ function setupOnce(testCase)
 
 
     [file_name,~] = getFile();
-    [analys.crop_rect, anlays.bg_cropped, vid] = startVideo(file_name,params.bg); % Initialize video
+    [analys.crop_rect, vid] = startVideo(file_name,params.bg); % Initialize video
     [analys.area_mask, analys.outer_region, analys.shadow, analys.film_area] = ... % Set areas
         setAreas(vid, analys.crop_rect, params.area, params.fit_type); 
     
