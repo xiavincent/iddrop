@@ -15,8 +15,7 @@
 %% Retrieve area data from .txt file and plot raw data
 
 
-%% TEMPORARY FIX BY VX --- ONLY PASS '_AREA.TXT' FILES IN THE FORMAT SPECIFIED BY THE NEWEST VIDEO PROCESSING CODE
-
+%% TEMPORARY FIX BY VX --- DO
 [file,path] = uigetfile('*.txt'); % choose '_Area.txt' file
 fname = strcat(path,file); % gets file name from uigetfile
 fname_short = fname(1:end-4); % removes .txt or other file extension from filename
@@ -33,6 +32,7 @@ fclose(fileID);
 timedata = Wet_area(:,2);
 areadata = Wet_area(:,3);
 
+
 %Figure formatting
 figure, hold on 
 xlim([0 600]);
@@ -43,7 +43,7 @@ set(gca,'FontName', 'Arial','FontSize',18);
 set(gcf, 'PaperPositionMode', 'auto');
 box on;
 
-plot(timedata,areadata,'.');
+plot(timedata,areadata,'o');
 print('-depsc2',strcat(fname,'_graph.eps'));
 print('-dtiff',strcat(fname,'_graph.tiff'));
 %% Dialog box to determine how to process data
@@ -67,18 +67,24 @@ elseif dewet_or_not==1
     
     if smooth_or_not==1 
         areadata = movmean(areadata, smooth_window); %version of code for after R2016  
+%         b = (1/smooth_window)*ones(1,smooth_window);  % for versions of Matlab before R2016                                                                       
+%         areadata = filter(b,1,areadata);
     end
     
+    
+    
+
 
 %  Find region of interest for linear fit of dewetting
 % (comment out this section if all you want is the smoothed graph)
 
-    t = 0; % define delay time point after which you want to start the analysis
 
-    onset_time_indices = find(Wet_area(:,3) < upperbound & Wet_area(:,2) > t);
+    t = 0; % define delay time point after which you want to start the analysis
+    Wet_area(2,:) = areadata;
+    onset_time_indices = find(Wet_area(2,:) < upperbound & Wet_area(1,:) > t);
     startpoint = onset_time_indices(1);
 
-    secondhalf = find(Wet_area(:,3) < lowerbound & Wet_area(:,2) > t);
+    secondhalf = find(Wet_area(2,:) < lowerbound & Wet_area(1,:) > t);
     endpoint = secondhalf(1);
 
     dewetsize = startpoint - endpoint + 1;
@@ -107,7 +113,7 @@ elseif dewet_or_not==1
     set(gcf, 'PaperPositionMode', 'auto');
     box on;
 
-    plot(timedata,areadata,'.')
+    plot(timedata,areadata,'o')
     plot(dewetting_x,dewetting_y_calculated,'c-','LineWidth',2);
     print('-depsc2',strcat(fname,'_graph_fit.eps'));
     print('-dtiff',strcat(fname,'_graph_fit.tiff'));
