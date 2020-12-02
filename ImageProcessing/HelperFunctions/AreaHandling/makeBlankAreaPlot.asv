@@ -1,7 +1,7 @@
 %Format the area plot to output
-function figure_handle = makeBlankAreaPlot() 
+function makeBlankAreaPlot() 
 
-    figure_handle = figure('Name','Area Plot');
+    handle figure('Name','Area Plot');
     hold on;
     
     xlim([0 600]);
