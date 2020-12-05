@@ -11,7 +11,6 @@ function plotRaw(time_data,wet_area_data)
     box on;
 
     plot(time_data,wet_area_data,'.');
-    print(strcat(fname,'_graph'),'-dpdf'); % save as pdf file
-    
+    print('-depsc–',strcat(fname,'_graph.eps')); % save as encapsulated postcript (eps) file
 
 end

@@ -45,7 +45,7 @@ function plotFit(fname, dewetting_x, dewetting_y_calculated)
     figure, hold on 
     xlim([0 600]);
     ylim([0 1.2]);
-    xlabel('Time (s)','FontSize' , 28,'FontName'   , 'Arial')
+    xlabel('Time (s)','FontSize', 28,'FontName' , 'Arial')
     ylabel('Wet Area / Total Area','FontSize' , 20,'FontName', 'Arial')
     set( gca,'FontName', 'Arial','FontSize',18);
     set(gcf, 'PaperPositionMode', 'auto');
@@ -53,7 +53,7 @@ function plotFit(fname, dewetting_x, dewetting_y_calculated)
 
     plot(time,area,'.')
     plot(dewetting_x,dewetting_y_calculated,'c-','LineWidth',2);
-    print('-depsc',strcat(fname,'_graph_fit.eps')); % save as encapsulated postscript
+    print(strcat(fname,'_graph_fit'),'-dpdf'); % save as pdf file
 
     DOT = (1-fit(1))/fit(2);
     disp(['The dewetting onset time is ', num2str(DOT), ' s.'])
