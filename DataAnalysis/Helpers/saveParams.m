@@ -1,4 +1,4 @@
-function saveParams()
+function saveParams(fname,params)
 
     fid=fopen(strcat(fname,'_DataProcessingParameters.txt'),'w'); %saves parameters used in file for analysis 
     fprintf(fid, 'dewet_or_not = %d \n', dewet_or_not);

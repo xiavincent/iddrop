@@ -1,8 +1,5 @@
-function plotRaw(area_data)
-
-    time_data = area_data(:,2);
-    wet_area_data = area_data(:,3);
-
+function plotRaw(time_data,wet_area_data)
+    
     %Figure formatting
     figure, hold on 
     xlim([0 600]);
@@ -14,7 +11,6 @@ function plotRaw(area_data)
     box on;
 
     plot(time_data,wet_area_data,'.');
-    print('-depsc2',strcat(fname,'_graph.eps'));
-    print('-dtiff',strcat(fname,'_graph.tiff'));
+    print('-depsc2',strcat(fname,'_graph.eps')); % save as encapsulated postcript (eps) file
 
 end
