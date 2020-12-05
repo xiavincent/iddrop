@@ -15,6 +15,10 @@ params = getParams(); % dialog box to determine how to process data
 
 %% Find Dewetting Onset Time
 
+if (params.smooth == 0)  % smooth data if requested by user
+    area = smoothData(params.smooth_window,area);
+end
+
 getDOT(params); % TODO: find and plot the DOT. Loop if user not satisfied
 
 saveParams(); % save parameters

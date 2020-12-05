@@ -14,8 +14,7 @@ function params = getParams()
     smooth_window = str2double(data_processing{5}); %gets this from input dialog
     
     f1 = "dewet"; v1 = dewet_or_not;
-    f2 = "Ubound"; v2 = upperbound;
-    f3 = "Lbound"; v3 = lowerbound;
+   
     f4 = "smooth"; v4 = smooth_or_not;
     f5 = "smooth_window"; v5 = smooth_window;
     
