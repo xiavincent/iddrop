@@ -1,21 +1,13 @@
 function getDOT(fname, params, time, area)
 
-    
-
-    if (params.dewet == 0) % video doesn't dewet
-        
-            disp('Dewetting does not occur.')
-            
-    elseif dewet_or_not==1    
-   
+    if (params.dewet == 1) % video dewets
         while (1)
-            
-            getBounds(); % user-specified lower and upper bounds 
-            
+            params = getBounds(params); % user-specified lower and upper bounds 
+
             % find the starting and stopping indices
             delay = 0; % define delay time point after which you want to start the analysis
-            begin = find(area < upperbound) && find(time > delay); % perform a short-circuit 'and' between the valid indices
-            stop = find(area < lowerbound) && find(time > delay);
+            begin = find(area < params.ubound) && find(time > delay); % perform a short-circuit 'and' between the valid indices
+            stop = find(area < params.lbound) && find(time > delay);
             
             x = time(begin:stop); % use this to calculate a one parameter linear regression
             X = [ones(length(x),1), x]; % use this to calculate a two parameter linear regression
@@ -29,21 +21,34 @@ function getDOT(fname, params, time, area)
             
 %             plotFit(fname, x, y_calc);  % plot fitted data and display dewetting onset time
             
-
             answer = questdlg('Redo fit?', 'Confirm DOT', 'Yes','No','No'); % two options, with 'No' set as default
             switch answer % exit loop based on user input
                 case 'No'
                     break;
                 case '' % user doesn't give a response
                     break; 
-                case 'Yes' % redo execution
-            end
-                    
-        end
+                case 'Yes' % reperform bound fitting
+            end  
+            
+        end     
+    else % video doesn't dewet      
+        disp('Dewetting does not occur.');
     end
 
 end
 
+
+% fills in the lower and upper bounds on the params struct based on user input
+function getBounds(params)
+    data_processing = inputdlg({'Select upper bound',...
+                                'Select lower bound'},...
+                                'DOT fit bounds',...
+                                [1 20; 1 20],{'0.97','0.8'});
+
+    params.ubound = str2double(data_processing{1}); %gets this from input dialog
+    params.lbound = str2double(data_processing{2}); %gets this from input dialog
+   
+end
 
 function plotFit(fname, x, y_calc)
 

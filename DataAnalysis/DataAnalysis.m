@@ -6,7 +6,6 @@
 % Kiara Cui, Vincent Xia
 % Nov 2020
 %%
-
 startup(); % add subfolders to path
 [fname, time, area] = readFile();  % retrieve data from .txt file
 plotRaw(time,area); % plot raw data 
