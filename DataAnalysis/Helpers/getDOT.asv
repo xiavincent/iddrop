@@ -1,0 +1,122 @@
+function result = getDOT(fname, params, time, area)
+
+    if (params.dewet == 1) % video dewets
+        while (1) % loop
+            params = getBounds(params); % user-specified lower and upper bounds 
+
+            % find the starting and stopping indices
+            delay = 0; % define delay time point after which you want to start the analysis
+            
+            time_indices = find(time > delay); % region past delay point
+            below_ub = intersect(find(area < params.ubound),time_indices); % find indices where area dips below upper bound
+            below_lb = intersect(find(area < params.lbound),time_indices);  % find indices where area dips below the lower bound
+            
+            begin = min(below_ub); % find first index where area dips below upper bound
+            stop = min(below_lb); % find first index where area dips below lower bound
+            
+            result = calcFit(time,area,begin,stop); % calculate line of best fit
+            
+            answer = questdlg('Redo fit?', 'Confirm DOT', 'Yes','No','No'); % two options, with 'No' set as default
+            switch answer % exit loop based on user input
+                case 'No'
+                    break;
+                case '' % user doesn't give a response
+                    break; 
+                case 'Yes' % reperform bound fitting
+            end  
+            
+        end     
+    else % video doesn't dewet      
+        disp('Dewetting does not occur.');
+    end
+
+end
+
+% fills in the lower and upper bounds on the params struct based on user input
+function params = getBounds(params)
+    
+    data_processing = inputdlg({'Select upper bound',...
+                                'Select lower bound'},...
+                                'DOT fit bounds',...
+                                [1 20; 1 20],{'0.98','0.90'});
+
+    params.ubound = str2double(data_processing{1}); %gets this from input dialog
+    params.lbound = str2double(data_processing{2}); %gets this from input dialog
+   
+end
+
+
+function result = calcFit(time,area,begin,stop) % calculate the line of best fit and return
+
+    x = time(begin:stop); % use this to calculate a one parameter linear regression
+%     X = [ones(length(x),1), x]; % use this to calculate a two parameter linear regression
+    y = area(begin:stop); % y values of line of interest
+      
+    polynom = polyfit(x,y,1);
+    y_fit = polyval(polynom, time); % calculate y values from line of best fit
+    y_flat = ones(size(time)); % flat line at y = 1
+    
+    % calculate time value at intersection with y = 1 (DOT)
+    result.DOT = roots([polynom(1), polynom(2)-1]); % find intersection of polynomial with y = 1
+        
+    
+    plot = figure('Name','Fitted Data');
+    hold on
+    plot(time,area,'o',...
+        time,y_fit,...
+        time,y_flat,'--'); % plot line of best fit and original data
+    
+    
+    annotate(plot,result.DOT);
+    
+    
+    plot(DOT,1,'r*',...
+    'MarkerSize',20); % plot intersection point
+
+    txt = ['\downarrow Dewetting Onset Time: ' num2str(DOT) 's']; % annotation for DOT point
+    x_loc = DOT;
+    y_loc = 1.05;
+    text(x_loc,y_loc,txt);
+    
+    txt = sprintf('Dewetting line: %.3g*x + %.3g', polynom(1), polynom(2));
+    text(x_loc,y_loc+.05,txt); % annotation for line equation
+    
+    txt = sprintf('y = 1');
+    text(max(time)+5, 1, txt);
+    
+    
+    
+   
+    
+    % calculate R^2 = 1 - SSres/SStot
+end
+
+
+function annotate(plot, DOT)
+
+
+
+
+
+end
+
+
+
+
+function plotFit(fname, x, y_calc)
+
+    figure, hold on 
+    xlim([0 600]);
+    ylim([0 1.2]);
+    xlabel('Time (s)','FontSize', 28,'FontName' , 'Arial')
+    ylabel('Wet Area / Total Area','FontSize' , 20,'FontName', 'Arial')
+    set( gca,'FontName', 'Arial','FontSize',18);
+    set(gcf, 'PaperPositionMode', 'auto');
+    box on;
+
+    plot(time,area,'.')
+    plot(x,y_calc,'c-','LineWidth',2);
+    print(strcat(fname,'_fit.pdf'),'-dpdf'); % save as pdf file
+
+  
+end

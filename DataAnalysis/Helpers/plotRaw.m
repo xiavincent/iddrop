@@ -1,7 +1,8 @@
 function plotRaw(fname,time_data,wet_area_data)
     
     %Figure formatting
-    figure, hold on 
+    figure('Name','Original Data')
+    hold on 
     xlim([0 600]);
     ylim([0 1.2]);
     xlabel('Time (s)','FontSize' , 28,'FontName'   , 'Arial')
