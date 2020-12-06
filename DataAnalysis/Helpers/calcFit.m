@@ -29,25 +29,28 @@ function plotFit(fname,time,area,result)
     hold on
     box on
 
-    font_size = 20;
-    
-    x_max = 600;
+    x_max = 600; % set figure bounds
+    y_max = 1.2;
     xlim([0 x_max]);
-    ylim([0 1.2]);
-    xlabel('Time (s)','FontSize',font_size);
-    ylabel('Wet Area / Total Area','FontSize',font_size,'FontName', 'Arial');
-    ax = gca;
+    ylim([0 y_max]);
+    
+    font_size = 20;
+    xlabel('Time (s)','FontSize',font_size); % add axis titles
+    ylabel('Wet Area / Total Area','FontSize',font_size);
+    
+    ax = gca; % format axes
     ax.FontSize = 18;
     ax.FontName = 'Arial';
     
     plot(time,area,'.',...
         time,result.yfit); % plot line of best fit and original data  
     yline(1,'--','max area'); % horizontal line y = 1
-    annotate(fname,result.DOT,result.polynom,x_max); % annotate the plot
+    annotate(fname,result.DOT,result.polynom); % annotate the plot
+    
 end
 
 
-function annotate(fname,DOT,polynomial,x_max) % annotate figure with line labels
+function annotate(fname,DOT,polynomial) % annotate figure with line labels
 
     plot(DOT,1,'r*',... % plot intersection point
     'MarkerSize',10); 
@@ -60,8 +63,6 @@ function annotate(fname,DOT,polynomial,x_max) % annotate figure with line labels
     txt = sprintf('Dewetting line: %.3g*x + %.3g', polynomial(1), polynomial(2));
     text(x,y+.04,txt); % annotation for line equation
     
-%     txt = sprintf('y = 1');
-%     text(x_max-35, 1.02, txt); % annotation for y = 1 line
-%     
     print(strcat(fname,'_fit.pdf'),'-dpdf'); % save as pdf file
+    
 end

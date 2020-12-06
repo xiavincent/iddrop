@@ -5,9 +5,9 @@ function [result,params] = getDOT(fname, params, time, area)
             params = getBounds(params); % user-specified lower and upper bounds 
 
             % find the starting and stopping indices
-            delay = 0; % define delay time point after which you want to start the analysis
+            params.delay = 0; % define delay time point after which you want to start the analysis
             
-            time_indices = find(time > delay); % region past delay point
+            time_indices = find(time > params.delay); % region past delay point
             below_ub = intersect(find(area < params.ubound),time_indices); % find indices where area dips below upper bound
             below_lb = intersect(find(area < params.lbound),time_indices);  % find indices where area dips below the lower bound
             
