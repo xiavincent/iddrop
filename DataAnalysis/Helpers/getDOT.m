@@ -1,4 +1,4 @@
-function getDOT(fname, params, time, area)
+function result = getDOT(fname, params, time, area)
 
     if (params.dewet == 1) % video dewets
         while (1) % loop
@@ -56,11 +56,16 @@ function calcFit(time,area,begin,stop) % calculate the line of best fit and retu
     
     
     polynom = polyfit(x,y,1);
-    y_calc = polyval(polynom, time); % calculate y values from line of best fit
+    y_fit = polyval(polynom, time); % calculate y values from line of best fit
     figure
-    plot(time,area,'o',time,y_calc); % plot line of best fit and original data
+    y_flat = ones(size(time)); % flat line at y = 1
+    plot(time,area,'o',...
+        time,y_fit,...
+        time,y_flat,'--'); % plot line of best fit and original data
+    
+    % calculate R^2 = 1 - SSres/SStot
+    
 
-   
     
 
 %     beta = X\y; % coefficients of the linear regression 
