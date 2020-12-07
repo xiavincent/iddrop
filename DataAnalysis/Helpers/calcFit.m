@@ -25,7 +25,7 @@ end
 
 function plotFit(fname,time,area,result)
 
-    figure('Name','Fitted Data');
+    fig = figure('Name','Fitted Data');
     hold on
     box on
 
@@ -47,6 +47,8 @@ function plotFit(fname,time,area,result)
     yline(1,'--','max area'); % horizontal line y = 1
     annotate(fname,result.DOT,result.polynom); % annotate the plot
     
+    print(fig,strcat(fname,'_fit.pdf'),'-dpdf'); % save as pdf file
+    
 end
 
 
@@ -63,6 +65,5 @@ function annotate(fname,DOT,polynomial) % annotate figure with line labels
     txt = sprintf('Dewetting line: %.3g*x + %.3g', polynomial(1), polynomial(2));
     text(x,y+.04,txt); % annotation for line equation
     
-    print(strcat(fname,'_fit.pdf'),'-dpdf'); % save as pdf file
     
 end
