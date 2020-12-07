@@ -45,25 +45,25 @@ function plotFit(fname,time,area,result)
     plot(time,area,'.',...
         time,result.yfit); % plot line of best fit and original data  
     yline(1,'--','max area'); % horizontal line y = 1
-    annotate(fname,result.DOT,result.polynom); % annotate the plot
+    annotate(result.DOT,result.polynom,y_max); % annotate the plot
     
     print(fig,strcat(fname,'_fit.pdf'),'-dpdf'); % save as pdf file
     
 end
 
 
-function annotate(fname,DOT,polynomial) % annotate figure with line labels
+function annotate(DOT,polynomial,y_max) % annotate figure with line labels
 
     plot(DOT,1,'r*',... % plot intersection point
     'MarkerSize',10); 
 
     txt = ['\downarrow Dewetting Onset Time: ' num2str(DOT) 's']; % annotation for DOT point
     x = DOT;
-    y = 1.05;
+    y = 1 + .05/y_max;
     text(x,y,txt);
     
-    txt = sprintf('Dewetting line: %.3g*x + %.3g', polynomial(1), polynomial(2));
-    text(x,y+.04,txt); % annotation for line equation
+    txt = sprintf('Dewetting line: y = %.3g*x + %.3g', polynomial(1), polynomial(2));
+    text(x,y+.04/y_max,txt); % annotation for line equation
     
     
 end

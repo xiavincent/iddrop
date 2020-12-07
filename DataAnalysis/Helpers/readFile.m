@@ -3,7 +3,7 @@ function [fname_short, time, area] = readFile()
 
     % TEMPORARY FIX BY VX --- ONLY PASS '_AREA.TXT' FILES IN THE FORMAT SPECIFIED BY THE NEWEST VIDEO PROCESSING CODE
     % use UI input to get the columns in the file
-    % by default, interpret file as raw time, time after t0, and wet area columns    
+    % by default, interpret file with (1) raw time, (2) time after t0, and (3) wet area columns    
     
     [file,path] = uigetfile('*.txt'); % choose '_Area.txt' file
     fname = strcat(path,file); % gets file name from uigetfile

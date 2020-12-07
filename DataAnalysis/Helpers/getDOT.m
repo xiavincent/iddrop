@@ -1,6 +1,6 @@
 function [result,params] = getDOT(fname, params, time, area)
 
-    if (params.dewet == 1) % video dewets
+    if (params.dewet == 0) % video dewets
         while (1) % loop
             params = getBounds(params); % user-specified lower and upper bounds 
 
