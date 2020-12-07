@@ -5,14 +5,18 @@
 
 % Kiara Cui, Vincent Xia
 % Nov 2020
-%%
+%% 
 
 init(); % add subfolders to path
-[fname, time, area] = readFile(); % retrieve data from .txt file
+[fname, time, area] = readFile(); % retrieve data from .txt file, return file name w/o extension
 plotRaw(fname,time,area); % plot raw data for user to see
 params = getParams(); % dialog box to determine how to process data
 
 %% Find Dewetting Onset Time
+
+if (params.save_smooth == 0) % save a txt of the smoothed data 
+    saveSmoothed(fname,time,area,params.smooth_window); % using the smoothing window inputted by user
+end
 
 if (params.smooth == 0)  % smooth data if requested by user
     area = smoothData(params.smooth_window,area);
