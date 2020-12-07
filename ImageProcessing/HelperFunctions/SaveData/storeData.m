@@ -4,7 +4,7 @@ function storeData(file_name_short,area_data_output,params)
     % Store analyzed data into text file to be used with image processing code
     f_id = fopen(strcat(file_name_short,'_Area.txt'),'w');
     fprintf(f_id,'%20s %20s %20s \n','Raw time (s)', 'time after t0 (s)', 'area'); 
-    fprintf(f_id, '%20.3f %20.3f %20.3f \n', area_data_output); % output the transposed matrix for viewership
+    fprintf(f_id, '%20.3f %20.3f %20.3f \n', area_data_output); 
     fclose(f_id);
     
     % Store image processing parameters into text file
