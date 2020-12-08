@@ -1,5 +1,5 @@
 % Close figures, clear command window, add current directory to search path
-function startup()
+function init()
     setDir(); % set the current directory to the 'ImageProcessing' folder
     checkToolbox(); % check for image processing toolbox
     closeExisting(); % close figures
@@ -34,6 +34,6 @@ function closeExisting()
 end
 
 function setDir() % set current folder to folder containing the active editor file
-    tmp = matlab.desktop.editor.getActive;  % get active file from Matlab editor API
-    cd(fileparts(tmp.Filename)); % move to directory of active file
+    dir = matlab.desktop.editor.getActive;  % get active file from Matlab editor API
+    cd(fileparts(dir.Filename)); % move to directory of active file
 end

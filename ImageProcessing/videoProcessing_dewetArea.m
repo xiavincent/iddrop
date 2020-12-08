@@ -9,7 +9,7 @@
 % Vincent Xia
 
 %% Initializations
-startup(); % add helper files to path
+init(); % add helper files to path
 
 %% Initializations
 [file_name,file_name_short] = getFile(); % get user-specified video file
