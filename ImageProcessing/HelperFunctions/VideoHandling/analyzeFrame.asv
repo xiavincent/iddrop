@@ -5,12 +5,20 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop = imcrop(orig_frame,analys.crop_rect); 
     gray = rgb2gray(crop); % grayscale frame from video
-    cam = getShadow(gray); % extract mask of camera shadow
-    gray = regionfill(gray,cam); % fill in the camera shadow 
+    
+    cam getShadow(gray); % 
+    
+    thresh = 100;
+    shadow = gray < thresh; % extract intensity values less than 100 to get camera shadow
+    
+    structuring_elem = strel('disk',10); 
+    dilate_shadow = imdilate(shadow,structuring_elem); % expand the shadow area
+    
+    gray_fill = regionfill(gray,dilate_shadow); % fill in the camera shadow
     
     
     %% Option 1 (BEST)
-    clr_brdr = imclearborder(gray); % remove the image border and leave us with the dome only
+    clr_brdr = imclearborder(gray_fill); % remove the image border and leave us with the dome only
     binarize_mask = imbinarize(clr_brdr,'global');
     
     % TODO: filter out camera and fill in with color of surrounding pixels (try regionfill)
@@ -45,18 +53,4 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
                           params.t0, cur_frame_num, wet_area,...
                           input_vid.FrameRate, outputs, output_vids);
 
-end
-
-
-
-
-
-function shadow = getShadow(gray_img) % return binary mask of camera shadow (defined as intensity values below 100)
-
-    thresh = 100;
-    shadow = gray_img < thresh; % extract intensity values less than 100 to get camera shadow
-    
-    structuring_elem = strel('disk',10); 
-    shadow = imdilate(shadow,structuring_elem); % expand the shadow area
-    
 end

@@ -23,7 +23,7 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
                              % fields defined in 'fillAnalysStruct.m'
                              
                              
-%%
+
 [analys.crop_rect, vid] = startVideo(file_name,params.bg); % Initialize video
 
 %% Set total area
