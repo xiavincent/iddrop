@@ -4,7 +4,7 @@
 % output_vids: structure containing initialized Matlab videos to be outputted 
 
 %% FUNCTION:
-function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, bw_frame_mask, label_dewet_img,...
+function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, label_dewet_img,...
                               t0_frame_num, cur_frame_num, wet_area,...
                               input_fps, output, output_vids)
                           
@@ -47,14 +47,14 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, bw_frame_
            
             im0 = insertText(crop_frame,[100 50],"orig image",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             im1 = insertText(im2uint8(HSV_mask),[100 50],"HSV mask",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
-                fuse = imfuse(im2uint8(HSV_mask),im2uint8(bw_frame_mask),'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of area mask with HSV mask
+                fuse = imfuse(im2uint8(HSV_mask),im2uint8(binarize_mask),'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of area mask with HSV mask
             im2 = insertText(fuse, [100 50],'HSV w/ binarize overlay','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
-            im3 = insertText(im2uint8(bw_frame_mask),[100 50],"Binarize mask (contains area mask)",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');            
-            im6 = insertText(label_dewet_img,[100 50],'final mask','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
+            im3 = insertText(im2uint8(binarize_mask),[100 50],"Binarize mask",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');            
+            im6 = insertText(label2rgb(label_dewet_img),[100 50],'final mask','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             
 %             im7 = insertText(im2uint8(_____),[100 50],"HSV mask after removing small objects and small mask holes",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             
-%           blank = zeros(size(im0)); use this to fill in gaps of the montage if there's not enough videos to output
+          blank = zeros(size(im0)); % use this to fill in gaps of the montage if there's not enough videos to output
             concat1 = cat(1,im0,im1,im2); %concatenate the images together
             concat2 = cat(1,im3,im6,blank);
             concatFinal = cat(2,concat1,concat2);

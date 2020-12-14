@@ -11,17 +11,6 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     clr_brdr = imclearborder(gray_frame); % remove the image border and leave us with the dome only
     binarize_mask = imbinarize(clr_brdr,'global');
     
-   %% Option 2 (works better for earlier video times)
-%     gray_frame_rm_shadow = imfill(gray_frame); % imfill works best with global thresholding 
-                                                   % Do NOT use imfill if using adaptive thresholding
-%     binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive'); % split gray_frame into 1's and 0's
-%     binarize_mask = imbinarize(gray_frame_rm_shadow,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62);
-
-    %% Option 3 (worked better for later video times)
-    % NOTE: Adaptive thresholding works better for later video times, whereas global thresholding works
-                % better for earlier ties       
-%     binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
-
 
 %%
     binarize_mask_reduced = binarize_mask;

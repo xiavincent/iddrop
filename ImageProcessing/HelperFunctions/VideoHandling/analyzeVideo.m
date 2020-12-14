@@ -18,10 +18,10 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     [output_vids.bw, output_vids.analyzed, output_vids.masks, output_vids.falsecolor] = ...
         initVids(file_name_short, output_framerate, output.bw_mask , output.analyzed, output.masks, output.falsecolor);   
     
-    init_frame_num = params.t0; %params.t0 %5176 % frame we start analyzing at
-    final_frame_num = vid.NumFrames; %vid.NumFrames % dictates the last frame of the video to be analyzed
+    init_frame_num = 6800; %params.t0 % frame we start analyzing at
+    final_frame_num = 6800; %vid.NumFrames % dictates the last frame of the video to be analyzed
     
-    num_frames_analys = final_frame_num - params.t0; % how far we will analyze in the video
+    num_frames_analys = final_frame_num - init_frame_num; % how far we will analyze in the video
     num_it = floor(num_frames_analys/params.skip) + 1; % number of individual video frames to analyze
     
     wait_bar = waitbar(0,'Analyzing... Go grab a cup of coffee...'); % start video processing
