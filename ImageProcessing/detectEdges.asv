@@ -1,0 +1,29 @@
+function detectEdges()
+
+    RGB = imread('/Volumes/Extreme SSD/LubricinData/07 2020/7-18-20/1 ugmL HPL2/finalCode/frame6800.tif');
+    
+    gray = rgb2gray(RGB);
+    
+    % visualize  edge detection methods
+    
+    sobel = edge(gray,'sobel');
+    prewitt = edge(gray,'prewitt');
+    roberts = edge(gray,'roberts');
+        canny = edge(gray,'canny');
+
+    
+    figure
+    montage({sobel,canny,prewitt,roberts})
+%     subplot(1,4,1)
+%     imshow(sobel);
+%     subplot(1,4,2)
+%     imshow(canny);
+%     subplot(1,4,3)
+%     imshow(prewitt);
+%     subplot(1,4,4)
+%     imshow(roberts);
+    
+   
+
+
+end

@@ -67,9 +67,9 @@ function mask = rmNegEuler(mask)
     
     
     % TODO: use 'bwpropfilt' instead
-%     low = -50;
-%     high = 10;
-%     mask = bwpropfilt(mask,'EulerNumber', [low high]);
+    low = 0;
+    high = 0;
+    mask = bwpropfilt(mask,'EulerNumber', [-50 
     
 end
 
