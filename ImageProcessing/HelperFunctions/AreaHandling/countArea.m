@@ -58,7 +58,7 @@ function mask = rmNegEuler(mask)
 %         cond2 = stats(c).EulerNumber < -20 && stats(c).Area < 5000; % medium objects with a large number of holes
         cond2 = stats(c).EulerNumber < -50; % -50 % large objects with a large number of holes
 
-        if ( cond2 ) % check for both conditions
+        if ( cond1 || cond2 ) % check for both conditions
            linear_indices = conn_comp.PixelIdxList{c};
            mask(linear_indices) = 0;  % remove component from orig image
         end
