@@ -18,7 +18,7 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, bw_frame_
 
         if (~output.bw_mask) % make a movie of the black/white final mask frames       
             final_mask = label_dewet_img > 0;
-            output_text = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
+            output_text = insertText(uint8(255*final_mask),[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
             writeVideo(output_vids.bw,output_text); % writes video with analyzed frames  
         end
 %% 
