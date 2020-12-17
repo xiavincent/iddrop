@@ -27,7 +27,7 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     wait_bar = waitbar(0,'Analyzing... Go grab a cup of coffee...'); % start video processing
     wet_area = zeros(1, num_it*params.skip); % normalized wet area for every frame index
 
-    for i = 1 : num_it
+    for i = 1 : num_it  % analyze each frame
         cur_frame_num = (i-1)*params.skip + init_frame_num;
         waitbar(cur_frame_num/final_frame_num,wait_bar); % update wait bar to show analysis progress
         wet_area(cur_frame_num) = analyzeFrame(vid, cur_frame_num, analys, params, output, output_vids); % run the analysis loop for a single frame
