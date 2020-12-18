@@ -3,7 +3,6 @@ function detectEdges()
     
     RGB = imread('/Volumes/Extreme SSD/LubricinData/07 2020/7-18-20/1 ugmL HPL2/finalCode/frame6800.tif');
     HSV = rgb2hsv(RGB);
-
     gray = rgb2gray(RGB);
     
     %% Get black parts of of image
@@ -21,12 +20,14 @@ function detectEdges()
     showEdges(gray,sobel_sens,can_sens); % visualize the edges in a figure using given senstivities as settings
     
     %% gradient visualization    
-    showGradients(gray);
+    filled_wet_area = showGradients(gray);
+    overlay = imoverlay(RGB,filled_wet_area,'red'); % burn binary mask into original image
+    figure
+    imshow(overlay) % display result
     
     %% Single direction sobel detection
-    
     showDirSobel(gray);
-    
+
 end
 
 
@@ -37,31 +38,18 @@ function getBlack(RGB_img) % takes an RGB image and gets the black pixels from i
     s_img = HSV(:,:,2);
     v_img = HSV(:,:,3);
     
-
     
     s_thresh = 0.3;
     gray_mask = s_img < s_thresh; % get gray colors
     
-%     v_thresh_high = 0.8; % threshold on value component to find light pixels
-%     white_pix = (v_img > v_thresh_high) & gray_mask; % find white pixels
-    v_thresh_low = 0.6;
+    v_thresh_low = 0.6; % threshold on value component to find dark pixels
     dark_pix = v_img < v_thresh_low;
     black_pix = dark_pix & gray_mask; % find black pixels
 
-    
-    figure
-    imshow(imoverlay(RGB_img,white_pix,'red'));
-    title('white pixels')
-    
     figure
     imshow(imoverlay(RGB_img,black_pix,'red'));
     title('black pixels')
 end
-
-
-
-
-
 
 %% Helper functions
 % show image edges using various edge detection algorithms
@@ -95,8 +83,7 @@ function fillHoles(varargin)
 end
 
 % show the Sobel gradients and magnitudes of a grayscale image
-function showGradients(gray_img)
-
+function filled = showGradients(gray_img)
     figure
     [Gx,Gy] = imgradientxy(gray_img);
     imshowpair(Gx,Gy,'montage')
@@ -107,11 +94,10 @@ function showGradients(gray_img)
     imshowpair(Gmag,Gdir,'montage')
     title('Gradient Magnitude (Left) and Gradient Direction (Right)')
     
-    floodFill(Gmag); % flood fill gradient magnitude image
-
+    filled = floodFill(Gmag); % flood fill gradient magnitude image and export result
 end
 
-function floodFill(gradient_magnitude) % flood fill dewetted portion of gradient image
+function filled = floodFill(gradient_magnitude) % flood fill wetted portion of gradient image
 
     mag_img = mat2gray(gradient_magnitude); % convert to grayscale
     
@@ -121,22 +107,42 @@ function floodFill(gradient_magnitude) % flood fill dewetted portion of gradient
     title(ax,'grayscale gradient magnitude image');
    
     bin = imbinarize(mag_img);
-    mag_filled = imfill(bin,[200 450]); % flood fill operation of interior of film
+    skel = bwskel(bin); % get the skeleton mask of the image
+    
+    
+    
+    
+%     mag_filled = imfill(bin,[200 450]); % flood fill operation of interior of film
+%     
+%     figure
+%     imshow(mag_filled)
+%     title('flood fill film interior')
+%     
+%     figure
+%     imshow(~mag_filled) % invert image to capture dewetted region
+%     title('inverted film interior')
+%     
+%     figure
+%     edge_fill = imfill(bin,[300 300]); % flood fill exterior of film
+%     imshow(edge_fill)
+%     title('flood fill film exterior')
+%     
     
     figure
-    imshow(mag_filled)
-    title('flood fill film interior')
+    imshow(skel)
+    bndry = traceDome(skel);
     
-    figure
-    imshow(~mag_filled) % invert image to capture dewetted region
-    title('inverted film interior')
+    for i=1:length(bndry)
+        skel(bndry(i,1),bndry(i,2)) = 0; % remove the boundary of the dome from the image
+    end
     
-    figure
-    edge_fill = imfill(bin,[300 300]); % flood fill exterior of film
-    imshow(edge_fill)
-    title('flood fill film exterior')
+    filled = imfill(skel,'holes'); % flood fill film by removing the dome's edges first
+    imshow(filled)
     
-   
+    % Works moderately well; expect some variation in film area inclusion based on edge
+    % detection
+    % TODO: test on different frames
+    
 end
 
 function showDirSobel(gray_img)
@@ -145,8 +151,47 @@ function showDirSobel(gray_img)
     horizontal_edges = edge(gray_img,'sobel','horizontal');
     
     figure
+    hold on
     combined = bitor(vertical_edges,horizontal_edges);
     imshow(combined)
     title('combined x- and y-directional sobel edges');
+    
+    bndry = traceDome(combined); % trace the dome and return the indices of the pixel boundaries
+    
+    for i=1:length(bndry)
+        combined(bndry(i,1),bndry(i,2)) = 0; % remove the boundary of the dome from the image
+    end    
+    
+    figure
+    imshow(combined)
+    
+    % NOTE: doesn't work because directional sobel can't adequately detect film edges
+         
+end
 
+function boundary_pix = traceDome(edges) % trace the outline of the dome given a binary image of its edges
+% return the indices of the pixels on the boundary
+
+    filled_dome = imfill(edges,'holes');
+   
+    clean_size = 200; % remove objects less than 200 pixels in size
+    cleaned_dome = bwareaopen(filled_dome,clean_size); 
+    
+    [boundaries,~,num_obj,~] = bwboundaries(cleaned_dome); % trace the boundary of the dome
+    
+    % if there's more than one object found, throw an exception
+    if (num_obj > 1)
+        errID = 'Dome detection';
+        msg = 'detected more than one object when searching for the dome';
+        ME = MException(errID,msg);
+        throw(ME)
+    end 
+    
+    boundary_pix = boundaries{1}; %there should only be one boundary to trace
+    
+    hold on
+    plot(boundary_pix(:,2),boundary_pix(:,1),'r','LineWidth',2); % show the boundary
+    
+    % TODO: get the bounding box of 'cleaned_dome' and use that for image cropping
+    
 end
