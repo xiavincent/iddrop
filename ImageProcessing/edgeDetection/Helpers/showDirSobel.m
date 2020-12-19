@@ -7,17 +7,18 @@ function showDirSobel(gray_img)
     figure
     hold on
     combined = bitor(vertical_edges,horizontal_edges);
+    
+    clean_size = 200;
+    combined = bwareaopen(combined,clean_size);
     imshow(combined)
-    title('combined x- and y-directional sobel edges');
+    title('combined x- and y-directional sobel edges after cleaning');
     
-    bndry = traceExposedDome(combined); % trace the dome and return the indices of the pixel boundaries
-    
-    for i=1:length(bndry)
-        combined(bndry(i,1),bndry(i,2)) = 0; % remove the boundary of the dome from the image
-    end    
+    disk_rad = 5;
+    closed = closeEdges(combined,disk_rad); % use morphological mask closing to correctly enclose the dome
+    skel = removeDomeEdges(closed); % remove the dome edges
     
     figure
-    imshow(combined)
+    imshow(skel)
     
     % NOTE: doesn't work because directional sobel can't adequately detect film edges
          

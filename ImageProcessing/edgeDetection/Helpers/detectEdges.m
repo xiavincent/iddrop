@@ -1,53 +1,60 @@
 % Detect the edges of a thin film
 function detectEdges()
+    %% add folders to path and pull frame of interest
+    addPath();
     
-    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame597.tif');
+    %%
+    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame10225.tif');
     HSV = rgb2hsv(RGB);
     gray = rgb2gray(RGB);
     
-    %% Get black parts of of image
-    getBlackPix(RGB);
+    %% Get a mask of the dome
+    
+%     dome_mask = findDome(RGB); % NOTE: only run 'findDome' on the frame for area selection
+    
+    %% Get black parts of image (for characterization of ultra-thin films)
+%     getBlackPix(RGB);
       
     %% visualize edges
-    close all
-    sobel_step_size = 0;
-    sobel_sens = .0164 + sobel_step_size; % sobel sensitivity
+%     close all
+%     sobel_step_size = 0;
+%     sobel_sens = .0164 + sobel_step_size; % sobel sensitivity
+%     
+%     step_high = 0.19;
+%     can_sens = .0781 + step_high;   % alternative format:can_sens = [0.0312+step_low , 0.0781+step_high];
+%     
+%     showEdges(gray,sobel_sens,can_sens); % visualize the edges in a figure using given senstivities as settings
     
-    step_high = 0.19;
-    can_sens = .0781 + step_high;   % alternative format:can_sens = [0.0312+step_low , 0.0781+step_high];
+    %% segment film area from gradient magnitude  
+    wet_film = findFilmArea(gray,dome_mask);
     
-    showEdges(gray,sobel_sens,can_sens); % visualize the edges in a figure using given senstivities as settings
-    
-    %% gradient visualization    
-    filled_wet_area = fillGradientMag(gray);
-    overlay = imoverlay(RGB,filled_wet_area,'red'); % burn binary mask into original image
+    overlay = imoverlay(RGB,wet_film,'red'); % burn binary mask into original image
     figure
     imshow(overlay) % display result
     
     %% Single direction sobel detection
-    showDirSobel(gray);
+%     showDirSobel(gray);
 
 end
 
-%% Helper functions
+%% Private helper functions
 
+function addPath() % add subfolders to the path
+    folder = fileparts(which(mfilename)); % currently running folder
+    addpath(genpath(folder)); % Add the folder plus all subfolders to the path.
+end
 
 % return a mask of the film area using the Sobel gradient magnitude of a grayscale image
-function filled = fillGradientMag(gray_img)
+function filled = findFilmArea(gray_img,dome_mask)
     figure
-    [Gx,Gy] = imgradientxy(gray_img);
-    imshowpair(Gx,Gy,'montage')
-    title('Directional Gradients Gx and Gy, Using Sobel Method')
-    
-    figure
-    [Gmag,Gdir] = imgradient(Gx,Gy);
+    [Gmag,Gdir] = imgradient(gray_img);
     imshowpair(Gmag,Gdir,'montage')
     title('Gradient Magnitude (Left) and Gradient Direction (Right)')
-    
-    filled = floodFill(Gmag); % flood fill gradient magnitude image and export result
+ 
+    filled = floodFill(Gmag,dome_mask); % flood fill film area using gradient magnitudes and export result
 end
 
-function filled = floodFill(gradient_magnitude) % flood fill wetted portion of gradient image
+function filled = floodFill(gradient_magnitude,dome_mask) % flood fill wetted portion of gradient image
 
     mag_img = mat2gray(gradient_magnitude); % convert to grayscale
     
@@ -57,59 +64,30 @@ function filled = floodFill(gradient_magnitude) % flood fill wetted portion of g
     title(ax,'grayscale gradient magnitude image');
    
     figure
-    binary = imbinarize(mag_img);
-    imshow(binary)
+    binary = imbinarize(mag_img,'adaptive');
     
-    disk_rad = 5;
-    closed = closeEdges(binary,disk_rad); % use morphological mask closing to correctly enclose the dome
-    skel = removeDomeEdges(closed); % remove the dome edges and return the skeletonized binary image
+    clean_size = 200;
+    binary_clean = bwareaopen(binary,clean_size); % remove small objects
+    binary_clean(~dome_mask) = 0; % clear everything outside of the exposed dome
+    
+    % TODO: apply area mask instead of applying dome mask... that way you can easily get rid of
+    % the dome from the skeleton, and then simply apply 'imfill'
+    
+    
+    % TODO: close the edges if not already closed
+%     closed = closeEdges(binary_clean);
+
+    skel = removeDomeEdges(binary_clean); % remove the dome edges, if they exist, and return the skeletonized binary image
     
     filled = imfill(skel,'holes'); % flood fill the film area
     imshow(filled)
     
-    % Works moderately well; expect some variation in film area inclusion based on edge
+    %%
+    % Notes: Works moderately well; expect some variation in film area inclusion based on edge
     % detection
     % TODO: test on different frames
 
 end
 
-function skel = removeDomeEdges(binary) % skeletonize a binary image and remove the edges, returning the result
-    skel = bwskel(binary); % get the skeleton mask of the image
-    bndry = traceExposedDome(skel);
-    
-    for i=1:length(bndry)
-        skel(bndry(i,1),bndry(i,2)) = 0; % remove the boundary of the dome from the image
-    end
-end
 
-% use a disk shape to morphologically close the edges of a binary image
-function closed_img = closeEdges(binary_img,radius)
-    se = strel('disk',radius); % create a disk shaped structuring element
-    closed_img = imclose(binary_img,se); % close the boundaries of the image
-end
 
-function boundary_pix = traceExposedDome(edges) % trace the outline of the dome given a binary image of its edges
-% return the indices of the pixels on the boundary
-
-    filled_dome = imfill(edges,'holes'); % get a binary mask of the dome
-    clean_size = 200; 
-    cleaned_dome = bwareaopen(filled_dome,clean_size); % remove objects less than 200 pixels in size
-    
-    [boundaries,~,num_obj,~] = bwboundaries(cleaned_dome); % trace the boundary of the dome
-    
-    % if there's more than one object found, throw an exception
-    if (num_obj > 1)
-        errID = 'detectEdges:domeDetection:tooManyObj';
-        msg = 'Custom message: detected more than one object when searching for the dome!';
-        ME = MException(errID,msg);
-        throw(ME)
-    end 
-    
-    boundary_pix = boundaries{1}; %there should only be one boundary to trace
-    
-    hold on
-    plot(boundary_pix(:,2),boundary_pix(:,1),'r','LineWidth',2); % show the boundary
-    
-    % TODO: get the bounding box of 'cleaned_dome' and use that for image cropping
-    
-end
