@@ -4,12 +4,11 @@ function detectEdges()
     addPath();
     
     %%
-    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame10225.tif');
+    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame2330_AreaFrame.tif');
     HSV = rgb2hsv(RGB);
     gray = rgb2gray(RGB);
     
     %% Get a mask of the dome
-    
 %     dome_mask = findDome(RGB); % NOTE: only run 'findDome' on the frame for area selection
     
     %% Get black parts of image (for characterization of ultra-thin films)
@@ -18,7 +17,7 @@ function detectEdges()
     %% visualize edges
 %     close all
 %     sobel_step_size = 0;
-%     sobel_sens = .0164 + sobel_step_size; % sobel sensitivity
+%     sobel_sens = .0164*.5 + sobel_step_size; % sobel sensitivity
 %     
 %     step_high = 0.19;
 %     can_sens = .0781 + step_high;   % alternative format:can_sens = [0.0312+step_low , 0.0781+step_high];
@@ -33,7 +32,7 @@ function detectEdges()
     imshow(overlay) % display result
     
     %% Single direction sobel detection
-%     showDirSobel(gray);
+    showDirSobel(gray);
 
 end
 
