@@ -3,13 +3,18 @@ function detectEdges()
     %% add folders to path and pull frame of interest
     addPath();
     
-    %%
-    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame2330_AreaFrame.tif');
+    %% read in data
+    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame659.tif');
     HSV = rgb2hsv(RGB);
     gray = rgb2gray(RGB);
     
     %% Get a mask of the dome
 %     dome_mask = findDome(RGB); % NOTE: only run 'findDome' on the frame for area selection
+
+
+    %% Get area mask
+    area_frame = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame2330_AreaFrame.tif');
+    area_mask = getAreaMask(area_frame); % NOTE: only run this on the area frame!
     
     %% Get black parts of image (for characterization of ultra-thin films)
 %     getBlackPix(RGB);
@@ -25,14 +30,24 @@ function detectEdges()
 %     showEdges(gray,sobel_sens,can_sens); % visualize the edges in a figure using given senstivities as settings
     
     %% segment film area from gradient magnitude  
-    wet_film = findFilmArea(gray,dome_mask);
+%     wet_film = findFilmArea(gray,dome_mask);
+%     
+%     overlay = imoverlay(RGB,wet_film,'red'); % burn binary mask into original image
+%     figure
+%     imshow(overlay) % display result
     
-    overlay = imoverlay(RGB,wet_film,'red'); % burn binary mask into original image
+    %% ImageJ-inspired Sobel detection
+    edges = getEdges(gray); % get the edges
+    film_edges = rmvDomeTrace(edges,area_mask); % apply an area mask to remove the dome
+    
     figure
-    imshow(overlay) % display result
+    imshow(film_edges);
+    title('film edges');
     
-    %% Single direction sobel detection
-    showDirSobel(gray);
+    figure
+    filled_film = imfill(film_edges,'holes');
+    overlay = labeloverlay(RGB,filled_film); % burn binary mask into original image
+    imshow(overlay);
 
 end
 
@@ -43,49 +58,19 @@ function addPath() % add subfolders to the path
     addpath(genpath(folder)); % Add the folder plus all subfolders to the path.
 end
 
-% return a mask of the film area using the Sobel gradient magnitude of a grayscale image
-function filled = findFilmArea(gray_img,dome_mask)
+function area_mask = getAreaMask(frame)
     figure
-    [Gmag,Gdir] = imgradient(gray_img);
-    imshowpair(Gmag,Gdir,'montage')
-    title('Gradient Magnitude (Left) and Gradient Direction (Right)')
- 
-    filled = floodFill(Gmag,dome_mask); % flood fill film area using gradient magnitudes and export result
+    imshow(frame); % display the original frame
+
+    xlabel('Draw circle around total area','FontSize',16,'FontName','Arial'); % user-specified cropping
+    roi = drawcircle('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all"); 
+    area_mask = createMask(roi);
 end
 
-function filled = floodFill(gradient_magnitude,dome_mask) % flood fill wetted portion of gradient image
-
-    mag_img = mat2gray(gradient_magnitude); % convert to grayscale
-    
-    f = figure;
-    ax = axes(f);
-    imshow(mag_img,'Parent',ax);
-    title(ax,'grayscale gradient magnitude image');
-   
-    figure
-    binary = imbinarize(mag_img,'adaptive');
-    
-    clean_size = 200;
-    binary_clean = bwareaopen(binary,clean_size); % remove small objects
-    binary_clean(~dome_mask) = 0; % clear everything outside of the exposed dome
-    
-    % TODO: apply area mask instead of applying dome mask... that way you can easily get rid of
-    % the dome from the skeleton, and then simply apply 'imfill'
-    
-    
-    % TODO: close the edges if not already closed
-%     closed = closeEdges(binary_clean);
-
-    skel = removeDomeEdges(binary_clean); % remove the dome edges, if they exist, and return the skeletonized binary image
-    
-    filled = imfill(skel,'holes'); % flood fill the film area
-    imshow(filled)
-    
-    %%
-    % Notes: Works moderately well; expect some variation in film area inclusion based on edge
-    % detection
-    % TODO: test on different frames
-
+% remove the dome edges from a binary image using an area mask
+function edges_clean = rmvDomeTrace(edges, area_mask)
+    edges(~area_mask) = 0; % clear pixels outside of area_mask
+    edges_clean = edges; % return the cleaned version
 end
 
 

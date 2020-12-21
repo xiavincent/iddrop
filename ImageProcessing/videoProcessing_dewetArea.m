@@ -31,6 +31,9 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 [analys.area_mask, analys.outer_region, analys.shadow, analys.film_area] = ...
     setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
+    % TODO: modify naming of analyz.film_area to reflect the fact that it is the original total
+    % film area
+
 %% Analyze video
 
 [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,params,output);
