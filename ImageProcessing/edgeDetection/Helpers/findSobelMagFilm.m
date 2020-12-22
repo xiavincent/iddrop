@@ -1,6 +1,6 @@
 % return a mask of the film area using the Sobel gradient magnitude of a grayscale image
 % INPUT: sobel gradient magnitude image
-function filled = findFilmArea(gray_img,dome_mask)
+function filled = findSobelMagFilm(gray_img,dome_mask)
     figure
     [Gmag,Gdir] = imgradient(gray_img);
     imshowpair(Gmag,Gdir,'montage')
