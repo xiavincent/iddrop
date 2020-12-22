@@ -4,7 +4,7 @@ function detectEdges()
     addPath();
     
     %% read in data
-    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame659.tif');
+    RGB = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame6800.tif');
     HSV = rgb2hsv(RGB);
     gray = rgb2gray(RGB);
     
@@ -37,17 +37,32 @@ function detectEdges()
 %     imshow(overlay) % display result
     
     %% ImageJ-inspired Sobel detection
+    
+    % TODO: segment out the camera shadow first
+    % TODO: implement automatic dome finding
+
     edges = getEdges(gray); % get the edges
     film_edges = rmvDomeTrace(edges,area_mask); % apply an area mask to remove the dome
-    
     figure
     imshow(film_edges);
     title('film edges');
     
+    % close edges
+    film_edges = bwmorph(film_edges,'bridge');
     figure
+    imshow(film_edges);
+    title('film edges after bridging');
+    
+    
     filled_film = imfill(film_edges,'holes');
-    overlay = labeloverlay(RGB,filled_film); % burn binary mask into original image
+    min_size = 7000; % camera shadow size measured on ImageJ
+    max_size = 190000; % empirical measurement on ImageJ
+    
+    filtered_film = bwareafilt(filled_film,[min_size max_size]); % filter out small objects so we retain only the main film
+    overlay = labeloverlay(RGB,filtered_film); % burn binary mask into original image
+    figure
     imshow(overlay);
+    title('Wet film overlay');
 
 end
 
