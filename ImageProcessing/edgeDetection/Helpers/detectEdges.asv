@@ -26,7 +26,7 @@ function detectEdges()
     % TODO: implement automatic dome finding
     
     tic
-    for i=50
+    for i=49
         RGB = images{i}.frame;
         gray = rgb2gray(RGB);
         film_mask = findFilm(gray,area_mask); % return a mask of the wet film
@@ -67,7 +67,7 @@ function area_mask = getAreaMask(frame)
 
     area_fit_type = 0; % freehand fit
    
-    [area_mask,~,~,~] = userdrawROI(frame,area_fit_type); % helper function from original code
+    [area_mask,~,~,~] = userdrawROI(frame,); % helper function from original code
 
 %     figure
 %     imshow(frame); % display the original frame
