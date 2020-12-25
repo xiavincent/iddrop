@@ -36,6 +36,10 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 
 %% Analyze video
 
+% TODO: move some functions into parfor loops for parallel processing
+   % NOTE: writeOutputVids.m will be unable to utilize parallel processing, so this will need
+   % to be done in a serial loop
+
 [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,params,output);
 
 %% Plot time vs area data

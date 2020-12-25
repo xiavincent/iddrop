@@ -3,10 +3,6 @@ function film_mask = findFilm(grayscale_img,area_mask)
 
     edges = getEdges(grayscale_img); % get the edges
     film_edges = rmvDomeTrace(edges,area_mask); % apply an area mask to remove the dome
-%     figure
-%     imshow(film_edges);
-%     title('film edges');
-%     
     film_edges = closeEdges(film_edges);
     
     filled_film = imfill(film_edges,'holes');
@@ -15,29 +11,18 @@ function film_mask = findFilm(grayscale_img,area_mask)
     
     film_mask = bwareafilt(filled_film,[min_size max_size]); % filter out small objects so we retain only the main film
     
-%     film_mask = smoothMask(film_mask); % don't smooth mask for performance
+    film_mask = smoothMask(film_mask); % don't smooth mask for increased performance
     
 end
 
 
-% use a disk shape to morphologically close the edges of a binary image
+% use line shape to morphologically close the edges of a binary image
 function closed_edges = closeEdges(film_edges)
-    
-%     figure
-%     imshow(closed_edges);
-%     title('film edges after bridging');
-
-    line_len = 3;
+    line_len = 2;
     se0 = strel('line',line_len,0); % horizontal line structuring element 
     se90 = strel('line',line_len,90); % vertical line structuring element
-    closed_edges = imdilate(closed_edges,[se0 se90]);
-    closed_edges = bwmorph(film_edges,'bridge'); % bridge the mask's edges
-
-    
-%     figure
-%     imshow(closed_edges);
-%     title('film edges after dilation');
-    
+    closed_edges = imdilate(film_edges,[se0 se90]);
+    closed_edges = bwmorph(closed_edges,'bridge'); % bridge the mask's edges
 end
 
 
