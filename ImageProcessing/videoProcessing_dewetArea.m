@@ -52,15 +52,13 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 % area_data_output = makeAreaOutput(); % make a matrix that holds all of our time and area information
 % output_size = floor((final_frame_num - params.t0)/params.skip); % number of row entries for the final area+time file output
 
-analy_frame_nums = params.t0 : params.skip : final_frame_num; % set raw video time 
-raw_time = analy_frame_nums/vid.FrameRate; %adjusts time for skipped frames and initial frame rate
-graph_time = raw_time - params.t0/vid.FrameRate; % time after t0
+[raw_time,graph_time] = getTimes(num_it,params,vid.FrameRate);
 
 area_output = zeros(3,num_it); % 2D matrix storing the corresponding area+time output
 for i=1:num_it
     cur_frame_num = (i-1)*params.skip + params.t0;
 %     entry_num = (cur_frame_num-params.t0)/params.skip + 1; % column entry number for the data output file
-    area_output(:,i) = [raw_time ; graph_time ; wet_area(cur_frame_num)];
+    area_output(:,i) = [raw_time(i) ; graph_time(i) ; wet_area(i)];
 end
 
 if(~output.animated_plot) % writes video of animated plot 
@@ -71,3 +69,13 @@ plotArea(area_output,file_name_short); % Create and format area plot
 
 %% Save parameters and data to output files
 storeData(file_name_short,area_output,params);
+
+
+%% PRIVATE HELPER FUNCTIONS
+
+function [raw_time,graph_time] = getTimes(num_iterations,params,frame_rate)
+    final_frame_num = (num_iterations-1)*params.skip + params.t0;
+    analy_frame_nums = params.t0 : params.skip : final_frame_num; % set raw video time 
+    raw_time = analy_frame_nums/frame_rate; %adjusts time for skipped frames and initial frame rate
+    graph_time = raw_time - params.t0/frame_rate; % time after t0
+end
