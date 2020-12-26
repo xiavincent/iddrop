@@ -49,17 +49,11 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 % TODO: make a matrix to represent frames we analyze and just iterate through the matrix, instead of
 % changing cur_frame_num each time
 
-% area_data_output = makeAreaOutput(); % make a matrix that holds all of our time and area information
-% output_size = floor((final_frame_num - params.t0)/params.skip); % number of row entries for the final area+time file output
 
 [raw_time,graph_time] = getTimes(num_it,params,vid.FrameRate);
 
 area_output = zeros(3,num_it); % 2D matrix storing the corresponding area+time output
-for i=1:num_it
-    cur_frame_num = (i-1)*params.skip + params.t0;
-%     entry_num = (cur_frame_num-params.t0)/params.skip + 1; % column entry number for the data output file
-    area_output(:,i) = [raw_time(i) ; graph_time(i) ; wet_area(i)];
-end
+area_output(:,:) = [raw_time ; graph_time ; wet_area]; % fill in area array
 
 if(~output.animated_plot) % writes video of animated plot 
     writeAnimatedPlot(file_name_short,output_framerate,area_output);
