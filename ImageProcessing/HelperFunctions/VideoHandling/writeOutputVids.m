@@ -5,25 +5,21 @@
 
 %% FUNCTION:
 function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, label_dewet_img,...
-                              t0_frame_num, cur_frame_num, wet_area,...
+                              t0_frame_num, cur_frame_num, wet_frac,...
                               input_fps, output, output_vids)
                           
         vid_time = cur_frame_num/input_fps; % raw video time
         graph_time = vid_time - t0_frame_num/input_fps; % adjusts time for skipped frames and initial frame rate  
+        frame_info = sprintf('Frame: %d | Video time: %.3f sec | Graph time: %.3f sec | Area: %.3f', cur_frame_num, vid_time, graph_time, wet_frac); % prints frame #, time stamp, and area for each mp4 video frame
 
-        frame_info = sprintf('Frame: %d | Video time: %.3f sec | Graph time: %.3f sec | Area: %.3f', cur_frame_num, vid_time, graph_time, wet_area); % prints frame #, time stamp, and area for each mp4 video frame
-
-%% 
 % Output black & white mask video:
-
         if (~output.bw_mask) % make a movie of the black/white final mask frames       
             final_mask = label_dewet_img > 0;
             output_img = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
             writeVideo(output_vids.bw,output_img); % writes video with analyzed frames  
         end
-%% 
+        
 % Output falsecolor:        
-
         if (~output.falsecolor)  % make a falsecolor overlay of our labelled final mask over the original grayscale image 
             FinalImgFuse = labeloverlay(gray_frame,label_dewet_img);
 %             FinalImgFuse = imfuse(finalMask,gray_frame,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of binary mask over original image    
@@ -32,16 +28,15 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_
             output_img = insertText(output_img,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
             writeVideo(output_vids.falsecolor, output_img); %writes video with analyzed frames
         end        
-%% 
+ 
 % Output analyzed frames:
         if (~output.analyzed) 
             frame_info = sprintf('Frame: %d | Time: %.3f sec ', cur_frame_num , graph_time); % prints frame #, time stamp, and area for each mp4 frame
             image = insertText(orig_frame,[30 725],frame_info,'FontSize',55,'BoxColor','white','AnchorPoint','LeftBottom'); %requires Matlab Computer Vision Toolbox
             writeVideo(output_vids.analyzed, image);
         end
-%% 
-% Output individual masks:       
 
+% Output individual masks:
         if(~output.masks) 
             box_color = 'green';
            
@@ -51,7 +46,6 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_
             im2 = insertText(fuse, [100 50],'HSV w/ binarize overlay','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             im3 = insertText(im2uint8(binarize_mask),[100 50],"Binarize mask",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');            
             im6 = insertText(label2rgb(label_dewet_img),[100 50],'final mask','FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
-            
 %             im7 = insertText(im2uint8(_____),[100 50],"HSV mask after removing small objects and small mask holes",'FontSize',18,'BoxColor', box_color,'AnchorPoint','LeftBottom');
             
           blank = zeros(size(im0)); % use this to fill in gaps of the montage if there's not enough videos to output

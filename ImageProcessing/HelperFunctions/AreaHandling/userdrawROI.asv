@@ -6,7 +6,6 @@ function [area_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
     roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
     area_mask = createMask(roi);
     film_area = nnz(area_mask);
-    close;
 end
 
 
@@ -15,7 +14,7 @@ end
 % Mid-level helper function to show the freehand or circle ROI
 function roi = showAreaROI(totalareaframecropped,areaFitType)
     
-    imshow(totalareaframecropped);                                 % Show area frame as total area input
+    fig = imshow(totalareaframecropped);                                 % Show area frame as total area input
     
     if (areaFitType == 1)
         xlabel('Draw circle around total area, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
@@ -28,7 +27,6 @@ function roi = showAreaROI(totalareaframecropped,areaFitType)
         end
     end
     customWait(roi); % wait for double click
-
 end
 
 

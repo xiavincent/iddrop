@@ -1,20 +1,17 @@
 % Analyze a single frame and return the wetted proportion
-function wet_frac = analyzeFrame(input_vid, cur_frame_num, analys, params, outputs, output_vids)
+function [wet_frac,overlay_img] = analyzeFrame(input_vid, cur_frame_num, analys, params, outputs, output_vids)
 
     orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop = imcrop(orig_frame,analys.crop_rect); 
     
-    [film_mask,overlay] = getFilmOverlay(crop,area_mask); % get wet film mask
+    [film_mask,overlay_img] = getFilmOverlay(crop,analys.area_mask); % get wet film mask
     
     film_area = nnz(film_mask);
     wet_frac = film_area/analys.film_area;
     
-    if (outputs.falsecolor)
-        output_img = insertText(overlay,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
-        writeVideo(output_vids.falsecolor, output_img); %writes video with analyzed frames
+    if (~outputs.falsecolor)
+        writeOverlayVideo(overlay_img,cur_frame_num,wet_frac,output_vids.falsecolor); % write overlay frames to mp4 video
     end
-    
-    
     
     
 %     gray = rgb2gray(crop); % grayscale frame from video
@@ -41,6 +38,14 @@ function [film_mask,overlay] = getFilmOverlay(RGB_img,area_mask)
     film_mask = findFilm(RGB_img,area_mask); % return a mask of the wet film
     overlay = labeloverlay(RGB_img,film_mask); % burn binary mask into original image
 end
+
+
+function writeOverlayVideo(overlay,cur_frame_num,wet_frac,falsecolor_vid)
+    frame_info = sprintf('Frame: %d |  Area: %.3f', cur_frame_num, wet_frac); % prints frame # and area frac for each mp4 video frame
+    output_img = insertText(overlay,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
+    writeVideo(falsecolor_vid, output_img); %writes video with analyzed frames
+end
+
 
 
 %% LEGACY
