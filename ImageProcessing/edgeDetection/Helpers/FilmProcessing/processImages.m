@@ -7,7 +7,7 @@ function processImages(start_index,finish_index,images,area_mask)
 %     ticBytes(gcp) % report byte transfer of process
     for (i=start_index:finish_index) % parallel 'for' loop for increased processing speed
         RGB = images{i}.frame;
-        overlay{i} = getFilmOverlay(RGB,area_mask);
+        [~,overlay{i}] = getFilmOverlay(RGB,area_mask);
     end
 %     tocBytes(gcp)
     
@@ -21,11 +21,8 @@ end
 
 %% PRIVATE HELPER FUNCTIONS
 % Get an overlay of the film for an RGB image
-function overlay = getFilmOverlay(RGB_img,area_mask)    
-    gray = rgb2gray(RGB_img);
-    
-    film_mask = findFilm(gray,area_mask); % return a mask of the wet film
-    film_mask(~area_mask) = 0;
+function [film_mask,overlay] = getFilmOverlay(RGB_img,area_mask)    
+    film_mask = findFilm(RGB_img,area_mask); % return a mask of the wet film
     overlay = labeloverlay(RGB_img,film_mask); % burn binary mask into original image
 end
 

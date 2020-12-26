@@ -18,8 +18,8 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_
 
         if (~output.bw_mask) % make a movie of the black/white final mask frames       
             final_mask = label_dewet_img > 0;
-            output_text = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
-            writeVideo(output_vids.bw,output_text); % writes video with analyzed frames  
+            output_img = insertText(final_mask,[100 50],frame_info,'AnchorPoint','LeftBottom'); % requires Matlab Computer Vision Toolbox            
+            writeVideo(output_vids.bw,output_img); % writes video with analyzed frames  
         end
 %% 
 % Output falsecolor:        
@@ -28,9 +28,9 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_
             FinalImgFuse = labeloverlay(gray_frame,label_dewet_img);
 %             FinalImgFuse = imfuse(finalMask,gray_frame,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of binary mask over original image    
             falseColorInfo = sprintf('red = binary mask | green = original img | yellow = both'); % prints false color info                
-            output_text = insertText(FinalImgFuse,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
-            output_text = insertText(output_text,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
-            writeVideo(output_vids.falsecolor, output_text); %writes video with analyzed frames
+            output_img = insertText(FinalImgFuse,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
+            output_img = insertText(output_img,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
+            writeVideo(output_vids.falsecolor, output_img); %writes video with analyzed frames
         end        
 %% 
 % Output analyzed frames:

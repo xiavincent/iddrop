@@ -9,25 +9,24 @@
 % Detect the edges of a thin film
 function detectEdges()
     %% add folders to path and pull frame of interest
-    addPath();
+%     addPath();
     
     %% read in single frame
 %   [RGB,HSV,gray] = readFrame('/Users/Vincent/LubricinDataLocal/11_05_2020/0.25 ug/TestFrames/batchProcess/*.tif');
     
     %% batch process frames in a single folder
-    img_path = '/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/*.tif';
-    images = readBatch(img_path); % get a cell array of all the images
-
-    %% Analyze the area frame
-    area_frame = imread('/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/skip100_0009.tif');
-    area_mask = getAreaMask(area_frame); % NOTE: must run videoprocessing file first to load the getAreaMask function
+%     img_path = '/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/*.tif';
+%     images = readBatch(img_path); % get a cell array of all the images
+% 
+%     %% Analyze the area frame
+%     area_frame = imread('/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/skip100_0009.tif');
+%     area_mask = getAreaMask(area_frame); % NOTE: must run videoprocessing file first to load the getAreaMask function
     %% Get camera shadow mask
-    camera_mask = getShadow(area_frame); % extract mask of camera shadow using intensity values
+%     camera_mask = getShadow(area_frame); % extract mask of camera shadow using intensity values
 
-    
+    %% Get a mask of the dome
 %     dome_mask = findDome(area_frame); % Get a mask of the dome
-                                        % NOTE: only run 'findDome' on the area selection frame!
-                                        
+                                        % NOTE: only run 'findDome' on the area selection frame!                     
     
     %% Get black parts of image (for characterization of ultra-thin films)
 %     getBlackPix(RGB);
@@ -40,9 +39,9 @@ function detectEdges()
         % from the edge of the dome
     
     tic
-    start = 50; % first image index to analyze
-    finish = 50; % last image index to analyze
-    processImages(start,finish,images,area_mask,camera_mask)
+    start = 1; % first image index to analyze
+    finish = 10; % last image index to analyze
+    processImages(start,finish,images,area_mask)
     toc
     
     % OBSERVATIONS:
@@ -73,7 +72,6 @@ function area_mask = getAreaMask(frame)
     area_fit_type = 0; % freehand fit
     [area_mask,~,~,~] = userdrawROI(frame,area_fit_type); % helper function from original code
 
-    
     
 %     figure
 %     imshow(frame); % display the original frame

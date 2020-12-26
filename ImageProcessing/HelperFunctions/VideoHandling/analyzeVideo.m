@@ -14,7 +14,6 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     output_framerate = 20; %output frame rate
     
     output_vids = struct('bw',0,'analyzed',0,'masks',0,'falsecolor',0); % store initialized videos
-
     [output_vids.bw, output_vids.analyzed, output_vids.masks, output_vids.falsecolor] = ...
         initVids(file_name_short, output_framerate, output.bw_mask , output.analyzed, output.masks, output.falsecolor);   
     
@@ -33,11 +32,7 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
         wet_area(cur_frame_num) = analyzeFrame(vid, cur_frame_num, analys, params, output, output_vids); % run the analysis loop for a single frame
     end
     
-    closeVids(output.bw_mask, output_vids.bw,...
-              output.analyzed, output_vids.analyzed,...
-              output.masks, output_vids.masks,...
-              output.falsecolor, output_vids.falsecolor);
-          
+    closeVids(output, output_vids); % close VideoWriter objects
     close(wait_bar); % closes wait bar
 
 end

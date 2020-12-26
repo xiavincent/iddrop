@@ -33,6 +33,8 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 
     % TODO: modify naming of analys.film_area to reflect the fact that it is the original total
     % film area
+    
+    % TODO: remove camera shadow selection for video segmentation
 
 %% Analyze video
 

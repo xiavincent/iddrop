@@ -2,7 +2,7 @@
 % then calculates the dewetted area array and returns the cleaned image
 % Vincent Xia -- Nov 2020
 
-function [clean_label_img, wet_area] = countArea(orig_mask,outer_region,total_film_area,img_size)
+function [clean_label_img, wet_frac] = countArea(orig_mask,outer_region,total_film_area,img_size)
  
     clean_mask = processComponents(orig_mask,outer_region,img_size); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
     clean_mask_components = bwconncomp(clean_mask); % find connected components again, since now we've removed objects in our clearing region
@@ -12,7 +12,7 @@ function [clean_label_img, wet_area] = countArea(orig_mask,outer_region,total_fi
     total_dewet_area = sum([dewet_area.Area]); % total dewetted area
    
     dewet_frac = total_dewet_area / total_film_area; % fraction of dewetted area, excluding the shadow's area
-    wet_area = 1 - dewet_frac; % fraction of wet area      
+    wet_frac = 1 - dewet_frac; % fraction of wet area      
     
 end
 

@@ -1,9 +1,11 @@
-% create a mask of the film area from a grayscale image, using the area_mask as a helper parameter
-function film_mask = findFilm(grayscale_img,area_mask) 
+% create a mask of the film area from an RGB image, using the area_mask as a helper parameter
+function film_mask = findFilm(RGB_img,area_mask) 
+
+    grayscale_img = rgb2gray(RGB_img);
 
     edges = getEdges(grayscale_img); % get the edges
-    film_edges = rmvDomeTrace(edges,area_mask); % apply an area mask to remove the dome
-    film_edges = closeEdges(film_edges);
+    edges = rmDomeTrace(edges,area_mask);
+    film_edges = closeEdges(edges);
     
     filled_film = imfill(film_edges,'holes');
     
@@ -36,7 +38,6 @@ end
 
 
 % remove the dome edges from a binary image using an area mask
-function edges_clean = rmvDomeTrace(edges, area_mask)
+function edges = rmDomeTrace(edges, area_mask)
     edges(~area_mask) = 0; % clear pixels outside of area_mask
-    edges_clean = edges; % return the cleaned version
 end
