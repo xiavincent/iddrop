@@ -15,12 +15,12 @@ function detectEdges()
 %   [RGB,HSV,gray] = readFrame('/Users/Vincent/LubricinDataLocal/11_05_2020/0.25 ug/TestFrames/batchProcess/*.tif');
     
     %% batch process frames in a single folder
-%     img_path = '/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/*.tif';
-%     images = readBatch(img_path); % get a cell array of all the images
-% 
+    img_path = '/Volumes/Extreme SSD/12-11-2020/DIWater HPL2 RT1/TestFrames/*.tif';
+    images = readBatch(img_path); % get a cell array of all the images
+
 %     %% Analyze the area frame
-%     area_frame = imread('/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/skip100_0009.tif');
-%     area_mask = getAreaMask(area_frame); % NOTE: must run videoprocessing file first to load the getAreaMask function
+    area_frame = imread('/Volumes/Extreme SSD/12-11-2020/DIWater HPL2 RT1/TestFrames/skip100_0007.tif');
+    area_mask = getAreaMask(area_frame); % NOTE: must run videoprocessing file first to load the getAreaMask function
     %% Get camera shadow mask
 %     camera_mask = getShadow(area_frame); % extract mask of camera shadow using intensity values
 
@@ -39,8 +39,8 @@ function detectEdges()
         % from the edge of the dome
     
     tic
-    start = 1; % first image index to analyze
-    finish = 10; % last image index to analyze
+    start = 31; % first image index to analyze
+    finish = 31; % last image index to analyze
     processImages(start,finish,images,area_mask)
     toc
     
@@ -70,7 +70,7 @@ end
 function area_mask = getAreaMask(frame)
 
     area_fit_type = 0; % freehand fit
-    [area_mask,~,~,~] = userdrawROI(frame,area_fit_type); % helper function from original code
+    [area_mask,~] = userdrawROI(frame,area_fit_type); % helper function from original code
 
     
 %     figure

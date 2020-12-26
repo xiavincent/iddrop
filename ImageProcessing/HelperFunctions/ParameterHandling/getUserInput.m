@@ -27,7 +27,6 @@ function [params,outputs] = getUserInput()
                           'Output animated plot? (1=no, 0=yes)'},... % animated video of the dewetting plot
                           'Output video types (note: choosing yes on any of these will be slower)', [1 40; 1 40; 1 40; 1 40; 1 40], {'1','1','1','1','1'});
                       
-                      
               
         % Initialize our parameters from the dialog boxes
         [remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,...

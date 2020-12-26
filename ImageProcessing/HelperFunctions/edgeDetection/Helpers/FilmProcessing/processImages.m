@@ -4,19 +4,17 @@ function processImages(start_index,finish_index,images,area_mask)
     len = finish_index - start_index + 1; % length of output cell array
     overlay = cell([1 len]); % store the final images
     
-%     ticBytes(gcp) % report byte transfer of process
-    for (i=start_index:finish_index) % parallel 'for' loop for increased processing speed
+    parfor (i=start_index:finish_index) % parallel 'for' loop for increased processing speed
         RGB = images{i}.frame;
         [~,overlay{i}] = getFilmOverlay(RGB,area_mask);
     end
-%     tocBytes(gcp)
     
-%     for i=start_index:finish_index % display all the images
-%         fig = figure;
-%         ax = axes(fig);
-%         imshow(overlay{i},'parent',ax);
-%         title(sprintf('Wet film overlay: image %d',images{i}.num));
-%     end
+    for i=start_index:finish_index % display all the images
+        fig = figure;
+        ax = axes(fig);
+        imshow(overlay{i},'parent',ax);
+        title(sprintf('Wet film overlay: image %d',images{i}.num));
+    end
 end
 
 %% PRIVATE HELPER FUNCTIONS

@@ -12,15 +12,11 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
 
     % Define output video parameters; open videos for writing
     output_framerate = 20; %output frame rate
-    output_vids = struct('bw',0,'analyzed',0,'masks',0,'falsecolor',0); % store initialized videos
-    [output_vids.bw, output_vids.analyzed, output_vids.masks, output_vids.falsecolor] = ...
-        initVids(file_name_short, output_framerate, output);  
+    output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
     
-    frame_range = [params.t0 3000]; % vid.NumFrames % first and last frame to analyze
+    frame_range = [params.t0 vid.NumFrames]; % vid.NumFrames % first and last frame to analyze
     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
-    
-    wait_bar = waitbar(0,'Analyzing... Go grab a cup of coffee...'); % start video processing
-    
+        
     wet_frac = zeros(1, num_it); % normalized wet area for every frame index
     overlay = cell([1 num_it]); % holds the final images        
     skip_frame = params.skip;
@@ -28,17 +24,11 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     
     parfor i=1:num_it  % analyze each frame
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
-%         waitbar(fnum/frame_range(2),wait_bar); % update wait bar to show analysis progress
-                                                           % works only it not using parallel
-                                                           % processing
         [wet_frac(i),overlay{i}] = analyzeFrame(vid, fnum, analys); % run the analysis loop for a single frame
     end
     
     writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(2),~output.falsecolor,output_vids.falsecolor)
-    
     closeVids(output, output_vids); % close VideoWriter objects
-    close(wait_bar); % closes wait bar
-
 end
 
 
@@ -53,7 +43,7 @@ function writeOverlayVid(overlay,wet_frac,skip_frame,final_frame,output_yn,video
    if (output_yn)
         for i=1:length(overlay) % write every overlay frame
             fnum = (i-1)*skip_frame + final_frame;
-            writeOverlayFrame(overlay{i},fnum,wet_frac,video); % write overlay frames to mp4 video
+            writeOverlayFrame(overlay{i},fnum,wet_frac(i),video); % write overlay frames to mp4 video
         end
    end
 end

@@ -11,20 +11,10 @@
 %% Initializations
 init(); % add helper files to path
 
-%% Initializations
-[file_name,file_name_short] = getFile(); % get user-specified video file
-
-% get user processing selections
-[params,output] = getUserInput(); % struct fields defined in 'getUserInput.m'
-
-
-% Get masks and area values
-analys = fillAnalysStruct(); % make a blank struct with empty fields
-                             % fields defined in 'fillAnalysStruct.m'
-                             
-                             
-
-[analys.crop_rect, vid] = startVideo(file_name,params.bg); % Initialize video
+[file_name,file_name_short] = getFile(); % get user-specified video file name
+[params,output] = getUserInput(); % get user's processing selections as structs
+analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
+[analys.crop_rect, vid] = startVideo(file_name,params.bg); % initialize video reading
 
 %% Set total area
 
@@ -34,16 +24,12 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
     % TODO: modify naming of analys.film_area to reflect the fact that it is the original total
     % film area
 
-    % TODO: remove camera shadow selection for video segmentation
-
 %% Analyze video
 
-% TODO: move some functions into parfor loops for parallel processing
-   % NOTE: writeOutputVids.m will be unable to utilize parallel processing, so this will need
-   % to be done in a serial loop
 tic
 [wet_area,num_it] = analyzeVideo(file_name_short,vid,analys,params,output);
 toc
+
 %% Plot time vs area data
 
 [raw_time,graph_time] = getTimes(num_it,params,vid.FrameRate);
@@ -61,7 +47,6 @@ plotArea(area_output,file_name_short); % Create and format area plot
 storeData(file_name_short,area_output,params);
 
 %% PRIVATE HELPER FUNCTIONS
-
 function [raw_time,graph_time] = getTimes(num_iterations,params,frame_rate)
     final_frame_num = (num_iterations-1)*params.skip + params.t0;
     analy_frame_nums = params.t0 : params.skip : final_frame_num; % set raw video time 

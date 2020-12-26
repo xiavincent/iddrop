@@ -14,7 +14,6 @@ end
 
 % Mid-level helper function to show the freehand or circle ROI
 function roi = showAreaROI(totalareaframecropped,areaFitType)
-    
     imshow(totalareaframecropped);                                 % Show area frame as total area input
     
     if (areaFitType == 1)
@@ -28,7 +27,6 @@ function roi = showAreaROI(totalareaframecropped,areaFitType)
         end
     end
     customWait(roi); % wait for double click
-
 end
 
 
