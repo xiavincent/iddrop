@@ -18,7 +18,7 @@ function detectEdges()
     img_path = '/Volumes/Extreme SSD/12-11-2020/DIWater HPL2 RT1/TestFrames/*.tif';
     images = readBatch(img_path); % get a cell array of all the images
 
-%     %% Analyze the area frame
+%    Analyze the area frame
     area_frame = imread('/Volumes/Extreme SSD/12-11-2020/DIWater HPL2 RT1/TestFrames/skip100_0007.tif');
     area_mask = getAreaMask(area_frame); % NOTE: must run videoprocessing file first to load the getAreaMask function
     %% Get camera shadow mask

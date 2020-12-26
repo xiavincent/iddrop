@@ -1,3 +1,4 @@
+%% LEGACY FUNCTION
 % get thresholding parameters based on software and sample type
 function [H_thresh_low, H_thresh_high, S_thresh_low, S_thresh_high, V_thresh_low, V_thresh_high] = getThresh(sftwre_type,liquid_type)
     if sftwre_type == 0  %Old uEye Cockpit software

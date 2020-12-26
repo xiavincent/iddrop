@@ -1,9 +1,10 @@
+%% FUNCTION
 % return a structure containing analysis parameters and output parameters based on user input
-%% Outputs
-% params: struct containing user-specified processing parameters
-% outputs: struct containing user-specified desired output videos
 
-%%
+% OUTPUTS
+    % params: struct containing user-specified processing parameters
+    % outputs: struct containing user-specified desired output videos
+
 function [params,outputs] = getUserInput()
         
         % Parameters for area analysis
@@ -14,10 +15,8 @@ function [params,outputs] = getUserInput()
                                 [1 50; 1 20;1 20;1 20],{'250','3','40','2500'});
 
         % Parameters for system type
-        analysis_type = inputdlg({'New or old software?(1=New,0=Old)',... % Old uEye Cockpit laptop software or New Thorcam software from 2/25/2020 onwards
-                          'Lubricin or Water?(1=lubricin, 0=water)',... % Which sample are you measuring dewetting on?
-                          'Circle or freehand area fit? (1=circle, 0=freehand)'},... % the area selection method for defining total area
-                          'Analysis Type', [1 40; 1 40; 1 40], {'1','1','1'});                                 
+        analysis_type = inputdlg({'Circle or freehand area fit? (1=circle, 0=freehand)'},... % total area selection method
+                          'Analysis Type', [1 40], {'1'});                            
 
         % Parameters for desired outputs
         video_output_types = inputdlg({ 'Falsecolor final output? (1=no, 0=yes) ',... % makes a falsecolor overlay of the binary mask on the original frame          
@@ -29,14 +28,8 @@ function [params,outputs] = getUserInput()
                       
               
         % Initialize our parameters from the dialog boxes
-        [remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,...
-            sftwre_type,liquid_type,area_fit_type,...
+        [remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,area_fit_type,...
             output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot] = fillParams(analysis_settings,analysis_type,video_output_types); %fill in all the parameters from the dialog boxes using helper function
-
-        % Theshold values for hue, saturation, value analysis (use Threshold Check or Matlab "Color Thresholder" App to test values)
-        [H_thresh_low, H_thresh_high, ...
-            S_thresh_low, S_thresh_high, ...
-            V_thresh_low, V_thresh_high] = getThresh(sftwre_type,liquid_type);
         
         
         % make a struct to hold all of our processing parameters
@@ -46,16 +39,9 @@ function [params,outputs] = getUserInput()
         field4 = 'area';  val4 = area_frame_num;
         field5 = 'bg';  val5 = background_frame_num;
         field6 = 'fit_type';  val6 = area_fit_type;
-        field7 = 'H_low'; val7 = H_thresh_low;
-        field8 = 'H_high';  val8 = H_thresh_high;
-        field9 = 'S_low';  val9 = S_thresh_low;
-        field10 = 'S_high';  val10 = S_thresh_high;
-        field11 = 'V_low';  val11 = V_thresh_low;
-        field12 = 'V_high';  val12 = V_thresh_high;
         
         params = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5,...
-                        field6,val6,field7,val7,field8,val8,field9,val9,field10,val10,...
-                        field11,val11,field12,val12);
+                        field6,val6);
                     
         field1 = 'falsecolor'; val1 = output_falsecolor;
         field2 = 'analyzed'; val2 = output_analyzed_frames;
@@ -64,7 +50,5 @@ function [params,outputs] = getUserInput()
         field5 = 'animated_plot'; val5 = output_animated_plot;       
         
         outputs = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5);
-        
-        
         
 end

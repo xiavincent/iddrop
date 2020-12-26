@@ -1,6 +1,5 @@
 % Initialize parameters from dialog boxes:
-function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,...
-            sftwre_type,liquid_type,areaFitType,...
+function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,area_fit_type,...
             output_false_color,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot] ...
         = fillParams(input_dialog,analysis_type,video_output_types)
 
@@ -13,9 +12,7 @@ function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,
                                                                                   
     background_frame_num = t0_frame_num+5; % Keep at t_0 for videos with fast dewetting
     
-    sftwre_type = str2double(analysis_type{1}); % from analysis_type input dialog
-    liquid_type = str2double(analysis_type{2}); % from analysis_type input dialog
-    areaFitType = str2double(analysis_type{3}); %use an assisted freehand on the area_frame fitting, or just use a circle
+    area_fit_type = str2double(analysis_type{1}); % use an assisted freehand on the area_frame fitting, or just use a circle
 
     output_false_color = str2double(video_output_types{1}); % print the final binary mask output video in BW or falsecolor overlay on original frame
     output_analyzed_frames = str2double(video_output_types{2}); % tells us whether or not to print an mp4 of analyzed frames from original video
