@@ -1,6 +1,5 @@
 % Skeletonize a binary image and remove the exposed dome's edges, returning the result
-function skel = removeDomeEdges(binary) 
-    
+function skel = removeDomeEdgesSkel(binary) 
     skel = bwmorph(binary,'skel',Inf); % get the skeleton mask of the image || alternative function: bwskel
   
     clean_size = 200;

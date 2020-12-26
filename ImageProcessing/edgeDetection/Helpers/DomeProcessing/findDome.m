@@ -1,6 +1,5 @@
-% Find the exposed dome and return a mask of it
+% Find the exposed dome from an RGB image and return a mask of it
 function dome_mask = findDome(RGB_img)
-
     gray_img = rgb2gray(RGB_img);
     [Gmag,~] = imgradient(gray_img);
     
@@ -15,5 +14,4 @@ function dome_mask = findDome(RGB_img)
 
     ecc_range = [0 .5];
     dome_mask = bwpropfilt(dome_mask,'Eccentricity',ecc_range); % filter out objects outside of the range, leaving only the dome
-        
 end

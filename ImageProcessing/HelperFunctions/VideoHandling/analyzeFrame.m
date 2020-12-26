@@ -5,7 +5,7 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     crop = imcrop(orig_frame,analys.crop_rect); 
     gray = rgb2gray(crop); % grayscale frame from video
     cam = getShadow(gray); % extract mask of camera shadow
-    gray = regionfill(gray,cam); % fill in the camera shadow 
+    gray = regionfill(gray,cam); % fill in the camera shadow with interpolation
     
     bin = binarizeImg(gray,analys); % get a binarized mask
     HSV = getHSVmask(crop,params); % get an HSV mask
@@ -20,37 +20,32 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
 
 end
 
-
-
 %% Helper functions
 
-% return binary mask of camera shadow (defined by grayscale intensity below 100)
-function shadow = getShadow(gray_img) 
-    thresh = 100;
-    shadow = gray_img < thresh; % extract intensity values less than 100 to get camera shadow
-    
-    structuring_elem = strel('disk',10); 
-    shadow = imdilate(shadow,structuring_elem); % expand the shadow area    
-end
-
-% return a binarized version of a grayscale image
+% return a binarized version of a grayscale image, checking to make sure the film is within the
+    % maximum allowable area
 function binarize_mask = binarizeImg(gray_img, analys) 
-
     clr_brdr = imclearborder(gray_img); % remove the image border and leave us with the dome only
     binarize_mask = imbinarize(clr_brdr,'global');
     
     binarize_mask_reduced = binarize_mask;
     binarize_mask_reduced(~analys.area_mask) = 0; % apply the area mask to get an accurate count of the area
     
-    max_area = analys.film_area + 1000; % maximum allowable area for the mask
-    if(nnz(binarize_mask_reduced) > max_area) % if the binarization fails to split image
-        binarize_mask = zeros(size(binarize_mask)); % don't try to analyze the frame for dewetted area
-                                                    % black out the whole mask
+    if (checkAllowableArea(binarize_mask_reduced,analys.film_area)) % if the area is too large
+         binarize_mask = zeros(size(binarize_mask)); % don't try to analyze the frame for dewetted area
+                                                        % black out the whole mask
     end
-    
 end
 
-% return an HSV mask of an RGB image
+function ret = checkAllowableArea(mask,max_film_area)
+    ret = 0; % return value
+    max_area = max_film_area + 1000; % maximum allowable area for the mask
+    if(nnz(mask) > max_area) % if the binarization fails to split image
+        ret = 1;
+    end
+end
+
+% return an HSV mask of an RGB image based on parameter thresholds
 function HSV_mask = getHSVmask(RGB_img, params)
     % Apply each color band's particular thresholds to the color band
     
@@ -64,15 +59,3 @@ function HSV_mask = getHSVmask(RGB_img, params)
 end
 
 
-% Combine the HSV and binarized masks
-% Additionally apply the area mask and remove mask holes
-function combined_mask_filled = combineMasks(HSV_mask,binary_mask,analys,params)
-
-    combined_mask = HSV_mask & binary_mask;    
-    combined_mask(~analys.area_mask) = 0; % apply area mask
-    combined_mask_open = bwareaopen(combined_mask, params.rm_pix);
-    
-    hole_size = 20; % remove holes smaller than 20 pixels
-    combined_mask_filled = ~bwareaopen(~combined_mask_open, hole_size); % fill in small holes
-
-end

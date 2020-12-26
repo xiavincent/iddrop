@@ -6,15 +6,16 @@ function film_mask = findFilm(grayscale_img,area_mask)
     film_edges = closeEdges(film_edges);
     
     filled_film = imfill(film_edges,'holes');
+    
     min_size = 7000; % camera shadow size measured on ImageJ
     max_size = 190000; % empirical measurement of maximum dome area on ImageJ
-    
     film_mask = bwareafilt(filled_film,[min_size max_size]); % filter out small objects so we retain only the main film
     
-    film_mask = smoothMask(film_mask); % don't smooth mask for increased performance
-    
+    film_mask = smoothMask(film_mask); % comment out and don't smooth mask for increased performance
 end
 
+
+%% PRIVATE HELPER FUNCTIONS
 
 % use line shape to morphologically close the edges of a binary image
 function closed_edges = closeEdges(film_edges)
@@ -28,17 +29,9 @@ end
 
 % perform morphological erosion to smooth a mask
 function smoothed_mask = smoothMask(film_mask)
-%     figure
-%     imshow(film_mask)
-%     title('unsmoothed film mask')
-    
     seD = strel('diamond',1); % diamond shaped structuring element
     smoothed_mask = imerode(film_mask,seD);
     smoothed_mask = imerode(smoothed_mask,seD);
-%     
-%     figure
-%     imshow(smoothed_mask)
-%     title('smoothed mask');
 end
 
 

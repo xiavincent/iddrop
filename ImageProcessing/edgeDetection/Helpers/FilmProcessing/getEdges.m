@@ -1,5 +1,5 @@
 %% FUNCTION
-% Get sobel edges using the imageJ
+% Get sobel edges of grayscale image using the imageJ
 % edge detection algorithm
 %------------------------------
 % Input: Grayscale image

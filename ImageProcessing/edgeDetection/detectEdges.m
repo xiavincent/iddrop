@@ -2,6 +2,8 @@
 % completely deteched on its edges from the bath
 
 % Works on 07-18-2020 and 11-05-2020 test videos
+% Works moderately well on 12/11/20 HPL2 37C SLB MUC
+% Doesn't work on 12/11/20 HPL3 RT1 SLB MUC
 
 
 % Detect the edges of a thin film
@@ -13,35 +15,35 @@ function detectEdges()
 %   [RGB,HSV,gray] = readFrame('/Users/Vincent/LubricinDataLocal/11_05_2020/0.25 ug/TestFrames/batchProcess/*.tif');
     
     %% batch process frames in a single folder
-    path = "/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/batchProcessFrames/*.tif";
-    images = readBatch(path); % get a cell array of all the images
+    img_path = '/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/*.tif';
+    images = readBatch(img_path); % get a cell array of all the images
 
     %% Analyze the area frame
-    area_frame = imread('/Users/Vincent/LubricinDataLocal/07_18_2020/TestFrames/frame2330_AreaFrame.tif');
+    area_frame = imread('/Volumes/Extreme SSD/12-11-2020/PBS HPL2 37C 1 SLB MUC/TestFrames/skip100_0009.tif');
     area_mask = getAreaMask(area_frame); % NOTE: must run videoprocessing file first to load the getAreaMask function
+    %% Get camera shadow mask
+    camera_mask = getShadow(area_frame); % extract mask of camera shadow using intensity values
+
     
 %     dome_mask = findDome(area_frame); % Get a mask of the dome
                                         % NOTE: only run 'findDome' on the area selection frame!
+                                        
     
     %% Get black parts of image (for characterization of ultra-thin films)
 %     getBlackPix(RGB);
     
     %% ImageJ-inspired Sobel detection
-    
-    % TODO: segment out the camera shadow first using grayscale interpolation with surrounding
-        % pixels
+
     % TODO: implement automatic dome finding for image cropping; expand size
-    % TODO: implement parallel processing toolbox detection
+    
     % TODO: make sure I can successfully process any images after the separation of the film
         % from the edge of the dome
     
-    
     tic
-    start = 125; % first image index to analyze
-    finish = 125; % last image index to analyze
-    processImages(start,finish,images,area_mask)
+    start = 50; % first image index to analyze
+    finish = 50; % last image index to analyze
+    processImages(start,finish,images,area_mask,camera_mask)
     toc
-    
     
     % OBSERVATIONS:
         % some difficulty on earlier frames (e.g., images 1 & 2)
@@ -69,9 +71,10 @@ end
 function area_mask = getAreaMask(frame)
 
     area_fit_type = 0; % freehand fit
-   
     [area_mask,~,~,~] = userdrawROI(frame,area_fit_type); % helper function from original code
 
+    
+    
 %     figure
 %     imshow(frame); % display the original frame
 % 
@@ -81,25 +84,6 @@ function area_mask = getAreaMask(frame)
 end
 
 
-% read a single image frame from a character vector of the file name
-% return the RGB, HSV, and grayscale intensity versions of the image
-function [RGB,HSV,grayscale] = readFrame(file_name)
-    RGB = imread(file_name);
-    HSV = rgb2hsv(RGB);
-    grayscale = rgb2gray(RGB);
-end
-
-function frames = readBatch(folder_path)
-    files = dir(folder_path);
-    
-    frames = cell([1 length(files)]);
-    for i=1:length(files) % read files into a cell array of structs
-        base_name = files(i).name;
-        fname = fullfile(files(i).folder,base_name);
-        [frames{i}.frame,~,~] = readFrame(fname);
-        frames{i}.num = str2double(base_name(end-7:end-4)); % grab the last 4 digits
-    end
-end
 
 
 

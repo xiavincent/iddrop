@@ -31,7 +31,7 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 [analys.area_mask, analys.outer_region, analys.shadow, analys.film_area] = ...
     setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
-    % TODO: modify naming of analyz.film_area to reflect the fact that it is the original total
+    % TODO: modify naming of analys.film_area to reflect the fact that it is the original total
     % film area
 
 %% Analyze video
@@ -51,8 +51,7 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 output_size = floor((final_frame_num - params.t0)/params.skip); % number of row entries for the final area+time file output
 area_output = zeros(3,output_size); % 2D matrix storing the corresponding area+time output
 
-
-for cur_frame_num = params.t0 : params.skip:final_frame_num % set raw video time 
+for cur_frame_num = params.t0 : params.skip : final_frame_num % set raw video time 
     raw_time = cur_frame_num/vid.FrameRate; %adjusts time for skipped frames and initial frame rate
     graph_time = raw_time - params.t0/vid.FrameRate; % time after t0
     entry_num = (cur_frame_num-params.t0)/params.skip + 1; % column entry number for the data output file
