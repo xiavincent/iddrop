@@ -1,32 +1,13 @@
 % Analyze a single frame and return the wetted proportion
-function [wet_frac,overlay_img] = analyzeFrame(input_vid, cur_frame_num, analys, params, outputs, output_vids)
+function [wet_frac,overlay_img] = analyzeFrame(input_vid, frame_num, analys)
 
-    orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
+    orig_frame = read(input_vid,frame_num); % reading individual frames from input video
     crop = imcrop(orig_frame,analys.crop_rect); 
     
     [film_mask,overlay_img] = getFilmOverlay(crop,analys.area_mask); % get wet film mask
     
     film_area = nnz(film_mask);
     wet_frac = film_area/analys.film_area;
-    
-    if (~outputs.falsecolor)
-        writeOverlayVideo(overlay_img,cur_frame_num,wet_frac,output_vids.falsecolor); % write overlay frames to mp4 video
-    end
-    
-    
-%     gray = rgb2gray(crop); % grayscale frame from video
-%     bin = binarizeImg(gray,analys); % get a binarized mask
-%     HSV = getHSVmask(crop,params); % get an HSV mask
-%     combined_mask = combineMasks(HSV,bin,analys,params); % combine the masks and clean the image
-
-%     [label_dewet_img, wet_frac] = countArea(final_mask, analys.outer_region, analys.film_area, size(gray)); % Remove invalid objects and count the area
-
-
-
-    % Write final videos
-%     writeOutputVids(gray, crop, orig_frame, HSV, bin, label_dewet_img,...
-%                           params.t0, cur_frame_num, wet_area,...
-%                           input_vid.FrameRate, outputs, output_vids);
 
 end
 
@@ -39,12 +20,6 @@ function [film_mask,overlay] = getFilmOverlay(RGB_img,area_mask)
     overlay = labeloverlay(RGB_img,film_mask); % burn binary mask into original image
 end
 
-
-function writeOverlayVideo(overlay,cur_frame_num,wet_frac,falsecolor_vid)
-    frame_info = sprintf('Frame: %d |  Area: %.3f', cur_frame_num, wet_frac); % prints frame # and area frac for each mp4 video frame
-    output_img = insertText(overlay,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
-    writeVideo(falsecolor_vid, output_img); %writes video with analyzed frames
-end
 
 
 

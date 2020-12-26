@@ -9,7 +9,7 @@
 % Detect the edges of a thin film
 function detectEdges()
     %% add folders to path and pull frame of interest
-%     addPath();
+    addPath();
     
     %% read in single frame
 %   [RGB,HSV,gray] = readFrame('/Users/Vincent/LubricinDataLocal/11_05_2020/0.25 ug/TestFrames/batchProcess/*.tif');

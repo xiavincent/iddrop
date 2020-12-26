@@ -14,8 +14,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     output_framerate = 20; %output frame rate
     output_vids = struct('bw',0,'analyzed',0,'masks',0,'falsecolor',0); % store initialized videos
     [output_vids.bw, output_vids.analyzed, output_vids.masks, output_vids.falsecolor] = ...
-        initVids(file_name_short, output_framerate, output);  
-    
+        initVids(file_name_short, output_framerate, output.bw_mask , output.analyzed, output.masks, output.falsecolor);   
     frame_range = [params.t0 3000]; % vid.NumFrames % first and last frame to analyze
     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
     
@@ -31,7 +30,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
 %         waitbar(fnum/frame_range(2),wait_bar); % update wait bar to show analysis progress
                                                            % works only it not using parallel
                                                            % processing
-        [wet_frac(i),overlay{i}] = analyzeFrame(vid, fnum, analys); % run the analysis loop for a single frame
+        [wet_frac(i),overlay{i}] = analyzeFrame(vid, fnum, analys, output, output_vids); % run the analysis loop for a single frame
     end
     
     writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(2),~output.falsecolor,output_vids.falsecolor)
@@ -58,10 +57,10 @@ function writeOverlayVid(overlay,wet_frac,skip_frame,final_frame,output_yn,video
    end
 end
 
-function writeOverlayFrame(overlay,frame_num,wet_frac,video)
+function writeOverlayFrame(overlay,frame_num,wet_frac,falsecolor_vid)
     frame_info = sprintf('Frame: %d |  Area: %.3f', frame_num, wet_frac); % prints frame # and area frac for each mp4 video frame
     output_img = insertText(overlay,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
-    writeVideo(video, output_img); %writes video with analyzed frames
+    writeVideo(falsecolor_vid, output_img); %writes video with analyzed frames
 end
 
 

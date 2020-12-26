@@ -41,14 +41,10 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 % TODO: move some functions into parfor loops for parallel processing
    % NOTE: writeOutputVids.m will be unable to utilize parallel processing, so this will need
    % to be done in a serial loop
-
+tic
 [wet_area,num_it] = analyzeVideo(file_name_short,vid,analys,params,output);
-
+toc
 %% Plot time vs area data
-
-% TODO: make a matrix to represent frames we analyze and just iterate through the matrix, instead of
-% changing cur_frame_num each time
-
 
 [raw_time,graph_time] = getTimes(num_it,params,vid.FrameRate);
 
@@ -63,7 +59,6 @@ plotArea(area_output,file_name_short); % Create and format area plot
 
 %% Save parameters and data to output files
 storeData(file_name_short,area_output,params);
-
 
 %% PRIVATE HELPER FUNCTIONS
 
