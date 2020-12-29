@@ -2,9 +2,9 @@
 % Takes '.avi' video file, creates a plot of wet area vs time. 
 % Saves '_Area.txt' file with wet area and time info
 % Can pass '_Area.txt' into data processing file to calculate dewetting onset time
-% Requires Matlab "image processing toolbox" to run
+% Requires Matlab image processing, computer vision, and parallel computing toolboxes to run
 
-% Nov 2020
+% Dec 2020
 % Version: Matlab 2020a/b                    
 % Vincent Xia
 
