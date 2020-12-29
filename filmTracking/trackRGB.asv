@@ -13,7 +13,7 @@ init(); % check for toolboxes, close figures
 
 %%
 % [file_name,~] = getVidPath(); % get user-specified avi video file
-file_name = '/Users/Vincent/LubricinDataLocal/07_18_2020/edgeDetect/1 ugmL lubricin DS HPL2 37C 1.avi';
+file_name =    « '/Users/Vincent/LubricinDataLocal/07_18_2020/edgeDetect/1 ugmL lubricin DS HPL2 37C 1.avi'
 
 vid = startVid(file_name); % open Matlab video reader object
 % params = getUserParams(); % get user-specified analysis parameters
@@ -22,7 +22,6 @@ point = struct; % store the location and intensity data
 point.location = selectPoint(vid); % get a user-specified row,column pixel location to track
 point.data = trackPoint(point.location, vid); % run through the video, read in each frame, and save the pixel's RGB intensity values as a matrix with height 3 (one for each color channel)
 
-%% plot the data
 plotIntensities(point.data); % make of graph of the intensity over time
                   % REACH: output a video that highlights the point of interest in the original
                   % video, so we know what we're tracking
@@ -30,13 +29,5 @@ plotIntensities(point.data); % make of graph of the intensity over time
 %% PRVIATE HELPER FUNCTIONS
                   
 function plotIntensities(data) % plot the intensities vs time, where point is a struct containing the intensity data
-    figure
-    hold on
-    plot(data.time,data.RGB(1,:),'r'); % plot red channel intensity
-    plot(data.time,data.RGB(2,:),'g'); % plot green channel intensity
-    plot(data.time,data.RGB(3,:),'b'); % plot blue channel intensity
-    xlabel('time (s)')
-    ylabel('Intensity')
-    legend('Red','Green','Blue')
-    title('RGB intensities vs time')
+    plot(data.RGB(1),data.time,'r'); % plot the red channel intensity 
 end

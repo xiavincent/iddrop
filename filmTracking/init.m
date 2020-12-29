@@ -4,7 +4,6 @@ function init()
     closeExisting(); % close figures
 
     checkToolbox('Image_Toolbox'); % check for image processing toolbox
-    checkToolbox('Distrib_Computing_Toolbox'); % check for parallel processing toolbox
     checkToolbox('Video_and_Image_Blockset'); % check for computer vision toolbox
     
     % WARNING: This function will no longer work if the application is compiled
