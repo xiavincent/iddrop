@@ -5,7 +5,7 @@
     % params: struct containing user-specified processing parameters
     % outputs: struct containing user-specified desired output videos
 
-function [params,outputs] = getUserInput()
+function [params,output] = getUserInput()
         
         % Parameters for area analysis
         analysis_settings = inputdlg({'Remove objects smaller than X pixels 100-1000', ... % will not designate pixels smaller than 'X' as wet/dry (reduces variation)
@@ -49,6 +49,6 @@ function [params,outputs] = getUserInput()
         field4 = 'bw_mask'; val4 = output_black_white_mask;
         field5 = 'animated_plot'; val5 = output_animated_plot;       
         
-        outputs = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5);
+        output = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5);
         
 end
