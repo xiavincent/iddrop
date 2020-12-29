@@ -2,9 +2,8 @@
 
 % High-level helper function to handle circular and freehand region drawing for a single video frame
 function [area_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
-    %set the total area mask
     roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
-    area_mask = createMask(roi);
+    area_mask = createMask(roi);    % set the total area mask
     film_area = nnz(area_mask);
     close;
 end

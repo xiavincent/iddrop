@@ -9,11 +9,11 @@ function testEdgeAlg(testCase)
     orig_mask = testCase.TestData.orig_mask;
     gray_frame = testCase.TestData.gray_frame;
     outer_region  = testCase.TestData.outer_region;
-    film_area = testCase.TestData.film_area;
+    max_area = testCase.TestData.max_area;
     
     img_size = size(gray_frame);
 
-    [final_mask, ~] = countArea(orig_mask, outer_region, film_area, img_size);
+    [final_mask, ~] = countArea(orig_mask, outer_region, max_area, img_size);
     final_mask = im2uint8(final_mask~=0);
     imshow(final_mask);
 end
@@ -46,7 +46,7 @@ function setupOnce(testCase)  % do not change function name
     % setup area frame
     totalareaframe        = read(video,area_frame_num);                % Read user specified frame for area analysis
     totalareaframecropped = imcrop(totalareaframe,crop_rect);     % Crop area frame
-    [area_mask, outer_region, ~, film_area] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
+    [area_mask, outer_region, ~, max_area] = userdrawROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
       
     orig_frame = read(video,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,crop_rect); 
@@ -57,13 +57,6 @@ function setupOnce(testCase)  % do not change function name
     
     clr_brdr_gray_frame = imclearborder(gray_frame);
     binarize_mask = imbinarize(clr_brdr_gray_frame,'global'); % ignore the camera shadow for now
-
-%     binarize_mask = imbinarize(gray_frame,'adaptive','ForegroundPolarity','bright','Sensitivity',0.62); % ignore the camera shadow for now
-
-    
-%     if(nnz(bw_frame_mask) > film_area) % if the binarization fails to split image
-%         bw_frame_mask = zeros(size(bw_frame_mask)); % don't try to analyze the frame for dewetted area
-%     end
     
     % Apply each color band's particular thresholds to the color band
     hsv_frame = rgb2hsv(crop_frame); % convert to hsv image
@@ -85,7 +78,7 @@ function setupOnce(testCase)  % do not change function name
     testCase.TestData.gray_frame = gray_frame;
     testCase.TestData.area_fit_type = area_fit_type; % freehand fit
     testCase.TestData.outer_region = outer_region;
-    testCase.TestData.film_area = film_area;
+    testCase.TestData.max_area = max_area;
 end
 
 

@@ -1,4 +1,4 @@
-%% IMAGE PROCESSING OF THIN FILM DEWETTING FROM i-DDrOP VIDEO 
+%% AREA ANALYSIS OF THIN FILM DEWETTING FROM i-DDrOP VIDEO 
 % Takes '.avi' video file, creates a plot of wet area vs time. 
 % Saves '_Area.txt' file with wet area and time info
 % Can pass '_Area.txt' into data processing file to calculate dewetting onset time
@@ -14,17 +14,13 @@ init(); % add helper files to path
 [file_name,file_name_short] = getFile(); % get user-specified video file name
 [params,output] = getUserInput(); % get user's processing selections as structs
 analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
-
-%%
 [analys.crop_rect, vid] = startVideo(file_name,params.bg,params.area); % initialize video reading
 
 %% Set total area
 
-[analys.area_mask, analys.film_area] = ...
+[analys.area_mask, analys.max_area] = ...
     setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
-    % TODO: modify naming of analys.film_area to reflect the fact that it is the original total
-    % film area
 
 %% Analyze video
 
