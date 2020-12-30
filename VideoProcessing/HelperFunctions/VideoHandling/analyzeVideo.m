@@ -11,7 +11,7 @@
 function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,output)
 
     % Define output video parameters; open videos for writing
-    output_framerate = 20; %output frame rate
+    output_framerate = 20; % define output frame rate
     output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
     
     frame_range = [params.t0 vid.NumFrames]; % vid.NumFrames % first and last frame to analyze

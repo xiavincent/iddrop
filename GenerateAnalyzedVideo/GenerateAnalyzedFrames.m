@@ -1,4 +1,4 @@
-%% Shortened Video Generation
+%% Generate Shortened Video
 % Makes a sped up version of an '.avi' video based on user specified 
 % output framerate and skip_frame values
 
@@ -9,8 +9,10 @@
 % close the video
 
 init(); % check for toolboxes
-getVidPath(); % get user-specified video file
-initOutputVid(framerate); % open the output video for writing
+[file_name,file_name_short] = getVidPath(); % get user-specified video file
+params = getUserInput();
+
+initOutputVid(params.framerate); % open the output video for writing
 getFrames(vid); % get the frames of video based on skip_frame
 
 
