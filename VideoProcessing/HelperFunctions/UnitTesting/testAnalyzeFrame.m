@@ -56,7 +56,7 @@ function setupOnce(testCase)
 %     [file_name,~] = getFile();
     file_name = '/Volumes/Extreme SSD/LubricinData/07 2020/7-18-20/1 ugmL HPL2/finalCode/1 ugmL lubricin DS HPL2 37C 1.avi';
 
-    [analys.crop_rect, vid] = startVideo(file_name,params.bg); % Initialize video
+    [analys.crop_rect, vid] = startVideo(file_name,params.area); % Initialize video
     [analys.area_mask, analys.outer_region, analys.shadow, analys.max_area] = ... % Set areas
         setAreas(vid, analys.crop_rect, params.area, params.fit_type); 
     

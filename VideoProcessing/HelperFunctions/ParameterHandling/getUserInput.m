@@ -28,27 +28,6 @@ function [params,output] = getUserInput()
                       
               
         % Initialize our parameters from the dialog boxes
-        [remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,area_fit_type,...
-            output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot] = fillParams(analysis_settings,analysis_type,video_output_types); %fill in all the parameters from the dialog boxes using helper function
-        
-        
-        % make a struct to hold all of our processing parameters
-        field1 = 'rm_pix';  val1 = remove_Pixels;
-        field2 = 'skip';  val2 = skip_frame;
-        field3 = 't0';  val3 = t0_frame_num;
-        field4 = 'area';  val4 = area_frame_num;
-        field5 = 'bg';  val5 = background_frame_num;
-        field6 = 'fit_type';  val6 = area_fit_type;
-        
-        params = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5,...
-                        field6,val6);
-                    
-        field1 = 'falsecolor'; val1 = output_falsecolor;
-        field2 = 'analyzed'; val2 = output_analyzed_frames;
-        field3 = 'masks'; val3 = output_all_masks;
-        field4 = 'bw_mask'; val4 = output_black_white_mask;
-        field5 = 'animated_plot'; val5 = output_animated_plot;       
-        
-        output = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5);
+        [params, output] = fillParams(analysis_settings,analysis_type,video_output_types); %fill in all the parameters from the dialog boxes using helper function
         
 end
