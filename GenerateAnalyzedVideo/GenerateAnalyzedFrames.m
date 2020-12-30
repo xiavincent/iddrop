@@ -1,12 +1,15 @@
 %% Generate Shortened Video
 % Makes a sped up version of an '.avi' video based on user specified 
 % output framerate and skip_frame values
+% Vincent Xia, Dec 2020
 
-% Check for IPT and Computer Vision toolboxes
-% Read in user-specified video
+
+% Pseudocode
 % Run 'initVids' helper function on only the single analyzed frames video
 % Run the video writing portion of the old analyzeFrame code (include video time on frame)
 % close the video
+
+%% SCRIPT
 
 init(); % check for toolboxes
 [file_name,file_name_short] = getVidPath(); % get user-specified video file

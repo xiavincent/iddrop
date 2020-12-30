@@ -1,5 +1,6 @@
 % Close figures, clear command window, add current directory to search path
 function init()
+    restoredefaultpath; % set the path to the factory default
     setDir(); % set the current directory to the 'ImageProcessing' folder
     closeExisting(); % close figures
 
