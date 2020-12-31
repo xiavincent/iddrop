@@ -12,7 +12,7 @@
 init(); % add helper files to path
 
 [file_name,file_name_short] = getFile(); % get user-specified video file name
-[params,output] = getUserInput(); % get user's processing selections as structs
+[params,output] = getUserInput(); % get user's processing selections in the form of 2 structs
 analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 [analys.crop_rect, vid] = startVideo(file_name,params.area); % initialize video reading
 
