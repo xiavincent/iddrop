@@ -4,10 +4,12 @@ function coord = selectPoint(vid)
     fnum = 2000; % frame number to display when user selects their point
     frame = read(vid,fnum);
     
-    figure
+    fig = figure;
     title('Select point of interest')
     imshow(frame)
     [x,y] = getpts; % interactive point selection || press return to exit
+    
+%     saveas(fig,'point.txt');
     
     row = y;
     col = x;

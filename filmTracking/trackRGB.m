@@ -27,6 +27,8 @@ plotIntensities(point.data); % make of graph of the intensity over time
                   % REACH: output a video that highlights the point of interest in the original
                   % video, so we know what we're tracking
                   
+makeVideo(point.data);
+                  
 %% PRVIATE HELPER FUNCTIONS
                   
 function plotIntensities(data) % plot the intensities vs time, where point is a struct containing the intensity data
@@ -40,3 +42,4 @@ function plotIntensities(data) % plot the intensities vs time, where point is a 
     legend('Red','Green','Blue')
     title('RGB intensities vs time')
 end
+
