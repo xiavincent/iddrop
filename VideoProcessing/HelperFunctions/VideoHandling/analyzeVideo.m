@@ -14,7 +14,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     output_framerate = 20; % define output frame rate
     output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
     
-    frame_range = [params.t0 vid.NumFrames]; % vid.NumFrames % first and last frame to analyze
+    frame_range = [params.start 1930]; % [params.t0 vid.NumFrames] % first and last frame to analyze
     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
         
     wet_frac = zeros(1, num_it); % normalized wet area for every frame index
@@ -22,12 +22,12 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     skip_frame = params.skip;
     first_fnum = frame_range(1);
     
-    parfor i=1:num_it  % analyze each frame
+    for i=1:num_it  % analyze each frame
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
         [wet_frac(i),overlay{i}] = analyzeFrame(vid, fnum, analys); % run the analysis loop for a single frame
     end
     
-    writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(2),~output.falsecolor,output_vids.falsecolor)
+    writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(1),~output.falsecolor,output_vids.falsecolor)
     closeVids(output, output_vids); % close VideoWriter objects
 end
 
@@ -39,10 +39,10 @@ function num_iterations = getNumIt(frame_range,skip_frame)
     num_iterations = floor(nframes_to_analyze/skip_frame) + 1; % number of individual video frames to analyze
 end
 
-function writeOverlayVid(overlay,wet_frac,skip_frame,final_frame,output_yn,video)
+function writeOverlayVid(overlay,wet_frac,skip_frame,first_fnum,output_yn,video)
    if (output_yn)
         for i=1:length(overlay) % write every overlay frame
-            fnum = (i-1)*skip_frame + final_frame;
+            fnum = (i-1)*skip_frame + first_fnum;
             writeOverlayFrame(overlay{i},fnum,wet_frac(i),video); % write overlay frames to mp4 video
         end
    end

@@ -1,5 +1,5 @@
 %% FUNCTION
-
+% get the corresponding times to our area analysis
 function [raw_time,graph_time] = getTimes(num_iterations,params,frame_rate)
     final_frame_num = (num_iterations-1)*params.skip + params.t0;
     analy_frame_nums = params.t0 : params.skip : final_frame_num; % set raw video time 

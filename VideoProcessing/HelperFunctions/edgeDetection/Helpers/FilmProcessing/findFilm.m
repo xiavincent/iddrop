@@ -2,6 +2,7 @@
 function film_mask = findFilm(RGB_img,area_mask) 
 
     grayscale_img = rgb2gray(RGB_img);
+%     gray_enhanced = imadjust(grayscale_img);
 
     edges = getEdges(grayscale_img); % get the edges
     edges = rmDomeTrace(edges,area_mask);
@@ -18,16 +19,6 @@ end
 
 
 %% PRIVATE HELPER FUNCTIONS
-
-% use line shape to morphologically close the edges of a binary image
-function closed_edges = closeEdges(film_edges)
-    line_len = 2;
-    se0 = strel('line',line_len,0); % horizontal line structuring element 
-    se90 = strel('line',line_len,90); % vertical line structuring element
-    closed_edges = imdilate(film_edges,[se0 se90]);
-    closed_edges = bwmorph(closed_edges,'bridge'); % bridge the mask's edges
-end
-
 
 % perform morphological erosion to smooth a mask
 function smoothed_mask = smoothMask(film_mask)

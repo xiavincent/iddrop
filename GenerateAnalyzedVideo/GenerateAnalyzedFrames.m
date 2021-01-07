@@ -16,6 +16,3 @@ output_vid = initOutputVid(file_name,params.fr); % open the output video for wri
 saveFrames(input_vid,output_vid,params); %  save the frames of video based on skip_frame
 closeVid(output_vid); % close output videowriter object
 
-
-
-

@@ -13,9 +13,6 @@ function storeData(file_name_short,area_data_output,params)
     fprintf(f_id, 't_0 = %d \n', params.t0);
     fprintf(f_id, 'frame for area analysis = %d \n', params.area);
     fprintf(f_id, 'frames_skipped = %d \n', params.skip);
-    fprintf(f_id, 'HueThreshold = (%.3f,%.3f) \n', params.H_low, params.H_high);
-    fprintf(f_id, 'SaturationThreshold = (%.3f,%.3f) \n', params.S_low, params.S_high);
-    fprintf(f_id, 'ValueThreshold = (%.3f,%.3f)', params.V_low, params.V_high);
     fclose(f_id);
 
 end

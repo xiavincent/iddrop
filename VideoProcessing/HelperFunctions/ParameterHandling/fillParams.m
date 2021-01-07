@@ -5,8 +5,9 @@ function [params, output] = fillParams(input_dialog,analysis_type,video_output_t
     params = struct;
     params.rm_pix = str2double(input_dialog{1}); % parameter passed to 'bwareaopen' that tells us how small (in pixels) objects need to be before we remove them from the analysis
     params.skip = str2double(input_dialog{2}); %frequency with which we analyze video frames
-    params.t0_frame_num = str2double(input_dialog{3});  % intial time when the dome reaches its maximum height
-    params.area = str2double(input_dialog{4}); % Background frame for defining total area; pick frame 
+    params.t0 = str2double(input_dialog{3});  % intial time when the dome reaches its maximum height
+    params.start = str2double(input_dialog{4}); % frame to start analysis (once dewetting regime begins)
+    params.area = str2double(input_dialog{5}); % Background frame for defining total area; pick frame 
                                             % after edge 'gravity-driven' dewetting occurs, and once
                                             % interference patterns begin  val4 = area_frame_num;
     params.fit_type = str2double(analysis_type{1}); % use an assisted freehand on the area_frame fitting, or just use a circle
