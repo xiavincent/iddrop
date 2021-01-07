@@ -14,7 +14,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     output_framerate = 20; % define output frame rate
     output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
     
-    frame_range = [params.start 1930]; % [params.t0 vid.NumFrames] % first and last frame to analyze
+    frame_range = [params.start vid.NumFrames]; % [params.t0 vid.NumFrames] % first and last frame to analyze
     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
         
     wet_frac = zeros(1, num_it); % normalized wet area for every frame index
