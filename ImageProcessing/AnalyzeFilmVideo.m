@@ -24,9 +24,9 @@ analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 
 %% Analyze video
 
-tic
+
 [wet_area,num_it] = analyzeVideo(file_name_short,vid,analys,params,output);
-toc
+
 
 %% Plot time vs area data
 

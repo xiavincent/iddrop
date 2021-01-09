@@ -15,6 +15,8 @@ function output = trackPoint(loc, vid)
         cur_frame = read(vid,i); % read in the frame
         output.RGB(:,index) = cur_frame(loc(1),loc(2),:); % grab the RGB value at the pixel location
         output.time(1,index) = i/vid.FrameRate; % calculate the raw video time
+        
+        
     end
    
     
