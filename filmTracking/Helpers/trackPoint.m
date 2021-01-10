@@ -4,8 +4,8 @@ function output = trackPoint(loc, vid)
 
     start_frame = 100;
     skip_frame = 100;
-    num_it = floor((vid.NumFrames-start_frame)/skip_frame + 1);
     
+    num_it = floor((vid.NumFrames-start_frame)/skip_frame + 1);
     output = struct; % struct to store RGB intensities and time output
     output.RGB = zeros(3,num_it); % initialize RGB output matrix
     output.time = zeros(1,num_it); % initialize time matrix

@@ -23,23 +23,13 @@ point.location = selectPoint(vid); % get a user-specified row,column pixel locat
 point.data = trackPoint(point.location, vid); % run through the video, read in each frame, and save the pixel's RGB intensity values as a matrix with height 3 (one for each color channel)
 
 %% plot the data
-plotIntensities(point.data); % make of graph of the intensity over time
+[fig,~] = plotIntensities(point.data); % make of graph of the intensity over time
                   % REACH: output a video that highlights the point of interest in the original
                   % video, so we know what we're tracking
                   
-makeVideo(point.data,point.location,vid,point.data,file_name);
+makeVideo(fig,point.data,point.location,file_name,vid);
                   
 %% PRVIATE HELPER FUNCTIONS
                   
-function plotIntensities(data) % plot the intensities vs time, where point is a struct containing the intensity data
-    figure
-    hold on
-    plot(data.time,data.RGB(1,:),'r'); % plot red channel intensity
-    plot(data.time,data.RGB(2,:),'g'); % plot green channel intensity
-    plot(data.time,data.RGB(3,:),'b'); % plot blue channel intensity
-    xlabel('time (s)')
-    ylabel('Intensity')
-    legend('Red','Green','Blue')
-    title('RGB intensities vs time')
-end
+
 
