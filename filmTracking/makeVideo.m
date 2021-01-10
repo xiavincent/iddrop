@@ -8,8 +8,7 @@
     
 function makeVideo(fig,data,loc,file_name,vid)
 
-    reducePadding(); % remove padding around figure
-    
+    reducePadding(fig); % remove padding around figure
     fname_short = file_name(end-4:end);
 
     start_frame = 100;
@@ -28,7 +27,7 @@ function makeVideo(fig,data,loc,file_name,vid)
         [R,G,B] = getRGB(data.RGB,index); % grab RGB intensities based on current index
 
         lab_img = makeLabelledImg(time,loc,i,cur_frame,R,G,B);
-        lab_graph = makeLabelledGraph(data,index,fig);
+        lab_graph = makeLabelledGraph(time,fig);
         
         writeOutputFrame(output_vid,lab_img,lab_graph); % fuse the two images and write to output video
     end
@@ -53,20 +52,14 @@ function output_img = makeLabelledImg(time,loc,fnum,RGB_img,R,G,B)
 end
 
 % add a vertical line on the graph at the current time point and return a raw image of the graph
-function graph = makeLabelledGraph(data,index,graph)
-    time = data.time(1,index); % grab raw video time
-
-%     fig2 = figure; % new figure 
-%     set(gcf, 'Position', [1, 1, 1024, 768]); % increase figure size
-% 
-%     copyobj(fig1.Children,fig2); % make a copy of the original figure
+function graph = makeLabelledGraph(time,fig)
+    figure(fig);
     vline = xline(time,'--r'); % plot a line at the current time
-%     reducePadding();
-
-    graph_struct = getframe(fig2);
+    graph_struct = getframe(fig);
     graph = graph_struct.cdata;
     graph = imresize(graph,[768 1024]); % resize to same dimensions as input video
-    close(fig2); % close figure
+    
+    delete(vline)
 end
 
 

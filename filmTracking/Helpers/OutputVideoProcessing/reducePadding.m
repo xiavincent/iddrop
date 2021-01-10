@@ -1,5 +1,6 @@
 % remove the blank padding around the figure
-function reducePadding()
+function reducePadding(fig)
+    figure(fig); % set current figure
     ax = gca;
     outerpos = ax.OuterPosition;
     ti = ax.TightInset; 
