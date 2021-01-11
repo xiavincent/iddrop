@@ -12,8 +12,8 @@
 init(); % check for toolboxes, close figures
 
 %%
-% [file_name,~] = getVidPath(); % get user-specified avi video file
-file_name = '/Users/Vincent/LubricinDataLocal/07_18_2020/edgeDetect/1 ugmL lubricin DS HPL2 37C 1.avi';
+[file_name,~] = getVidPath(); % get user-specified avi video file
+% file_name = '/Users/Vincent/LubricinDataLocal/07_18_2020/edgeDetect/1 ugmL lubricin DS HPL2 37C 1.avi';
 
 vid = startVid(file_name); % open Matlab video reader object
 % params = getUserParams(); % get user-specified analysis parameters
