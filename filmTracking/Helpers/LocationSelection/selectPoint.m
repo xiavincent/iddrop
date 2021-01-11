@@ -4,14 +4,14 @@ function coord = selectPoint(vid)
     fnum = 2000; % frame number to display when user selects their point
     frame = read(vid,fnum);
     
-    fig = figure;
+    figure; % display as original image size
     title('Select point of interest')
     imshow(frame)
+    truesize([768 1024]);
     [x,y] = getpts; % interactive point selection || press return to exit
-    
-%     saveas(fig,'point.txt');
-    
-    row = y;
-    col = x;
+    close;
+        
+    row = round(y);
+    col = round(x);
     coord = [row col];
 end

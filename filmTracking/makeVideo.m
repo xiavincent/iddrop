@@ -6,18 +6,20 @@
 % on the bottom, put a picture of the resultant graph, with a vertical line to indicate where
     % we are on it
     
+% NOTE: 'imresize' in 'makeLabelledGraph' is particularly slow. If possible, find higher
+% performance solution
+    
 function makeVideo(fig,data,loc,file_name,vid)
 
     reducePadding(fig); % remove padding around figure
-    fname_short = file_name(end-4:end);
+    fname_short = file_name(1:end-4);
 
     start_frame = 100;
-    skip_frame = 100;
+    skip_frame = 30;
     
     output_vid = VideoWriter(strcat(fname_short,'_RGBtracking'),'MPEG-4'); 
     output_vid.FrameRate = 20;
     open(output_vid);
-
         
     for i=start_frame:skip_frame:vid.NumFrames % read every 100 frames
         index = (i-start_frame)/skip_frame + 1; % index number for data storage
@@ -55,14 +57,15 @@ end
 function graph = makeLabelledGraph(time,fig)
     figure(fig);
     vline = xline(time,'--r'); % plot a line at the current time
+    vline.Label = 'Current Time';
     graph_struct = getframe(fig);
     graph = graph_struct.cdata;
-    graph = imresize(graph,[768 1024]); % resize to same dimensions as input video
+%     exportgraphics(fig,strcat(fname_short,'_curframe.pdf','ContentType','vector'));
+    
+    graph = imresize(graph,[768 1024]); % resize to same dimensions as input video 
     
     delete(vline)
 end
-
-
 
 
 % fuse the image and graph into the same frame and write it to 'vid'

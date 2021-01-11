@@ -13,7 +13,7 @@ function [fig,axes] = plotIntensities(data)
     plot(data.time,data.RGB(3,:),'b'); % plot blue channel intensity
     xlabel('time (s)')
     ylabel('Intensity')
-    legend('Red','Green','Blue')
+    legend('Red','Green','Blue','AutoUpdate','off')
     title('RGB intensities vs time')
     
 end

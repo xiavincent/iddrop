@@ -3,7 +3,7 @@
 function output = trackPoint(loc, vid)
 
     start_frame = 100;
-    skip_frame = 100;
+    skip_frame = 30;
     
     num_it = floor((vid.NumFrames-start_frame)/skip_frame + 1);
     output = struct; % struct to store RGB intensities and time output
@@ -14,10 +14,7 @@ function output = trackPoint(loc, vid)
         index = (i-start_frame)/skip_frame + 1; % index number for data storage
         cur_frame = read(vid,i); % read in the frame
         output.RGB(:,index) = cur_frame(loc(1),loc(2),:); % grab the RGB value at the pixel location
-        output.time(1,index) = i/vid.FrameRate; % calculate the raw video time
-        
-        
+        output.time(1,index) = i/vid.FrameRate; % calculate the raw video time     
     end
    
-    
 end
