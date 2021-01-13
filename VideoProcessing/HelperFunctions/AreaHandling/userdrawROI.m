@@ -4,7 +4,9 @@
 function [area_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
     roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
     area_mask = createMask(roi);    % set the total area mask
+    
     film_area = nnz(area_mask);
+
     close;
 end
 
@@ -51,37 +53,3 @@ function clickCallback(~,evt)
     end
 end
 
-
-
-% LEGACY FUNCTION
-% Scale the mask and return a binary mask of the symmetric difference of the scaled mask and
-%   the original mask. Conceptually, this represents the outer region only
-% function outer_region = scaleMask(area_mask)
-%     boundaries = bwboundaries(area_mask); % returns a cell array of the boundary pixel locations
-%     coord = boundaries{1}; % copy the vector of x/y coordinates for the boundary of our single region
-%     
-%     % debugging plot
-% %     orig_fig = gcf; 
-% %         figure; % new figure
-% %         plot(coord(:,2),coord(:,1),'g','LineWidth',3); % plot the boundary
-% %     figure(orig_fig); % go back to the old figure
-%     
-%     pgon_orig = polyshape(coord(:,2),coord(:,1)); % turn the boundary into a polyshape
-%     [orig_centroid_x, orig_centroid_y] = centroid(pgon_orig); % get the centroid of the polyshape
-%     
-%     pgon_scale = scale(pgon_orig, .95, [orig_centroid_x orig_centroid_y]); % scale the polyshape and make it smaller
-%     [scale_x,scale_y] = boundary(pgon_scale);
-%    
-%     img_size = size(area_mask);
-%     
-%     scaled_poly_mask = poly2mask(scale_x, scale_y, img_size(1), img_size(2));  % convert the scaled ROI polygon into a mask
-%     
-%     % debugging plot
-%     orig_fig = gcf; 
-%         figure('Name','Scaled mask and original mask','NumberTitle','off');
-%         falsecolor = imfuse(scaled_poly_mask,area_mask,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); 
-%         imshow(falsecolor);
-%     figure(orig_fig); % go back to the old figure
-% 
-%     outer_region = xor(scaled_poly_mask, area_mask); % get non-overlapping region between the scaled mask and the original mask
-% end
