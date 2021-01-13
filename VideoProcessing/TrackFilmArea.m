@@ -18,7 +18,7 @@ analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 
 %% Set total area
 
-[analys.area_mask, analys.max_area] = setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
+[analys.area_mask, analys.scaled_mask, analys.max_area] = setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
 %% Analyze video
 
