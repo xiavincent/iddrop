@@ -24,7 +24,8 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     
     for i=1:num_it  % analyze each frame
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
-        [wet_frac(i),overlay{i}] = analyzeFrame(vid,analys, fnum,params.start,params.area); % run the analysis loop for a single frame
+        [wet_frac(i),overlay{i}] = analyzeFrame(vid, fnum, analys, params.start); % run the analysis loop for a single frame
+        wet_frac(i) = checkArea(wet_frac(i),fnum,params.area); % make sure area is reasonable
     end
     
     writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(1),~output.falsecolor,output_vids.falsecolor)
@@ -37,6 +38,15 @@ end
 function num_iterations = getNumIt(frame_range,skip_frame)
     nframes_to_analyze = frame_range(2) - frame_range(1); % number of frames to analyze
     num_iterations = floor(nframes_to_analyze/skip_frame) + 1; % number of individual video frames to analyze
+end
+
+% check the area to make sure it's reasonable
+% set it to '1' if not
+function wet_fraction = checkArea(wet_fraction,cur_framenum,area_framenum)
+    dewet_thresh = .7;
+    if ((wet_fraction < dewet_thresh) && (cur_framenum < area_framenum)) % if the video dewetted abnormally quickly
+        wet_fraction = 1; % reset the area fraction
+    end
 end
 
 function writeOverlayVid(overlay,wet_frac,skip_frame,first_fnum,output_yn,video)
