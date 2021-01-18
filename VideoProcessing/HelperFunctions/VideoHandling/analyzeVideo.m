@@ -25,7 +25,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     for i=1:num_it  % analyze each frame
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
         [wet_frac(i),overlay{i}] = analyzeFrame(vid, fnum, analys); % run the analysis loop for a single frame
-        wet_frac(i) = checkArea(wet_frac(i),i,params.area); % make sure area is reasonable
+        wet_frac(i) = checkArea(wet_frac(i),fnum,params.area); % make sure area is reasonable
     end
     
     writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(1),~output.falsecolor,output_vids.falsecolor)
