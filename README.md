@@ -12,4 +12,6 @@ The main branch uses edge detection algorithm to calculate dewetting onset time,
 
 Matlab scripts (*.m*) are included along with respective helper function folders. Contact Vincent Xia (vxia@stanford.edu) with questions.
 
+-------------------------
+
 <img width="809" alt="Screen Shot 2021-01-18 at 3 06 05 PM" src="https://user-images.githubusercontent.com/33092902/104969938-b1587000-599e-11eb-80b5-56b3628beb0a.png">
