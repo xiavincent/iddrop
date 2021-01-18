@@ -1,4 +1,7 @@
-# Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
+# [LEGACY VERSION]
+## Hue-saturation-value based segmentation: see 'main' branch for edge detection algorithm
+
+## Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
 i-DDrOP analysis of thin film dewetting patterns in videos using hydrophilic glass domes with lubricin/water as base media. 
 
