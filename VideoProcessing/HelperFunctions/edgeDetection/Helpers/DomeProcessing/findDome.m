@@ -9,6 +9,6 @@ function dome_mask = findDome(RGB_img)
     dome_mask = bwareafilt(dome,area_range);
     
     if (nnz(dome_mask) == 0) % if no acceptable dome was found, throw an error
-        error('Error: No dome outline could be detected! Check input video quality.');
+        error('Error: No dome outline could be detected! Check input video quality, or pick a different frame for setting the area.');
     end
 end
