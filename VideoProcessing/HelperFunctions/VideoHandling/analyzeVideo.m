@@ -17,7 +17,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     frame_range = [params.start vid.NumFrames]; % [params.t0 vid.NumFrames] % first and last frame to analyze
     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
         
-    wet_frac = zeros(1, num_it); % normalized wet area for every frame index
+    wet_frac = ones(1, num_it); % normalized wet area for every frame index
     overlay = cell([1 num_it]); % holds the final images        
     skip_frame = params.skip;
     first_fnum = frame_range(1);
