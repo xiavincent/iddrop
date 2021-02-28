@@ -18,10 +18,11 @@ function [area_mask, scaled_mask, max_area] = setAreas(video,crop_rect,area_fram
     area_frame_cropped = imcrop(area_frame,crop_rect);     % Crop area frame
     [area_mask, ~] = userdrawROI(area_frame_cropped,area_fit_type); % Handle our ROI drawing
     
-%     scaled_maskA = scaleMask(area_mask, 1.01); % scale larger by 1%
+    % TODO:
+    scaled_maskA = scaleMask(area_mask, 1.01); % scale larger by 1%
     
     grow_size = 1; % number of pixels by which we expand the boundary
-    scaled_mask = closeEdges(area_mask,grow_size); % scale mask larger using the edge detection size-scaling helper function
-    max_area = nnz(scaled_mask); % set maximum area using scaled version of user-defined area
+    scaled_maskB = closeEdges(area_mask,grow); % scale larger using the edge detection size-scaling helper function
+    max_area = nnz(scaled_mask); % perform "closeEdges" helper function on original area fit for sake of consistency
     
 end

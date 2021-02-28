@@ -22,7 +22,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     skip_frame = params.skip;
     first_fnum = frame_range(1);
     
-    for i=50:num_it  % analyze each frame
+    for i=150:num_it  % analyze each frame
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
         [wet_frac(i),overlay{i}] = analyzeFrame(vid,analys, fnum,params.start,params.area); % run the analysis loop for a single frame
     end
