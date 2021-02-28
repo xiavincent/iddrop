@@ -2,7 +2,6 @@
 function film_mask = findFilm(RGB_img,scaled_area_mask) 
 
     grayscale_img = rgb2gray(RGB_img);
-%     gray_enhanced = imadjust(grayscale_img);
 
     edges = getEdges(grayscale_img); % get the edges
     edges = rmDomeTrace(edges,scaled_area_mask);

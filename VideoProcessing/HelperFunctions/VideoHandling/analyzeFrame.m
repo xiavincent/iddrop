@@ -1,5 +1,5 @@
 % Analyze a single frame and return the wetted proportion
-function [wet_frac,overlay_img] = analyzeFrame(input_vid,analys, frame_num,start_fnum,area_fnum)
+function [wet_frac,overlay_img] = analyzeFrame(input_vid, analys, frame_num,start_fnum,area_fnum)
     orig_frame = read(input_vid,frame_num); % reading individual frames from input video
     crop = imcrop(orig_frame,analys.crop_rect); 
     

@@ -23,7 +23,7 @@ analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 %% Analyze video
 
 [wet_area,num_it] = analyzeVideo(file_name_short,vid,analys,params,output);
-
+    
 %% Plot time vs area data
 
 [raw_time,graph_time] = getTimes(num_it,params,vid.FrameRate);
