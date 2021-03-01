@@ -6,7 +6,7 @@ function film_mask = findFilm(RGB_img,scaled_area_mask)
     edges = getEdges(grayscale_img); % get the edges
     edges = rmDomeTrace(edges,scaled_area_mask);
     
-    grow_bdry = 1; % number of pixels we expand edge boundaries
+    grow_bdry = 2; % number of pixels we expand edge boundaries
     film_edges = closeEdges(edges,grow_bdry);
     
     filled_film = imfill(film_edges,'holes');

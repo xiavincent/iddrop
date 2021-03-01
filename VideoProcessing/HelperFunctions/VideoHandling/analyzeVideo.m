@@ -41,7 +41,7 @@ end
 
 function writeOverlayVid(overlay,wet_frac,skip_frame,first_fnum,output_yn,video)
    if (output_yn)
-        for i=1:length(overlay) % write every overlay frame
+        for i=50:length(overlay) % write every overlay frame
             fnum = (i-1)*skip_frame + first_fnum;
             writeOverlayFrame(overlay{i},fnum,wet_frac(i),video); % write overlay frames to mp4 video
         end

@@ -2,7 +2,7 @@
 function dome_mask = findDome(RGB_img)
     grayscale_img = rgb2gray(RGB_img);
     edges = getEdges(grayscale_img); % get the binary edges
-    grow_edges = 1; % number of pixels to expand the edges
+    grow_edges = 2; % number of pixels to expand the edges
     edges = closeEdges(edges, grow_edges); % close the edges to fill in gaps
     dome = imfill(edges,'holes');
     
