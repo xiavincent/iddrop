@@ -1,17 +1,16 @@
 % create a mask of the film area from an RGB image, using the area_mask as a helper parameter
-function film_mask = findFilm(RGB_img,scaled_area_mask,seed_xy) 
+function film_mask = findFilm(RGB_img,area_mask,seed_rc) 
    
     grayscale_img = rgb2gray(RGB_img);
 
     edges = getEdges(grayscale_img); % get the edges
-    edges = rmDomeTrace(edges,scaled_area_mask);
+    edges = rmDomeTrace(edges,area_mask);
     
     grow_bdry = 2; % number of pixels we expand edge boundaries
     film_edges = closeEdges(edges,grow_bdry);
     
-    filled_film = imfill(film_edges,[seed_xy(2) seed_xy(1)]); % convert seed location to row/column order and fill in the film area
+    filled_film = imfill(film_edges,seed_rc); % convert seed location to row/column indexing and fill in the film area
 
-    
     min_size = 7000; % camera shadow size measured on ImageJ
     max_size = 190000; % empirical measurement of maximum dome area on ImageJ
     film_mask = bwareafilt(filled_film,[min_size max_size]); % filter out small objects so we retain only the main film
