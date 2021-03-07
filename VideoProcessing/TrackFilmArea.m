@@ -21,7 +21,6 @@ vid = startVideo(file_name); % initialize video
  analys.max_area, analys.crop_rect, analys.seed] = setAreas(vid, params.area); % automatic total dome area detection 
 
 %%
-
 % TODO: remove now defunct params elements
 
 %% Analyze video

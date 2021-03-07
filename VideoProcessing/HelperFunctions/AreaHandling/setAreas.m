@@ -31,7 +31,7 @@ function [cam_mask, dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setA
     crop = imcrop(area_frame,crop_rect); % crop the area frame 
     f = figure;
     imshow(crop);
-    xlabel('Tap inside the camera shadow and then press enter','FontSize',16,'FontName','Arial');
+    xlabel('Tap the center of the camera shadow and then press enter','FontSize',16,'FontName','Arial');
     [seed_x,seed_y] = getpts; % get film seeding location in x (col) and y (row) coordinates
     seed_rc = round([seed_y seed_x]); % convert to a row column vector
     close(f); 

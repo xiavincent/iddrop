@@ -37,10 +37,10 @@ function [film_mask, wet_frac] = checkArea(film_mask,max_area,cur_fnum,area_fnum
     film_area = nnz(film_mask);
     wet_frac = film_area/max_area;
 
-    dewet_thresh = .8; % threshold for abnormal area fraction
-    if ((wet_frac < dewet_thresh) && (cur_fnum < area_fnum)) % if the video dewetted abnormally quickly
-        wet_frac = 1; % reset the area fraction
-        film_mask = zeros(size(film_mask)); % reset the mask
-    end
+%     dewet_thresh = .8; % threshold for abnormal area fraction
+%     if ((wet_frac < dewet_thresh) && (cur_fnum < area_fnum)) % if the video dewetted abnormally quickly
+%         wet_frac = 1; % reset the area fraction
+%         film_mask = zeros(size(film_mask)); % reset the mask
+%     end
 end
 

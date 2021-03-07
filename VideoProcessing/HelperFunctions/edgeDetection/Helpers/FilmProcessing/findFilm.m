@@ -13,7 +13,8 @@ function film_mask = findFilm(RGB_img,dome_mask,cam_mask,seed_rc)
     filled_film = imfill(film_edges,seed_rc); % convert seed location to row/column indexing and fill in the film area
 
     min_size = 7000; % camera shadow size measured on ImageJ
-    max_size = 190000; % empirical measurement of maximum dome area on ImageJ
+%     max_size = 190000; % empirical measurement of maximum dome area on ImageJ
+    max_size = 1000000;
     film_mask = bwareafilt(filled_film,[min_size max_size]); % filter out small objects so we retain only the main film
     
 %     film_mask = smoothMask(film_mask); % comment out and don't smooth mask for increased performance
