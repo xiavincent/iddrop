@@ -1,21 +1,23 @@
 % Analyze a single frame and return the wetted proportion
-function [wet_frac,overlay_img] = analyzeFrame(input_vid, analys, frame_num,start_fnum,area_fnum)
-    orig_frame = read(input_vid,frame_num); % reading individual frames from input video
+function [wet_frac,overlay_img] = analyzeFrame(input_vid,analys,cur_frame_num,area_fnum)
+    orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop = imcrop(orig_frame,analys.crop_rect); 
     
-    if (frame_num > start_fnum) % if we want to begin analyzing the video
-        [overlay_img,wet_frac] = getFilmOverlay(crop,analys.scaled_mask,analys.max_area, frame_num,area_fnum); % get wet film mask
-    else
-        wet_frac = 1;   
-        overlay_img = crop; % make a copy of the original frame for video output
-    end
+    [overlay_img,wet_frac] = getFilmOverlay(analys,crop,analys.scaled_mask,analys.max_area,cur_frame_num,area_fnum); % get wet film mask
+    
+    
+%     if (frame_num > start_fnum) % if we want to begin analyzing the video
+%     else
+%         wet_frac = 1;   
+%         overlay_img = crop; % make a copy of the original frame for video output
+%     end
 end
 
 
 %% PRIVATE HELPER FUNCTIONS
 
 % Get an overlay of the film for an RGB image
-function [overlay,wet_frac] = getFilmOverlay(RGB_img,scaled_mask,max_area,cur_fnum,area_fnum)    
+function [overlay,wet_frac] = getFilmOverlay(analys,RGB_img,scaled_mask,max_area,cur_fnum,area_fnum)    
     film_mask = findFilm(RGB_img,scaled_mask); % return a mask of the wet film
     [film_mask, wet_frac] = checkArea(film_mask,max_area,cur_fnum,area_fnum);
    

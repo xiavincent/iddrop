@@ -14,11 +14,12 @@ init(); % add helper files to path
 [file_name,file_name_short] = getFile(); % get user-specified video file name
 [params,output] = getUserInput(); % get user's processing selections in the form of 2 structs
 analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
-[analys.crop_rect, vid] = startVideo(file_name,params.area); % initialize and crop video
+vid = startVideo(file_name); % initialize video
 
 %% Set total area
 
-[analys.area_mask, analys.scaled_mask, analys.max_area] = setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
+[analys.area_mask, analys.scaled_mask,...
+ analys.max_area, analys.crop_rect] = setAreas(vid, params.area); % user-specified camera shadow area and total area
 
 %% Analyze video
 
@@ -31,7 +32,7 @@ analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 area_output = zeros(3,num_it); % 2D matrix storing the corresponding area+time output
 area_output(:,:) = [raw_time ; graph_time ; wet_area]; % fill in area array
 
-if(~output.animated_plot) % writes video of animated plot 
+if(~output.animated_plot) % writes video of animated plot
     writeAnimatedPlot(file_name_short,output_framerate,area_output);
 end
 

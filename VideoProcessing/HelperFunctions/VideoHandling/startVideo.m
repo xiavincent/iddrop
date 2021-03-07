@@ -1,14 +1,14 @@
 % Get video parameters, set cropping rectangle, and save background frame
-function [crop_rect, vid] = startVideo(file_name,area_frame_num)
+function vid = startVideo(file_name)
     vid = VideoReader(file_name); % starts reading video
-    area_frame = read(vid,area_frame_num);
-    crop_rect = getCropSize(area_frame);
+%     area_frame = read(vid,area_frame_num);
+%     crop_rect = getCropSize(area_frame);
 end
 
 
 %% PRIVATE HELPER FUNCTION
 
-% get user-specified cropping rectangle
+% get automatic cropping rectangle based on dome
 function crop_rect = getCropSize(frame)
     dome_mask = findDome(frame);
     stats = regionprops(dome_mask,'BoundingBox'); % get rectangle coordinates of minimum bounding box
