@@ -1,14 +1,15 @@
 % create a mask of the film area from an RGB image, using the area_mask as a helper parameter
-function film_mask = findFilm(RGB_img,area_mask,seed_rc) 
+function film_mask = findFilm(RGB_img,dome_mask,cam_mask,seed_rc) 
    
     grayscale_img = rgb2gray(RGB_img);
 
-    edges = getEdges(grayscale_img); % get the edges
-    edges = rmDomeTrace(edges,area_mask);
+    raw_edges = getEdges(grayscale_img); % get the edges
+    raw_edges = rmEdges(raw_edges,dome_mask); % remove dome edges
+    raw_edges = rmEdges(raw_edges,~cam_mask); % remove camera shadow edges
     
     grow_bdry = 2; % number of pixels we expand edge boundaries
-    film_edges = closeEdges(edges,grow_bdry);
-    
+    film_edges = closeEdges(raw_edges,grow_bdry);
+        
     filled_film = imfill(film_edges,seed_rc); % convert seed location to row/column indexing and fill in the film area
 
     min_size = 7000; % camera shadow size measured on ImageJ
@@ -28,8 +29,11 @@ function smoothed_mask = smoothMask(film_mask)
     smoothed_mask = imerode(smoothed_mask,seD);
 end
 
-% remove the dome edges from a binary image using an area mask
-function edges = rmDomeTrace(edges, mask)
+
+% remove the edges from a binary image outside of an input mask
+function edges = rmEdges(edges, mask)
     edges(~mask) = 0; % clear pixels outside of area_mask
 end
+
+ 
 

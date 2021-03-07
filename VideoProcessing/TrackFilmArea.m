@@ -17,7 +17,7 @@ analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 vid = startVideo(file_name); % initialize video
 
 %% Set total area and film center location
-[analys.area_mask, analys.scaled_mask,...
+[analys.cam_mask, analys.area_mask, analys.scaled_mask,...
  analys.max_area, analys.crop_rect, analys.seed] = setAreas(vid, params.area); % automatic total dome area detection 
 
 %%

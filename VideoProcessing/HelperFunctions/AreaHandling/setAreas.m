@@ -13,12 +13,17 @@
 %     (0 = freehand; 1 = circular)
 
 %% FUNCTION:
-function [dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setAreas(video,area_frame_num)
+function [cam_mask, dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setAreas(video,area_frame_num)
     area_frame = read(video,area_frame_num); % Read user specified frame for area analysis
+    
     dome_mask_raw = findDome(area_frame); % automatically detect dome in full-sized image
     crop_rect = getCropSize(dome_mask_raw); % get cropping rectangle
     dome_mask = imcrop(dome_mask_raw,crop_rect); % crop raw image to get final dome mask
+    
+    cam_mask_raw = getShadow(area_frame); % extract mask of camera shadow using intensity values
+    cam_mask = imcrop(cam_mask_raw,crop_rect); % crop raw image to get final dome mask
 
+    
     max_area = nnz(dome_mask); % number of pixels in mask
     scaled_mask = scaleMask(dome_mask, 0.96); % scale smaller by 4% for later film detection
     
@@ -36,6 +41,7 @@ function [dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setAreas(video
 %     scaled_mask = closeEdges(area_mask,grow_size); % scale mask larger using the edge detection size-scaling helper function
 %     max_area = nnz(scaled_mask); % set maximum area using scaled version of user-defined area
         
+
 end
 
 %% PRIVATE HELPER FUNCTION
