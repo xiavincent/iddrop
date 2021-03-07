@@ -13,7 +13,7 @@
 %     (0 = freehand; 1 = circular)
 
 %% FUNCTION:
-function [dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setAreas(video,area_frame_num)
+function [dome_mask, scaled_mask, max_area, crop_rect] = setAreas(video,area_frame_num)
     area_frame = read(video,area_frame_num); % Read user specified frame for area analysis
     dome_mask_raw = findDome(area_frame); % automatically detect dome in full-sized image
     crop_rect = getCropSize(dome_mask_raw); % get cropping rectangle
@@ -23,14 +23,9 @@ function [dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setAreas(video
     scaled_mask = scaleMask(dome_mask, 0.96); % scale smaller by 4% for later film detection
     
     
-    crop = imcrop(area_frame,crop_rect); % crop the area frame 
-    f = figure;
-    imshow(crop);
-    xlabel('Tap inside the camera shadow and then press enter','FontSize',16,'FontName','Arial');
     [seed_x,seed_y] = getpts; % get film seeding location in x (col) and y (row) coordinates
-    seed_rc = round([seed_y seed_x]); % convert to a row column vector
-    close(f); 
-   
+    seed_rc = [round([seed_y seed_x])]; % convert to a row column vector
+
 %     [area_mask, ~] = userdrawROI(area_frame_cropped,area_fit_type); % Handle our ROI drawing
 %     grow_size = 2; % number of pixels by which we expand the boundary
 %     scaled_mask = closeEdges(area_mask,grow_size); % scale mask larger using the edge detection size-scaling helper function

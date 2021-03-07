@@ -16,10 +16,13 @@ init(); % add helper files to path
 analys = fillAnalysStruct(); % initialize a struct to hold analysis parameters
 vid = startVideo(file_name); % initialize video
 
-%% Set total area
-
+%% Set total area and film center location
 [analys.area_mask, analys.scaled_mask,...
- analys.max_area, analys.crop_rect] = setAreas(vid, params.area); % user-specified camera shadow area and total area
+ analys.max_area, analys.crop_rect, analys.seed] = setAreas(vid, params.area); % automatic total dome area detection 
+
+%%
+
+% TODO: remove now defunct params elements
 
 %% Analyze video
 

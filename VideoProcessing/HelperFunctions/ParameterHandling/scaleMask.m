@@ -7,6 +7,8 @@ function scaled_mask = scaleMask(area_mask,scale_factor)
     pgon_orig = polyshape(coord(:,2),coord(:,1)); % turn the boundary into a polyshape
     [orig_centroid_x, orig_centroid_y] = centroid(pgon_orig); % get the centroid of the polyshape
     
+    pgon_orig = getLargestPgon(pgon_orig); % get the largest pgon region
+    
     pgon_scale = scale(pgon_orig, scale_factor, [orig_centroid_x orig_centroid_y]); % scale the polyshape and make it smaller
     [scale_x,scale_y] = boundary(pgon_scale);
    
@@ -21,4 +23,17 @@ function scaled_mask = scaleMask(area_mask,scale_factor)
 %         imshow(falsecolor);
 %     figure(orig_fig); % go back to the old figure
     
+end
+
+%% PRIVATE HELPER FUNCTION
+
+% return the largest pgon region in a polyshape
+function pgon_out = getLargestPgon(pgon_in)
+    nregions = pgon_in.NumRegions;
+    if (nregions > 1)
+        polysort = sortboundaries(pgon_in,'area','descend');
+        for (i=2 : nregions)
+            pgon_out = rmboundary(polysort,i);
+        end
+    end
 end

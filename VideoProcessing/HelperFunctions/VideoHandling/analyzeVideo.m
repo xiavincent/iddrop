@@ -24,7 +24,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     
     for i=1:num_it  % analyze each frame
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
-        [wet_frac(i),overlay{i}] = analyzeFrame(vid,analys,fnum,params.area); % run the analysis loop for a single frame
+        [wet_frac(i),overlay{i}] = analyzeFrame(vid,analys,fnum,params); % run the analysis loop for a single frame
     end
     
     writeOverlayVid(overlay,wet_frac,skip_frame,frame_range(1),~output.falsecolor,output_vids.falsecolor)
