@@ -27,6 +27,8 @@ function [cam_mask, dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setA
     max_area = nnz(dome_mask); % number of pixels in mask
     scaled_mask = scaleMask(dome_mask, 0.96); % scale smaller by 4% for later film detection
     
+    % TODO: remove scaled_mask parameter from files
+    
     
     crop = imcrop(area_frame,crop_rect); % crop the area frame 
     f = figure;
@@ -36,11 +38,6 @@ function [cam_mask, dome_mask, scaled_mask, max_area, crop_rect, seed_rc] = setA
     seed_rc = round([seed_y seed_x]); % convert to a row column vector
     close(f); 
    
-%     [area_mask, ~] = userdrawROI(area_frame_cropped,area_fit_type); % Handle our ROI drawing
-%     grow_size = 2; % number of pixels by which we expand the boundary
-%     scaled_mask = closeEdges(area_mask,grow_size); % scale mask larger using the edge detection size-scaling helper function
-%     max_area = nnz(scaled_mask); % set maximum area using scaled version of user-defined area
-        
 
 end
 
