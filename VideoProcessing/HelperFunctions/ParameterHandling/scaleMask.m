@@ -35,5 +35,7 @@ function pgon_out = getLargestPgon(pgon_in)
         for (i=2 : nregions)
             pgon_out = rmboundary(polysort,i);
         end
+    else
+        pgon_out = pgon_in;
     end
 end
