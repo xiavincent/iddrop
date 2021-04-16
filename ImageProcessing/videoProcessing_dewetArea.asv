@@ -28,7 +28,9 @@ analys = fillAnalysStruct(); % make a blank struct with empty fields
 
 %% Set total area
 
-[analys.area_mask, analys.film_area, analys.shadow, analys.shadow_area, analys.film_center, analys.film_radius] = ...
+% [mask, max_area, shadowMask, cameraarea, totalAreaCenter, totalAreaRadius] = userdraw_ROI(totalareaframecropped,area_fit_type); %helper function to handle our ROI drawing
+
+[analys.area_mask, analys.film_area, analys.shadow, analys.cam_area, analys.] = ...
     setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
 
 %% Analyze video

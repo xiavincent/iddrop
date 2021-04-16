@@ -14,6 +14,15 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     output_framerate = 20; %output frame rate
     
     output_vids = struct('bw',0,'analyzed',0,'masks',0,'falsecolor',0); % store initialized videos
+    
+    
+    %% NEW SECTION MIGRATED FROM APR 16 2021 WORKING HSV CODE
+    background_frame = read(video, params.t0); %gets background frame in video (used for deleting background)
+    background_frame_gray = rgb2gray(background_frame); 
+    analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
+    
+    %%
+    
 
     [output_vids.bw, output_vids.analyzed, output_vids.masks, output_vids.falsecolor] = ...
         initVids(file_name_short, output_framerate, output.bw_mask , output.analyzed, output.masks, output.falsecolor);   
@@ -26,6 +35,7 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     
     wait_bar = waitbar(0,'Analyzing... Go grab a cup of coffee...'); % start video processing
     wet_area = zeros(1, num_it*params.skip); % normalized wet area for every frame index
+    
 
     for i = 1 : num_it
         cur_frame_num = (i-1)*params.skip + init_frame_num;

@@ -2,19 +2,53 @@
 % then calculates the dewetted area array and returns the cleaned image
 % Vincent Xia -- Nov 2020
 %% FUNCTION:
-function [clean_label_img, wet_area] = countArea(orig_mask,outer_region,total_film_area,img_size)
- 
-    clean_mask = processComponents(orig_mask,outer_region,img_size); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
-    clean_mask_components = bwconncomp(clean_mask); % find connected components again, since now we've removed objects in our clearing region
-    clean_label_img = labelmatrix(clean_mask_components); % creates matrix that labels each dewetted object in the image
+
+%% MIGRATED APRIL 16 2021 FROM WORKING HSV
+
+function [labelImg, area] = countArea(coloredObjectsMask,totalAreaRadius,gray_frame,totalAreaCenter)
+
+    connComp = bwconncomp(coloredObjectsMask,8); % finds connected components within binary image (connectivity of 4)                
+    [~,ncol] = size(connComp.PixelIdxList);
     
-    dewet_area = regionprops(clean_mask_components, 'Area'); % areas of the connected components
-    total_dewet_area = sum([dewet_area.Area]); % total dewetted area
-   
-    dewet_frac = total_dewet_area / total_film_area; % fraction of dewetted area, excluding the shadow's area
-    wet_area = 1 - dewet_frac; % fraction of wet area      
+    radiusRmv = totalAreaRadius - 10; % radius for our clearing region. The center lies at the center of our 'totalArea' circle
+                
+    for idx = 1:ncol % for each component in connComp
+        [row,col] = ind2sub(size(gray_frame), connComp.PixelIdxList{1,idx});
+        coord = cat(2,col,row);
+        
+        loc = (coord(:,1) - totalAreaCenter(1)).^2 + (coord(:,2) - totalAreaCenter(2)).^2;
+                   
+        if ~any(loc > radiusRmv^2) % if any pixels in the connected component fall outside our clearing region, with radius 'radiusRmv'...   
+            coloredObjectsMask(connComp.PixelIdxList{1,idx}) = 0; % if the component falls entirely inside our clearing region, set pixels to 0 (black)
+        end                                  
+    end
+    
+    connCompClean = bwconncomp(coloredObjectsMask); % finds connected components again, since now we've removed objects in our clearing region
+    labelImg = labelmatrix(connCompClean); % creates labeled matrix from bwconncomp structure
+    
+    graindata = regionprops(connCompClean, 'Area'); % computes 'Area' measurement of connCompClean
+    
+    area = sum([graindata.Area]); % sum of areas in our cleaned connected components to be used when calculating wet vs dry area   
+    %return area
     
 end
+
+
+%% ORIGINAL
+
+% function [clean_label_img, wet_area] = countArea(orig_mask,outer_region,total_film_area,img_size)
+%  
+%     clean_mask = processComponents(orig_mask,outer_region,img_size); % remove the connected regions in HSV_bw_mask that don't fall within the outer region
+%     clean_mask_components = bwconncomp(clean_mask); % find connected components again, since now we've removed objects in our clearing region
+%     clean_label_img = labelmatrix(clean_mask_components); % creates matrix that labels each dewetted object in the image
+%     
+%     dewet_area = regionprops(clean_mask_components, 'Area'); % areas of the connected components
+%     total_dewet_area = sum([dewet_area.Area]); % total dewetted area
+%    
+%     dewet_frac = total_dewet_area / total_film_area; % fraction of dewetted area, excluding the shadow's area
+%     wet_area = 1 - dewet_frac; % fraction of wet area      
+%     
+% end
 
 % Process all connected components in a mask with the edge algorithm and euler algorithm
 % return the cleaned mask

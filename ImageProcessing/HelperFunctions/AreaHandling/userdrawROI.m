@@ -1,26 +1,33 @@
 % HELPER FUNCTION -- Vincent Xia -- Nov 2020
+%% MIGRATED APRIL 16 2021 FROM WORKING HSV CODE
 
-% High-level helper function to handle circular and freehand region drawing for a single video frame
-function [area_mask, outer_region, shadow_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
+% Highest level helper function to allow user to draw the ROI
+function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawROI(totalareaframecropped,areaFitType)
     %set the total area mask
-    roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
-    area_mask = createMask(roi);
-    
-    outer_region = scaleMask(area_mask); % scale the mask and return the outer region
-    
+    roi = showAreaROI(totalareaframecropped,areaFitType); %show the frame and return an roi that we can calculate things from
+    if (areaFitType == 1)
+        center = roi.Center;
+        radius = roi.Radius;
+    else 
+        mask = createMask(roi);
+        stats = regionprops('table',mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
+            center = stats.Centroid;
+            diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
+            radius = diameter/2;
+    end
+    mask = createMask(roi);
+    max_area = nnz(mask); % TODO: replace this with 'max_area - camera_area' to ignore the camera shadow's effect
+
     %set the camera shadow area
-    shadowROI = showShadowROI(area_frame_cropped);    
+    shadowROI = showShadowROI(totalareaframecropped);    
     shadow_mask = createMask(shadowROI);
-    
-    max_area = nnz(area_mask);
-    camera_area = nnz(shadow_mask);
-    film_area = max_area - camera_area; % exposed dome area, excluding the camera shadow
+    camera_area = nnz(shadow_mask); 
     
     close;
 end
 
 % Mid-level helper function to show the freehand or circle ROI
-function roi = showAreaROI(totalareaframecropped,areaFitType)
+function [roi] = showAreaROI(totalareaframecropped,areaFitType)
     imshow(totalareaframecropped);                                 % Show area frame as total area input
     
     if (areaFitType == 1)
@@ -35,6 +42,43 @@ function roi = showAreaROI(totalareaframecropped,areaFitType)
     end
     customWait(roi); % wait for double click
 end
+
+
+% High-level helper function to handle circular and freehand region drawing for a single video frame
+% function [area_mask, outer_region, shadow_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
+%     %set the total area mask
+%     roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
+%     area_mask = createMask(roi);
+%     
+%     outer_region = scaleMask(area_mask); % scale the mask and return the outer region
+%     
+%     %set the camera shadow area
+%     shadowROI = showShadowROI(area_frame_cropped);    
+%     shadow_mask = createMask(shadowROI);
+%     
+%     max_area = nnz(area_mask);
+%     camera_area = nnz(shadow_mask);
+%     film_area = max_area - camera_area; % exposed dome area, excluding the camera shadow
+%     
+%     close;
+% end
+% 
+% % Mid-level helper function to show the freehand or circle ROI
+% function roi = showAreaROI(totalareaframecropped,areaFitType)
+%     imshow(totalareaframecropped);                                 % Show area frame as total area input
+%     
+%     if (areaFitType == 1)
+%         xlabel('Draw circle around total area, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
+%         roi = drawcircle('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
+%     else
+%         xlabel('Draw freehand around total area; double-click to close and double-click again to finish','FontSize',16,'FontName','Arial');
+%         roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
+%         while (isempty(roi.Position)) % repeat if the user deletes the ROI
+%             roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
+%         end
+%     end
+%     customWait(roi); % wait for double click
+% end
 
 function [shadowROI] = showShadowROI(totalareaframecropped)
     imshow(totalareaframecropped);                                 % Show area frame as total area input
