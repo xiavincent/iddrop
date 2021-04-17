@@ -41,13 +41,11 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     HSV_bw_mask = HSV_mask_rmv_obj & bw_frame_mask_clean;
 
  
-    [finalMask,grain_areas(i)] = countArea(HSV_bw_mask,totalAreaRadius,gray_frame,totalAreaCenter);      
-    
     % Clean the image and count the area
-    [label_dewet_img, wet_area] = countArea(combined_mask_fill, analys.outer_region, analys.film_area, size(gray_frame));       
+    [final_mask,wet_area] = countArea(HSV_bw_mask,totalAreaRadius,gray_frame,totalAreaCenter);      
 
     % Write final videos          
-    writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, label_dewet_img,...
+    writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, final_mask,...
                           params.t0, cur_frame_num, wet_area,...
                           input_vid.FrameRate, outputs, output_vids);
 
