@@ -11,14 +11,14 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
    if (cur_frame_num > params.t0) %adjust this depending on how much noise your analysis picks up at the beginning. starting this later will lead to less noise
         subtract_frame(analys.shadow) = 0; %clear every subtract_frame pixel inside the camera shadow
         subtract_frame(~analys.area_mask) = 0; %apply area mask
-        bw_frame_mask=imbinarize(subtract_frame);
+        binarize_mask=imbinarize(subtract_frame);
     else
         bw_frame=imbinarize(subtract_frame); % "Blanket" method to suppress noise before area frame
-        bw_frame_mask = bw_frame.*analys.area_mask; % Add mask of overall circle specified from UI input
+        binarize_mask = bw_frame.*analys.area_mask; % Add mask of overall circle specified from UI input
     end
      
-    bw_frame_mask_clean = bwareaopen(bw_frame_mask, params.rm_pix); % remove connected objects that are smaller than 250 pixels in size
-    bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean, params.rm_pix); % remove holes that are smaller than 20 pixels in size
+    binarize_mask_clean = bwareaopen(binarize_mask, params.rm_pix); % remove connected objects that are smaller than 250 pixels in size
+    binarize_mask_clean = ~bwareaopen(~binarize_mask_clean, params.rm_pix); % remove holes that are smaller than 20 pixels in size
     
     hsv_frame=rgb2hsv(crop_frame); % convert to hsv image
     hsv_frame(analys.shadow) = 0; % apply camera mask
@@ -38,15 +38,17 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     HSV_mask_rmv_obj = bwareaopen(HSV_mask_rmv_maskHoles, params.rm_pix); %fill in holes smaller than 250 pixels in size
     
     % apply binarization mask
-    HSV_bw_mask = HSV_mask_rmv_obj & bw_frame_mask_clean;
-
+    combined_mask = HSV_mask_rmv_obj & binarize_mask_clean;
  
     % Clean the image and count the area
-    [final_mask,wet_area] = countArea(HSV_bw_mask,analys.film_radius,gray_frame,analys.film_center);      
+    [final_mask,wet_area] = countArea(combined_mask,analys.film_radius,gray_frame,analys.film_center);      
 
     % Write final videos          
     writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, final_mask,...
                           params.t0, cur_frame_num, wet_area,...
                           input_vid.FrameRate, outputs, output_vids);
+                      
+                      
 
 end
+
