@@ -17,8 +17,8 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
         binarize_mask = bw_frame.*analys.area_mask; % Add mask of overall circle specified from UI input
     end
      
-    binarize_mask_clean = bwareaopen(binarize_mask, params.rm_pix); % remove connected objects that are smaller than 250 pixels in size
-    binarize_mask_clean = ~bwareaopen(~binarize_mask_clean, params.rm_pix); % remove holes that are smaller than 20 pixels in size
+    bw_frame_mask_clean = bwareaopen(binarize_mask, params.rm_pix); % remove connected objects that are smaller than 250 pixels in size
+    bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean, params.rm_pix); % remove holes that are smaller than 20 pixels in size
     
     hsv_frame=rgb2hsv(crop_frame); % convert to hsv image
     hsv_frame(analys.shadow) = 0; % apply camera mask
@@ -38,7 +38,8 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
     HSV_mask_rmv_obj = bwareaopen(HSV_mask_rmv_maskHoles, params.rm_pix); %fill in holes smaller than 250 pixels in size
     
     % apply binarization mask
-    combined_mask = HSV_mask_rmv_obj & binarize_mask_clean;
+    combined_mask = HSV_mask_rmv_obj & bw_frame_mask_clean;
+
  
     % Clean the image and count the area
     [final_mask,wet_area] = countArea(combined_mask,analys.film_radius,gray_frame,analys.film_center);      

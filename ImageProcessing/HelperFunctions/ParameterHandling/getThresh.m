@@ -33,31 +33,13 @@ function [H_thresh_low, H_thresh_high, S_thresh_low, S_thresh_high, V_thresh_low
 
         elseif liquid_type == 1 %lubricin
 
-      %      For 08-12-20 1 ugmL HPL3 RT solvent trap
-    %         hueThresholdLow = .438;
-    %         hueThresholdHigh = .535;
-    %         saturationThresholdLow = .177;
-    %         saturationThresholdHigh = .236;
-    %         valueThresholdLow = .718;
-    %         valueThresholdHigh = .906;
-
-
-        % For 07-19-20 .5 ugmL HPL1 NR (less discriminatory)
-    %         hueThresholdLow = .410;
-    %         hueThresholdHigh = .554;
-    %         saturationThresholdLow = .104;
-    %         saturationThresholdHigh = .271;
-    %         valueThresholdLow = .439;
-    %         valueThresholdHigh = .780;
-
-
-            % For 10-13-20 1 ugmL lubricin TS HPL4 37C
-            H_thresh_low = .422;
-            H_thresh_high = .500;
-            S_thresh_low = .104; %.164 <--- saturation boundaries have a substantial impact on video thresholding!
-            S_thresh_high = .271; %.233
-            V_thresh_low = .490; %.490
-            V_thresh_high = .761; %.761
+          % For Feb 8, 2021 videos
+            H_thresh_low = .408;
+            H_thresh_high = .586;
+            S_thresh_low = 0.16;
+            S_thresh_high = 0.309;
+            V_thresh_low = 0.808;
+            V_thresh_high = 1;
         end 
     end
 end
