@@ -1,6 +1,6 @@
 % Analyze a single frame 
 % return the fraction of wet area 
-function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outputs, output_vids)
+function wet_area_frac = analyzeFrame(input_vid, cur_frame_num, analys, params, outputs, output_vids)
 
     orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,analys.crop_rect); 
@@ -42,11 +42,12 @@ function wet_area = analyzeFrame(input_vid, cur_frame_num, analys, params, outpu
 
  
     % Clean the image and count the area
-    [final_mask,wet_area] = countArea(combined_mask,analys.film_radius,gray_frame,analys.film_center);      
+    img_size = size(gray_frame);
+    [final_mask,wet_area_frac] = countArea(combined_mask,img_size,analys.film_radius,analys.film_center,analys.max_area);      
 
     % Write final videos          
     writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, final_mask,...
-                          params.t0, cur_frame_num, wet_area,...
+                          params.t0, cur_frame_num, wet_area_frac,...
                           input_vid.FrameRate, outputs, output_vids);
                       
                       

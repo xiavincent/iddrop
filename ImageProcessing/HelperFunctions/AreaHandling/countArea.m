@@ -5,32 +5,32 @@
 
 %% MIGRATED APRIL 16 2021 FROM WORKING HSV
 
-function [labelImg, area] = countArea(dryarea_mask,film_radius,gray_frame,film_center)
+function [labelImg, wet_frac] = countArea(dryarea_mask,img_size,film_radius,film_center,max_area)
 
-    connComp = bwconncomp(dryarea_mask,8); % finds connected components within binary image (connectivity of 4)                
-    [~,ncol] = size(connComp.PixelIdxList);
+    conn_comp = bwconncomp(dryarea_mask,8); % finds connected components within binary image (connectivity of 4)                
+    [~,ncol] = size(conn_comp.PixelIdxList);
     
     radiusRmv = film_radius - 10; % radius for our clearing region. The center lies at the center of our 'totalArea' circle
                 
     for idx = 1:ncol % for each component in connComp
-        [row,col] = ind2sub(size(gray_frame), connComp.PixelIdxList{1,idx});
+        [row,col] = ind2sub(size(img_size), conn_comp.PixelIdxList{1,idx});
         coord = cat(2,col,row);
         
         loc = (coord(:,1) - film_center(1)).^2 + (coord(:,2) - film_center(2)).^2;
                    
         if ~any(loc > radiusRmv^2) % if any pixels in the connected component fall outside our clearing region, with radius 'radiusRmv'...   
-            dryarea_mask(connComp.PixelIdxList{1,idx}) = 0; % if the component falls entirely inside our clearing region, set pixels to 0 (black)
+            dryarea_mask(conn_comp.PixelIdxList{1,idx}) = 0; % if the component falls entirely inside our clearing region, set pixels to 0 (black)
         end                                  
     end
     
     connCompClean = bwconncomp(dryarea_mask); % finds connected components again, since now we've removed objects in our clearing region
     labelImg = labelmatrix(connCompClean); % creates labeled matrix from bwconncomp structure
     
-    graindata = regionprops(connCompClean, 'Area'); % computes 'Area' measurement of connCompClean
+    dewet_area = regionprops(connCompClean, 'Area'); % computes 'Area' measurement of connCompClean
+    total_dewet_area = sum([dewet_area.Area]);
     
-    area = sum([graindata.Area]); % sum of areas in our cleaned connected components to be used when calculating wet vs dry area   
-    %return area
-    
+    dewet_frac = total_dewet_area / max_area; % fraction of dry area exclusing camera shadow
+    wet_frac = 1 - dewet_frac; % fraction of wet area
 end
 
 

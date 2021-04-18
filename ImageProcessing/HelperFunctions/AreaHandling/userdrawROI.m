@@ -3,6 +3,7 @@
 
 % Highest level helper function to allow user to draw the ROI
 function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawROI(totalareaframecropped,areaFitType)
+
     %set the total area mask
     roi = showAreaROI(totalareaframecropped,areaFitType); %show the frame and return an roi that we can calculate things from
     if (areaFitType == 1)
@@ -16,12 +17,14 @@ function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawRO
             radius = diameter/2;
     end
     mask = createMask(roi);
-    max_area = nnz(mask); % TODO: replace this with 'max_area - camera_area' to ignore the camera shadow's effect
+    total_area = nnz(mask); % TODO: replace this with 'max_area - camera_area' to ignore the camera shadow's effect
 
     %set the camera shadow area
     shadowROI = showShadowROI(totalareaframecropped);    
     shadow_mask = createMask(shadowROI);
     camera_area = nnz(shadow_mask); 
+    
+    max_area = total_area - camera_area;
     
     close;
 end
