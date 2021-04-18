@@ -5,25 +5,25 @@
 
 %% MIGRATED APRIL 16 2021 FROM WORKING HSV
 
-function [labelImg, area] = countArea(coloredObjectsMask,totalAreaRadius,gray_frame,totalAreaCenter)
+function [labelImg, area] = countArea(dryarea_mask,film_radius,gray_frame,film_center)
 
-    connComp = bwconncomp(coloredObjectsMask,8); % finds connected components within binary image (connectivity of 4)                
+    connComp = bwconncomp(dryarea_mask,8); % finds connected components within binary image (connectivity of 4)                
     [~,ncol] = size(connComp.PixelIdxList);
     
-    radiusRmv = totalAreaRadius - 10; % radius for our clearing region. The center lies at the center of our 'totalArea' circle
+    radiusRmv = film_radius - 10; % radius for our clearing region. The center lies at the center of our 'totalArea' circle
                 
     for idx = 1:ncol % for each component in connComp
         [row,col] = ind2sub(size(gray_frame), connComp.PixelIdxList{1,idx});
         coord = cat(2,col,row);
         
-        loc = (coord(:,1) - totalAreaCenter(1)).^2 + (coord(:,2) - totalAreaCenter(2)).^2;
+        loc = (coord(:,1) - film_center(1)).^2 + (coord(:,2) - film_center(2)).^2;
                    
         if ~any(loc > radiusRmv^2) % if any pixels in the connected component fall outside our clearing region, with radius 'radiusRmv'...   
-            coloredObjectsMask(connComp.PixelIdxList{1,idx}) = 0; % if the component falls entirely inside our clearing region, set pixels to 0 (black)
+            dryarea_mask(connComp.PixelIdxList{1,idx}) = 0; % if the component falls entirely inside our clearing region, set pixels to 0 (black)
         end                                  
     end
     
-    connCompClean = bwconncomp(coloredObjectsMask); % finds connected components again, since now we've removed objects in our clearing region
+    connCompClean = bwconncomp(dryarea_mask); % finds connected components again, since now we've removed objects in our clearing region
     labelImg = labelmatrix(connCompClean); % creates labeled matrix from bwconncomp structure
     
     graindata = regionprops(connCompClean, 'Area'); % computes 'Area' measurement of connCompClean
