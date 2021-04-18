@@ -25,7 +25,6 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, bw_frame_
 
         if (~output.falsecolor)  % make a falsecolor overlay of our labelled final mask over the original grayscale image 
             final_img_fuse = labeloverlay(gray_frame,final_mask);
-            final_img_fuse = imfuse(final_img_fuse,gray_frame,'falsecolor','Scaling','joint','ColorChannels',[1 2 0]); %create falsecolor overlay of binary mask over original image    
             falseColorInfo = sprintf('red = binary mask | green = original img | yellow = both'); % prints false color info                
             output_text = insertText(final_img_fuse,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
             output_text = insertText(output_text,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
