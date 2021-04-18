@@ -5,12 +5,12 @@
 
 %% MIGRATED APRIL 16 2021 FROM WORKING HSV
 
-function [labelImg, wet_frac] = countArea(dryarea_mask,img_size,film_radius,film_center,max_area)
+function [dewet_comp_labelimg, wet_frac] = countArea(dryarea_mask,img_size,film_radius,film_center,max_area)
 
     conn_comp = bwconncomp(dryarea_mask,8); % finds connected components within binary image (connectivity of 4)                
     [~,ncol] = size(conn_comp.PixelIdxList);
     
-    radiusRmv = film_radius - 10; % radius for our clearing region. The center lies at the center of our 'totalArea' circle
+    radius_rm = film_radius - 10; % radius for our clearing region. The center lies at the center of our 'totalArea' circle
                 
     for idx = 1:ncol % for each component in connComp
         [row,col] = ind2sub(size(img_size), conn_comp.PixelIdxList{1,idx});
@@ -18,13 +18,13 @@ function [labelImg, wet_frac] = countArea(dryarea_mask,img_size,film_radius,film
         
         loc = (coord(:,1) - film_center(1)).^2 + (coord(:,2) - film_center(2)).^2;
                    
-        if ~any(loc > radiusRmv^2) % if any pixels in the connected component fall outside our clearing region, with radius 'radiusRmv'...   
+        if ~any(loc > radius_rm^2) % if any pixels in the connected component fall outside our clearing region, with radius 'radiusRmv'...   
             dryarea_mask(conn_comp.PixelIdxList{1,idx}) = 0; % if the component falls entirely inside our clearing region, set pixels to 0 (black)
         end                                  
     end
     
     connCompClean = bwconncomp(dryarea_mask); % finds connected components again, since now we've removed objects in our clearing region
-    labelImg = labelmatrix(connCompClean); % creates labeled matrix from bwconncomp structure
+    dewet_comp_labelimg = labelmatrix(connCompClean); % creates labeled matrix from bwconncomp structure
     
     dewet_area = regionprops(connCompClean, 'Area'); % computes 'Area' measurement of connCompClean
     total_dewet_area = sum([dewet_area.Area]);

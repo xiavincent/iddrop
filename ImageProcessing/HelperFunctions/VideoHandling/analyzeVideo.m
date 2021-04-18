@@ -20,7 +20,7 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     background_frame = read(vid, params.t0); % gets background frame in video (used for deleting background)
     background_frame_gray = rgb2gray(background_frame); 
     analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
-    
+        
     %%
     
 
