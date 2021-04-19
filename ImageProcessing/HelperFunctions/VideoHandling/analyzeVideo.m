@@ -22,7 +22,6 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
     analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
         
     %%
-    
 
     [output_vids.bw, output_vids.analyzed, output_vids.masks, output_vids.falsecolor] = ...
         initVids(file_name_short, output_framerate, output.bw_mask , output.analyzed, output.masks, output.falsecolor);   

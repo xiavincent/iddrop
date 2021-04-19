@@ -4,7 +4,7 @@
 % Can pass '_Area.txt' into data processing file to calculate dewetting onset time
 % Requires Matlab "image processing toolbox" to run
 
-% Nov 2020
+% Apr 2021
 % Version: Matlab 2020a/b                    
 % Vincent Xia
 

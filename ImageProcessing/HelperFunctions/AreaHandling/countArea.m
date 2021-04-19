@@ -16,9 +16,9 @@ function [dewet_comp_labelimg, wet_frac] = countArea(dryarea_mask,img_size,film_
         [row,col] = ind2sub(img_size, conn_comp.PixelIdxList{1,idx});
         coord = cat(2,col,row);
         
-        loc = (coord(:,1) - film_center(1)).^2 + (coord(:,2) - film_center(2)).^2;
+        distance_from_center = (coord(:,1) - film_center(1)).^2 + (coord(:,2) - film_center(2)).^2; % squared distance from center of dome based on pythagorean theorem
                    
-        if ~any(loc > radius_rm^2)   
+        if ~any(distance_from_center > radius_rm^2)   
             dryarea_mask(conn_comp.PixelIdxList{1,idx}) = 0; % if the dry area conncomponent falls entirely inside our clearing region, set pixels to 0 (black)
         end                                  
     end
