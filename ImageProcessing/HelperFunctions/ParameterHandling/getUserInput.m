@@ -14,9 +14,7 @@ function [params,outputs] = getUserInput()
                                 [1 50; 1 20;1 20;1 20],{'250','3','40','2500'});
 
         % Parameters for system type
-        analysis_type = inputdlg({'New or old software?(1=New,0=Old)',... % Old uEye Cockpit laptop software or New Thorcam software from 2/25/2020 onwards
-                          'Lubricin or Water?(1=lubricin, 0=water)',... % Which sample are you measuring dewetting on?
-                          'Circle or freehand area fit? (1=circle, 0=freehand)'},... % the area selection method for defining total area
+        analysis_type = inputdlg({'Freehand, ellipse, or circle area fit? (1=freehand, 2=ellipse, 3=circle)'},... % the area selection method for defining total area
                           'Analysis Type', [1 40; 1 40; 1 40], {'1','1','1'});                                 
 
         % Parameters for desired outputs

@@ -2,22 +2,11 @@
 %% MIGRATED APRIL 16 2021 FROM WORKING HSV CODE
 
 % Highest level helper function to allow user to draw the ROI
-function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawROI(img,area_fit_type)
+function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawROI(totalareaframecropped,area_fit_type)
 
-    selection_type = 0; % make image caption for fitting total exposed dome
-    roi = showAreaROI(img,area_fit_type, selection_type); % set the total area mask
-    mask = createMask(roi);
-
-    if (area_fit_type == 1) % find circular parameters of freehand fit
-        stats = regionprops('table',mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
-        diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
-        
-        center = stats.Centroid;
-        radius = diameter/2;
-    elseif (area_fit_type == 2) % find circular parameters of ellipse fit        
-        center = roi.Center;
-        radius = (roi.SemiAxes(1) + roi.SemiAxes(2))/2; % average the two semi-axes of the ellipse to get an estimate of its radius
-    elseif (area_fit_type == 3) % find circular parameters of circle fit
+    %set the total area mask
+    roi = showAreaROI(totalareaframecropped,area_fit_type); %show the frame and return an roi that we can calculate things from
+    if (area_fit_type == 1)
         center = roi.Center;
         radius = roi.Radius;
     else 
@@ -27,41 +16,33 @@ function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawRO
             diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
             radius = diameter/2;
     end
+    mask = createMask(roi);
     total_area = nnz(mask); % TODO: replace this with 'max_area - camera_area' to ignore the camera shadow's effect
 
-    selection_type = 1; % set the camera shadow area
-    shadowROI = showAreaROI(img,area_fit_type, selection_type);
+    %set the camera shadow area
+    shadowROI = showShadowROI(totalareaframecropped);    
     shadow_mask = createMask(shadowROI);
-    
     camera_area = nnz(shadow_mask); 
+    
     max_area = total_area - camera_area;
     
     close;
 end
 
-% Mid-level helper function to return the user-specified freehand, ellipse, or circle ROI
-function roi = showAreaROI(img,area_fit_type,selection_type)
-    imshow(img); % Show area frame as total area input
+% Mid-level helper function to show the freehand or circle ROI
+function [roi] = showAreaROI(totalareaframecropped,area_fit_type)
+    imshow(totalareaframecropped);                                 % Show area frame as total area input
     
-    if (selection_type == 0)
-        if (area_fit_type == 1)
-            xlabel('Draw freehand around total area; double-click to close and double-click again to finish','FontSize',16,'FontName','Arial');
+    if (area_fit_type == 1)
+        xlabel('Draw freehand around total area; double-click to close and double-click again to finish','FontSize',16,'FontName','Arial');
+        roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
+        while (isempty(roi.Position)) % repeat if the user deletes the ROI
             roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
-            while (isempty(roi.Position)) % repeat if the user deletes the ROI
-                roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
-            end
-        elseif (area_fit_type == 2)
-            xlabel('Draw ellipse around total area, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
-            roi = drawellipse('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
-        elseif (area_fit_type == 3)
-            xlabel('Draw circle around total area, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
-            roi = drawcircle('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
         end
-    else 
-        xlabel('Draw circle around camera shadow, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
+    elseif (area_f
+        xlabel('Draw circle around total area, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
         roi = drawcircle('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
     end
-    
     customWait(roi); % wait for double click
 end
 
@@ -102,6 +83,13 @@ end
 %     customWait(roi); % wait for double click
 % end
 
+function [shadowROI] = showShadowROI(totalareaframecropped)
+    imshow(totalareaframecropped);                                 % Show area frame as total area input
+    xlabel('Draw circle around camera shadow, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
+    shadowROI = drawcircle('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
+
+    customWait(shadowROI);
+end
 
 function customWait(hROI) %general wait function
     l = addlistener(hROI,'ROIClicked',@clickCallback); % Listen for mouse clicks on the ROI
