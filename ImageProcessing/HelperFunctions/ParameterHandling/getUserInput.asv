@@ -15,10 +15,7 @@ function [params,outputs] = getUserInput()
                                 'Sample',[1 50; 1 20; 1 20; 1 20; 1 40],{'250','3','40','2500','1'});
 
         % Parameters for thresholding
-        threshold_values = inputdlg({'Hue low threshold','Hue high threshold',...
-                                     'Saturation low threshold','Saturation high threshold',...
-                                     'Value low threshold','Value high threshold'},...
-                                     'HSV thresholding',[1 50; 1 50; 1 50; 1 50; 1 50; 1 50],{'1','1','1','1','1','1'});
+        threshold_value
 
         % Parameters for desired outputs
         video_output_types = inputdlg({ 'Falsecolor final output? (1=no, 0=yes) ',... % makes a falsecolor overlay of the binary mask on the original frame          
@@ -38,7 +35,7 @@ function [params,outputs] = getUserInput()
         % Theshold values for hue, saturation, value analysis (use Threshold Check or Matlab "Color Thresholder" App to test values)
         [H_thresh_low, H_thresh_high, ...
             S_thresh_low, S_thresh_high, ...
-            V_thresh_low, V_thresh_high] = _________ % TODO: turn into input dialog 
+            V_thresh_low, V_thresh_high] = 
         
 %         getThresh(sftwre_type,liquid_type);
         
