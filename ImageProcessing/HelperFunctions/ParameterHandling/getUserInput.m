@@ -41,9 +41,7 @@ function [params,outputs] = getUserInput()
             S_thresh_low, S_thresh_high, ...
             V_thresh_low, V_thresh_high] = getThresh(threshold_values); % fills in threshold values based on user input
                 
-
- 
-%           % For Feb 8, 2021 videos
+ %           % For Feb 8, 2021 videos
 %             H_thresh_low = .408;
 %             H_thresh_high = .586;
 %             S_thresh_low = 0.16;
