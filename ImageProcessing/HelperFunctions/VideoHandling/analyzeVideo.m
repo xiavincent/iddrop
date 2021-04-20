@@ -51,3 +51,22 @@ function [wet_area,final_frame_num] = analyzeVideo(file_name_short,vid,analys,pa
 
 end
 
+
+%% Latest EdgeDetect implementation
+
+% frame_range = [params.t0 vid.NumFrames]; % [params.start vid.NumFrames] % first and last frame to analyze
+%     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
+%         
+%     wet_frac = ones(1, num_it); % normalized wet area for every frame index
+%     overlay = cell([1 num_it]); % holds the final images        
+%     skip_frame = params.skip;
+%     first_fnum = frame_range(1);
+
+% for i=1:num_it  % analyze each frame
+%         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
+%         [wet_frac(i),overlay{i}] = analyzeFrame(vid,analys, fnum,params.start,params.area); % run the analysis loop for a single frame
+%     end
+
+
+
+
