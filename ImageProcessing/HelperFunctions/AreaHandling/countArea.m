@@ -29,7 +29,7 @@ function [dewet_comp_labelimg, wet_frac] = countArea(dryarea_mask,img_size,film_
     dewet_area = regionprops(connCompClean, 'Area'); % computes 'Area' measurement of connCompClean
     total_dewet_area = sum([dewet_area.Area]);
     
-    dewet_frac = total_dewet_area / max_area; % fraction of dry area exclusing camera shadow
+    dewet_frac = total_dewet_area / max_area; % fraction of dry area out of total area, excluding the camera shadow
     wet_frac = 1 - dewet_frac; % fraction of wet area
 end
 

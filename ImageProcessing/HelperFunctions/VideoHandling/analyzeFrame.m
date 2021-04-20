@@ -40,7 +40,6 @@ function wet_area_frac = analyzeFrame(input_vid, cur_frame_num, analys, params, 
     % apply binarization mask
     combined_mask = HSV_mask_rmv_obj & bw_frame_mask_clean;
 
- 
     % Clean the image and count the area
     img_size = size(gray_frame);
     [dewet_comp,wet_area_frac] = countArea(combined_mask,img_size,analys.film_radius,analys.film_center,analys.max_area);      
@@ -49,8 +48,7 @@ function wet_area_frac = analyzeFrame(input_vid, cur_frame_num, analys, params, 
     writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, dewet_comp,...
                           params.t0, cur_frame_num, wet_area_frac,...
                           input_vid.FrameRate, outputs, output_vids);
-                      
-                      
+                       
 
 end
 

@@ -14,18 +14,12 @@ init(); % add helper files to path
 %% Initializations
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
-% get user processing selections
-[params,output] = getUserInput(); % struct fields defined in 'getUserInput.m'
+[params,output] = getUserInput(); % get user processing selections
+analys = fillAnalysStruct(); % initialize a struct that stores the parameters used in the analysis
 
-% Get masks and area values
-analys = fillAnalysStruct(); % make a blank struct with empty fields
-                             % fields defined in 'fillAnalysStruct.m'
-                             
-                             
-%%
+%% Start video and set areas
+
 [analys.crop_rect, vid] = startVideo(file_name,params.bg); % Initialize video
-
-%% Set total area
 
 [analys.area_mask, analys.max_area, analys.shadow, analys.shadow_area, analys.film_center, analys.film_radius] = ...
     setAreas(vid, analys.crop_rect, params.area, params.fit_type); % user-specified camera shadow area and total area
