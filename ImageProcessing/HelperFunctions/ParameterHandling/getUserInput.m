@@ -18,41 +18,31 @@ function [params,outputs] = getUserInput()
         threshold_values = inputdlg({'Hue low threshold','Hue high threshold',...
                                      'Saturation low threshold','Saturation high threshold',...
                                      'Value low threshold','Value high threshold'},...
-                                     'HSV thresholding',[1 50; 1 50; 1 50; 1 50; 1 50; 1 50],{'1','1','1','1','1','1'});
+                                     'HSV thresholding (values from 0-1)',[1 50; 1 50; 1 50; 1 50; 1 50; 1 50],{'0','1','0','1','0','1'});
 
         % Parameters for desired outputs
         video_output_types = inputdlg({ 'Falsecolor final output? (1=no, 0=yes) ',... % makes a falsecolor overlay of the binary mask on the original frame          
-                          'Output analyzed frames?(1=no, 0=yes)',... % makes a copy of the analyzed frames from the original video
-                          'Output individual masks video?(1=no, 0=yes)',... % makes a montage copy of the individual masks for debugging purposes
-                          'Output black/white mask?(1=no,0=yes)',... % binary version of final mask
-                          'Output animated plot? (1=no, 0=yes)'},... % animated video of the dewetting plot
-                          'Output video types (note: choosing yes on any of these will be slower)', [1 40; 1 40; 1 40; 1 40; 1 40], {'1','1','1','1','1'});
-                      
-                      
+                                      'Output analyzed frames?(1=no, 0=yes)',... % makes a copy of the analyzed frames from the original video
+                                      'Output individual masks video?(1=no, 0=yes)',... % makes a montage copy of the individual masks for debugging purposes
+                                      'Output black/white mask?(1=no,0=yes)',... % binary version of final mask
+                                      'Output animated plot? (1=no, 0=yes)'},... % animated video of the dewetting plot
+                                      'Output video types (note: choosing yes on any of these will be slower)',...
+                                      [1 40; 1 40; 1 40; 1 40; 1 40],{'1','1','1','1','1'});                      
               
         % Initialize our parameters from the dialog boxes
-        [remove_Pixels,skip_frame,t0_frame_num,area_frame_num,background_frame_num,...
-            area_fit_type,...
-            output_falsecolor,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot] = fillParams(analysis_settings,analysis_type,video_output_types); %fill in all the parameters from the dialog boxes using helper function
+        [remove_Pixels,skip_frame,t0_frame_num,...
+            area_frame_num,background_frame_num,area_fit_type,...
+            output_falsecolor,output_analyzed_frames,output_all_masks,...
+            output_black_white_mask,output_animated_plot]... 
+            = fillParams(analysis_settings,video_output_types); % fill in all the parameters from the dialog boxes using helper function
 
         % Theshold values for hue, saturation, value analysis (use Threshold Check or Matlab "Color Thresholder" App to test values)
         [H_thresh_low, H_thresh_high, ...
             S_thresh_low, S_thresh_high, ...
-            V_thresh_low, V_thresh_high] = _________ % TODO: turn into input dialog 
-        
-%         getThresh(sftwre_type,liquid_type);
-        
+            V_thresh_low, V_thresh_high] = getThresh(threshold_values); % fills in threshold values based on user input
+                
 
- % From 07-05-20 HPL3 DIWater Test 2 file
-%             H_thresh_low = 0;
-%             H_thresh_high = 1;
-%             S_thresh_low = 0;
-%             S_thresh_high = 1;
-%             V_thresh_low = 0.659;
-%             V_thresh_high = 1;
-% 
-%         elseif liquid_type == 1 %lubricin
-% 
+ 
 %           % For Feb 8, 2021 videos
 %             H_thresh_low = .408;
 %             H_thresh_high = .586;

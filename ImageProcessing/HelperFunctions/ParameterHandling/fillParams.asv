@@ -4,13 +4,14 @@ function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,
         = fillParams(analysis_settings,video_output_types)
 
     remove_Pixels = str2double(analysis_settings{1}); % parameter passed to 'bwareaopen' that tells us how small (in pixels) objects need to be before we remove them from the analysis
-    skip_frame = str2double(analysis_settings{2}); % frequency with which we analyze video frames
-    t0_frame_num=str2double(analysis_settings{3}); % intial time when the dome reaches its maximum height
-    area_frame=str2double(analysis_settings{4}); % background frame for defining total area; pick frame 
-                                                % after edge 'gravity-driven' dewetting occurs, and once
-                                                % interference patterns begin
-    area_fit_type = str2double(analysis_settings{5}); % use an assisted freehand on the area_frame fitting, or just use a circle
-                              
+    skip_frame = str2double(analysis_settings{2}); %frequency with which we analyze video frames
+    t0_frame_num=str2double(analysis_settings{3});  % intial time when the dome reaches its maximum height
+    area_frame=str2double(analysis_settings{4}); % Background frame for defining total area; pick frame 
+                                            % after edge 'gravity-driven' dewetting occurs, and once
+                                            % interference patterns begin
+                                            area_fit_type = str2double(analysis_type{1}); %use an assisted freehand on the area_frame fitting, or just use a circle
+
+                                                                                  
     background_frame_num = t0_frame_num+5; % Keep at t_0 for videos with fast dewetting
     
 

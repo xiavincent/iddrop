@@ -17,7 +17,6 @@ init(); % add helper files to path
 % get user processing selections
 [params,output] = getUserInput(); % struct fields defined in 'getUserInput.m'
 
-
 % Get masks and area values
 analys = fillAnalysStruct(); % make a blank struct with empty fields
                              % fields defined in 'fillAnalysStruct.m'
