@@ -13,11 +13,9 @@ function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,
                               
     background_frame_num = t0_frame_num+5; % Keep at t_0 for videos with fast dewetting
     
-
     output_false_color = str2double(video_output_types{1}); % print the final binary mask output video in BW or falsecolor overlay on original frame
     output_analyzed_frames = str2double(video_output_types{2}); % tells us whether or not to print an mp4 of analyzed frames from original video
     output_all_masks = str2double(video_output_types{3}); % tells us whether or not to print an mp4 of individual masks from video
     output_black_white_mask = str2double(video_output_types{4}); % simple black/white mask mp4 video
     output_animated_plot=str2double(video_output_types{5}); % should we plot the animated video or not?
-    
 end

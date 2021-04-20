@@ -2,7 +2,7 @@
 %% MIGRATED APRIL 16 2021 FROM WORKING HSV CODE
 
 % Highest level helper function to allow user to draw the ROI
-function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawROI(img,area_fit_type)
+function [mask, exposed_area, center, radius] = userdrawROI(img,area_fit_type)
 
     selection_type = 0; % make image caption for fitting total exposed dome
     roi = showAreaROI(img,area_fit_type, selection_type); % set the total area mask
@@ -27,14 +27,7 @@ function [mask, max_area, shadow_mask, camera_area, center, radius] = userdrawRO
             diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
             radius = diameter/2;
     end
-    total_area = nnz(mask); % TODO: replace this with 'max_area - camera_area' to ignore the camera shadow's effect
-
-    selection_type = 1; % set the camera shadow area
-    shadowROI = showAreaROI(img,area_fit_type, selection_type);
-    shadow_mask = createMask(shadowROI);
-    
-    camera_area = nnz(shadow_mask); 
-    max_area = total_area - camera_area;
+    exposed_area = nnz(mask);
     
     close;
 end
