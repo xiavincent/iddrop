@@ -23,11 +23,12 @@ function writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, bw_frame_
 %% 
 % Output falsecolor:        
 
-        if (~output.falsecolor)  % make a falsecolor overlay of our labelled final mask over the original grayscale image 
-            final_img_fuse = labeloverlay(gray_frame,final_mask);
-            falseColorInfo = sprintf('red = binary mask | green = original img | yellow = both'); % prints false color info                
+        if (~output.falsecolor)  % make a single color falsecolor overlay of our labelled final mask over the original grayscale image 
+            binary_mask = final_mask > 0; % turn the label image into a binary mask
+            final_img_fuse = labeloverlay(gray_frame,binary_mask);
+            falseColorInfo = sprintf('blue = no detectable film'); % prints false color info                
             output_text = insertText(final_img_fuse,[100 50],frame_info,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox
-            output_text = insertText(output_text,[100 100],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
+            output_text = insertText(output_text,[100 75],falseColorInfo,'AnchorPoint','LeftBottom','BoxColor','black',"TextColor","white"); % NOTE: requires Matlab Computer Vision Toolbox    
             writeVideo(output_vids.falsecolor, output_text); %writes video with analyzed frames
         end        
 %% 
