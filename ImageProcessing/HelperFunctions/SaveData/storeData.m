@@ -11,7 +11,6 @@ function storeData(file_name_short,area_data_output,params)
     f_id=fopen(strcat(file_name_short,'_Parameters.txt'),'w'); %saves parameters used in file for analysis 
     fprintf(f_id, 'remove_Pixels = %d \n', params.rm_pix);
     fprintf(f_id, 't_0 = %d \n', params.t0);
-    fprintf(f_id, 'background = %d \n', params.bg);
     fprintf(f_id, 'frame for area analysis = %d \n', params.area);
     fprintf(f_id, 'frames_skipped = %d \n', params.skip);
     fprintf(f_id, 'HueThreshold = (%.3f,%.3f) \n', params.H_low, params.H_high);

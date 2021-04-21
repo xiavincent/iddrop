@@ -64,7 +64,7 @@ function [params,outputs] = getUserInput()
         
         params = struct(field1,val1,field2,val2,field3,val3,field4,val4,field5,val5,...
                         field6,val6,field7,val7,field8,val8,field9,val9,field10,val10,...
-                        field11,val11);
+                        field11,val11,field12,);
                     
         field1 = 'falsecolor'; val1 = output_falsecolor;
         field2 = 'analyzed'; val2 = output_analyzed_frames;

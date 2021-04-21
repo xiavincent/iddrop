@@ -15,7 +15,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
 
     %% NEW SECTION MIGRATED FROM APR 16 2021 WORKING HSV CODE
-    background_frame = read(vid, params.t0); % gets background frame in video (used for deleting background)
+    background_frame = read(vid,params.t0); % gets background frame in video (used for deleting background)
     background_frame_gray = rgb2gray(background_frame); 
     analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
         
