@@ -10,21 +10,25 @@
 %% Function
 function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,output)
 
+    analysis_timespan = 10*60; % analyze 10 min (600 sec) of video
+    max_analysis_frame = round(analysis_timespan*vid.FrameRate); % maximum frame to analysis
+
     % Define output video parameters; open videos for writing
     output_framerate = 20; %output frame rate
     output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
+    
 
     %% NEW SECTION MIGRATED FROM APR 16 2021 WORKING HSV CODE
     background_frame = read(vid,params.t0); % gets background frame in video (used for deleting background)
     background_frame_gray = rgb2gray(background_frame); 
     analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
         
-    frame_range = [params.t0 vid.NumFrames]; % first and last frame to analyze
-    num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
+    first_fnum = params.t0; % first and last frame to analyze
+    last_fnum = min([vid.NumFrames max_analysis_frame]); % analyze until desired frame or end of video (whichever comes first)
+    num_it = getNumIt(first_fnum,last_fnum,params.skip); % get the number of iterations we need
         
     wet_frac = ones(1, num_it); % normalized wet area for every frame index
     skip_frame = params.skip;
-    first_fnum = frame_range(1);
     
     for i=1:num_it
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
@@ -36,8 +40,8 @@ end
 
 %% PRIVATE HELPER FUNCTIONS
 
-function num_iterations = getNumIt(frame_range,skip_frame)
-    nframes_to_analyze = frame_range(2) - frame_range(1); % number of frames to analyze
+function num_iterations = getNumIt(first_fnum,last_fnum,skip_frame)
+    nframes_to_analyze = last_fnum - first_fnum; % number of frames to analyze
     num_iterations = floor(nframes_to_analyze/skip_frame) + 1; % number of individual video frames to analyze
 end
 
