@@ -13,7 +13,6 @@ init(); % add helper files to path
 
 %% Initializations
 [file_name,file_name_short] = getFile(); % get user-specified video file
-
 [params,output] = getUserInput(); % get user processing selections
 analys = fillAnalysStruct(); % initialize a struct that stores the parameters used in the analysis
 

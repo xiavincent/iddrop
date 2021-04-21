@@ -19,7 +19,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     background_frame_gray = rgb2gray(background_frame); 
     analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
         
-    frame_range = [params.t0 vid.NumFrames]; % [params.start vid.NumFrames] % first and last frame to analyze
+    frame_range = [params.t0 vid.NumFrames]; % first and last frame to analyze
     num_it = getNumIt(frame_range,params.skip); % get the number of iterations we need
         
     wet_frac = ones(1, num_it); % normalized wet area for every frame index
@@ -28,7 +28,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     
     for i=1:num_it
         fnum = (i-1)*skip_frame + first_fnum; % current frame number to process
-        wet_frac(i) = analyzeFrame(vid,analys,fnum,params.start,params.area); % run the analysis loop for a single frame
+        wet_frac(i) = analyzeFrame(vid,analys,fnum,params,output,output_vids); % run the analysis loop for a single frame
     end
     
     closeVids(output, output_vids); % close VideoWriter objects

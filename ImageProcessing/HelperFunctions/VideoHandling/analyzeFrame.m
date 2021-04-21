@@ -1,14 +1,14 @@
 % Analyze a single frame 
 % return the fraction of wet area 
-function wet_area_frac = analyzeFrame(input_vid, analys, fnum, params, outputs, output_vids)
+function wet_area_frac = analyzeFrame(vid,analys,fnum,params,outputs,output_vids)
 
-    orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
+    orig_frame = read(vid,fnum); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,analys.crop_rect); 
     gray_frame = rgb2gray(crop_frame); % grayscale frame from video
     subtract_frame = gray_frame - analys.bg_gray; % Subtract background frame from current frame
     
     %% MIGRATED ON APR 16 FROM WORKING HSV VERSION
-   if (cur_frame_num > params.t0) %adjust this depending on how much noise your analysis picks up at the beginning. starting this later will lead to less noise
+   if (fnum > params.t0) %adjust this depending on how much noise your analysis picks up at the beginning. starting this later will lead to less noise
         subtract_frame(analys.shadow) = 0; %clear every subtract_frame pixel inside the camera shadow
         subtract_frame(~analys.area_mask) = 0; %apply area mask
         binarize_mask=imbinarize(subtract_frame);
@@ -18,7 +18,7 @@ function wet_area_frac = analyzeFrame(input_vid, analys, fnum, params, outputs, 
     end
      
     bw_frame_mask_clean = bwareaopen(binarize_mask, params.rm_pix); % remove connected objects that are smaller than 250 pixels in size
-    bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean, params.rm_pix); % remove holes that are smaller than 20 pixels in size
+    bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean,params.rm_pix); % remove holes that are smaller than 20 pixels in size
     
     hsv_frame=rgb2hsv(crop_frame); % convert to hsv image
     hsv_frame(analys.shadow) = 0; % apply camera mask
@@ -46,8 +46,8 @@ function wet_area_frac = analyzeFrame(input_vid, analys, fnum, params, outputs, 
 
     % Write final videos          
     writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, dewet_comp,...
-                          params.t0, cur_frame_num, wet_area_frac,...
-                          input_vid.FrameRate, outputs, output_vids);
+                          params.t0, fnum, wet_area_frac,...
+                          vid.FrameRate, outputs, output_vids);
                        
 end
 
