@@ -1,6 +1,6 @@
 % Analyze a single frame 
 % return the fraction of wet area 
-function wet_area_frac = analyzeFrame(input_vid, cur_frame_num, analys, params, outputs, output_vids)
+function wet_area_frac = analyzeFrame(input_vid, analys, fnum, params, outputs, output_vids)
 
     orig_frame = read(input_vid,cur_frame_num); % reading individual frames from input video
     crop_frame = imcrop(orig_frame,analys.crop_rect); 
@@ -49,6 +49,5 @@ function wet_area_frac = analyzeFrame(input_vid, cur_frame_num, analys, params, 
                           params.t0, cur_frame_num, wet_area_frac,...
                           input_vid.FrameRate, outputs, output_vids);
                        
-
 end
 
