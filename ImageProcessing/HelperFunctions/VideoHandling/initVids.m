@@ -8,7 +8,7 @@ function [videos] = initVids(file_name_short, output_framerate, output_yn)
     falsecolor = 0;
 
     if (~output_yn.bw_mask)
-        bw=VideoWriter(strcat(file_name_short,'_maskVideo'),'MPEG-4'); %writes black/white video showing wet area (black) vs. dry area (white)
+        bw=VideoWriter(strcat(file_name_short,'_blackWhiteVideo'),'MPEG-4'); %writes black/white video showing wet area (black) vs. dry area (white)
         bw.FrameRate = output_framerate; %sets output video frame rate
         open(bw); % opens output video for writing
     end
