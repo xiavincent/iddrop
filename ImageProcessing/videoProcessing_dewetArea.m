@@ -10,10 +10,13 @@
 
 %% Initializations
 init(); % add helper files to path
-
-%% Initializations
 [file_name,file_name_short] = getFile(); % get user-specified video file
-[params,output] = getUserInput(); % get user processing selections
+
+if (exist('params','var'))
+    [params,output] = getUserInput(params); % get user processing selections, using existing parameters as default
+else
+    [params,output] = getUserInput(); % get user processing selections
+end
 
 %% Start video and set areas
 
