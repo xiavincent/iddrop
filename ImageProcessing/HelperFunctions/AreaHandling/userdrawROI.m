@@ -56,8 +56,8 @@ function crop_rect = getCropSize(dome_mask)
     % get user-specified cropping rectangle
     stats = regionprops(dome_mask,'BoundingBox'); % get rectangle coordinates of minimum bounding box
     
-    min_coord = [stats.BoundingBox(1) stats.BoundingBox(2)] - 45; % leave a 45 pixel padding on all sides
-    width_height = [stats.BoundingBox(3) stats.BoundingBox(4)] + 90;
+    min_coord = [stats.BoundingBox(1) stats.BoundingBox(2)] - 50; % leave a 50 pixel padding on all sides
+    width_height = [stats.BoundingBox(3) stats.BoundingBox(4)] + 100;
     crop_rect = round([min_coord width_height]);
     
 end
