@@ -1,5 +1,5 @@
 % Initialize parameters from dialog boxes:
-function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,area_fit_type,...
+function [remove_Pixels,skip_frame,t0_frame_num,area_frame,area_fit_type,...
             output_false_color,output_analyzed_frames,output_all_masks,output_black_white_mask,output_animated_plot] ...
         = fillParams(analysis_settings,video_output_types)
 
@@ -10,9 +10,7 @@ function [remove_Pixels,skip_frame,t0_frame_num,area_frame,background_frame_num,
                                                 % after edge 'gravity-driven' dewetting occurs, and once
                                                 % interference patterns begin
     area_fit_type = str2double(analysis_settings{5}); % use an assisted freehand on the area_frame fitting, or just use a circle
-                              
-    background_frame_num = t0_frame_num+5; % Keep at t_0 for videos with fast dewetting
-    
+                                  
     output_false_color = str2double(video_output_types{1}); % print the final binary mask output video in BW or falsecolor overlay on original frame
     output_analyzed_frames = str2double(video_output_types{2}); % tells us whether or not to print an mp4 of analyzed frames from original video
     output_all_masks = str2double(video_output_types{3}); % tells us whether or not to print an mp4 of individual masks from video

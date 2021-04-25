@@ -10,15 +10,16 @@
 
 %% Initializations
 init(); % add helper files to path
+
 [file_name,file_name_short] = getFile(); % get user-specified video file
 
-if (exist('params','var'))
+if (exist('params','var')) %  if the params struct already exists
     [params,output] = getUserInput(params); % get user processing selections, using existing parameters as default
 else
-    [params,output] = getUserInput(); % get user processing selections
+    [params,output] = getUserInput; % get user processing selections
 end
 
-%% Start video and set areas
+%% Start video
 
 vid = startVideo(file_name); % initialize video
 analys = setAreas(vid,params.area,params.fit_type,params.t0); % create a struct with video analysis parameters

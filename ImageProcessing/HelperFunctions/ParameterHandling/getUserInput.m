@@ -4,12 +4,11 @@
 % outputs: struct containing user-specified desired output videos
 
 %%
-function [params,outputs] = getUserInput(params)        
-
+function [params,outputs] = getUserInput(varargin)        
 
         dlg_num = 1;
-        if (exist('params','var'))
-            defaults = getDefaults(dlg_num,params); % get default values for input dialog
+        if (nargin ~= 0) % if the user passed any parameters
+            defaults = getDefaults(dlg_num,varargin{1}); % get default values for input dialog from the first parameter passed
         else
             defaults = getDefaults(dlg_num); % get default values for input dialog
         end
@@ -25,8 +24,8 @@ function [params,outputs] = getUserInput(params)
                             
                             
         dlg_num = 2;
-        if (exist('params','var'))
-            defaults = getDefaults(dlg_num,params); % get default values for input dialog
+        if (nargin ~= 0)
+            defaults = getDefaults(dlg_num,varargin{1}); % get default values for input dialog
         else
             defaults = getDefaults(dlg_num); % get default values for input dialog
         end
@@ -40,8 +39,8 @@ function [params,outputs] = getUserInput(params)
 
                                  
         dlg_num = 3;
-        if (exist('params','var'))
-            defaults = getDefaults(dlg_num,params); % get default values for input dialog
+        if (nargin ~= 0)
+            defaults = getDefaults(dlg_num,varargin{1}); % get default values for input dialog
         else
             defaults = getDefaults(dlg_num); % get default values for input dialog
         end
@@ -54,11 +53,11 @@ function [params,outputs] = getUserInput(params)
                                       'Output black/white mask?(1=no,0=yes)',... % binary version of final mask
                                       'Output animated plot? (1=no, 0=yes)'},... % animated video of the dewetting plot
                                       'Output video types (note: choosing yes on any of these will be slower)',...
-                                      [1 40; 1 40; 1 40; 1 40; 1 40],);                      
+                                       sizes,defaults);                      
               
         % Initialize our parameters from the dialog boxes
         [remove_Pixels,skip_frame,t0_frame_num,...
-            area_frame_num,background_frame_num,area_fit_type,...
+            area_frame_num,area_fit_type,...
             output_falsecolor,output_analyzed_frames,output_all_masks,...
             output_black_white_mask,output_animated_plot]... 
             = fillParams(analysis_settings,video_output_types); % fill in all the parameters from the dialog boxes using helper function
@@ -106,26 +105,21 @@ end
 
 %%  PRIVATE HELPER FUNCTION
 
-function def = getDefaults(type,params) % high-level helper function to handle default value filling
-    if (type == 1) % analysis_settings
-        if exist('params','var') % if the params struct already exists inside the workspace
-            def = getDefAnalys(params); % populate the default cell array with the pre-existing values
+function def = getDefaults(varargin) % high-level helper function to handle default value filling
+    if (varargin{1} == 1) % analysis_settings
+        if (nargin == 2) % if the params struct was passed into the function
+            def = getDefAnalys(varargin{2}); % populate the default cell array with the pre-existing values
         else
             def = {'250','30','80','2000','1'}; % values: params.rm_pix, params.skip, params.t0, params.area, params.fit_type
         end
-    elseif (type == 2) % threshold values
-        if exist('params','var') % if the params struct already exists inside the workspace
-            def = getDefThresh(params); % populate the default cell array with the pre-existing values
+    elseif (varargin{1} == 2) % threshold values
+        if (nargin == 2) % if the params struct already exists inside the workspace
+            def = getDefThresh(varargin{2}); % populate the default cell array with the pre-existing values
         else
             def = {'0','1','0','1','0','1'}; % values: params.rm_pix, params.skip, params.t0, params.area, params.fit_type
         end
-    elseif (type == 3)
-        
-        if exist('params','var') % if the params struct already exists inside the workspace
-            def = getDefOutputs(params); % populate the default cell array with the pre-existing values
-        else
-            def = {'1','1','1','1','1'}; % values: params.rm_pix, params.skip, params.t0, params.area, params.fit_type
-        end
+    elseif (varargin{1} == 3)
+        def = {'1','1','1','1','1'}; % values: output.falsecolor, output.analyzed, output.masks, output.bw_mask, output.animated_plot
     end
 end
 
@@ -140,11 +134,14 @@ function def = getDefAnalys(params)
 end
 
 function def = getDefThresh(params)
-
-    % TODO
-end
-
-function def = getDefOutputs(params)
-    % TODO
+    H_low = num2str(params.H_low);
+    H_high = num2str(params.H_high);
+    S_low = num2str(params.S_low);
+    S_high = num2str(params.S_high);
+    V_low = num2str(params.V_low);
+    V_high = num2str(params.V_high);
+    
+    def = {H_low,H_high,S_low,S_high,V_low,V_high};
+    
 end
 

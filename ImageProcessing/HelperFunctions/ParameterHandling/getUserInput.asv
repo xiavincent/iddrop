@@ -58,7 +58,7 @@ function [params,outputs] = getUserInput(params)
               
         % Initialize our parameters from the dialog boxes
         [remove_Pixels,skip_frame,t0_frame_num,...
-            area_frame_num,background_frame_num,area_fit_type,...
+            area_frame_num,area_fit_type,...
             output_falsecolor,output_analyzed_frames,output_all_masks,...
             output_black_white_mask,output_animated_plot]... 
             = fillParams(analysis_settings,video_output_types); % fill in all the parameters from the dialog boxes using helper function
@@ -124,7 +124,7 @@ function def = getDefaults(type,params) % high-level helper function to handle d
         if exist('params','var') % if the params struct already exists inside the workspace
             def = getDefOutputs(params); % populate the default cell array with the pre-existing values
         else
-            def = {'1','1','0','1','0','1'}; % values: params.rm_pix, params.skip, params.t0, params.area, params.fit_type
+            def = {'1','1','1','1','1'}; % values: output.falsecolor, output.analyzed, output.masks, output.bw_mask, output.animated_plot
         end
     end
 end
@@ -140,7 +140,7 @@ function def = getDefAnalys(params)
 end
 
 function def = getDefThresh(params)
-
+    
     % TODO
 end
 

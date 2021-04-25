@@ -13,7 +13,7 @@ function wet_area_frac = analyzeFrame(vid,analys,fnum,params,outputs,output_vids
         subtract_frame(~analys.dome_mask) = 0; % apply dome mask
         binarize_mask=imbinarize(subtract_frame);
     else
-        bw_frame=imbinarize(subtract_frame); % "Blanket" method to suppress noise before area frame
+        bw_frame=imbinarize(subtract_frame); % "Blanket" binarizatioon method to suppress noise before t0
         binarize_mask = bw_frame.*analys.dome_mask; % Add mask of overall dome specified from user input
     end
      
