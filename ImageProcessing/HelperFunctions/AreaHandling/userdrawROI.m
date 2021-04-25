@@ -2,17 +2,19 @@
 %% MIGRATED APRIL 16 2021 FROM WORKING HSV CODE
 
 % Highest level helper function to allow user to draw the ROI
-function [mask, exposed_area, center, radius] = userdrawROI(img,area_fit_type)
+function [mask, center, radius, exposed_area, crop_rect] = userdrawROI(img,area_fit_type)
 
     selection_type = 0; % make image caption for fitting total exposed dome
     roi = showAreaROI(img,area_fit_type, selection_type); % set the total area mask
     mask = createMask(roi);
+    crop_rect = getCropSize(mask); % find a suitable cropping rectangle
+    mask = imcrop(mask,crop_rect); % crop the mask
 
     if (area_fit_type == 1) % find circular parameters of freehand fit
         stats = regionprops('table',mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
-        diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
-        
         center = stats.Centroid;
+        
+        diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
         radius = diameter/2;
     elseif (area_fit_type == 2) % find circular parameters of ellipse fit        
         center = roi.Center;
@@ -20,16 +22,10 @@ function [mask, exposed_area, center, radius] = userdrawROI(img,area_fit_type)
     elseif (area_fit_type == 3) % find circular parameters of circle fit
         center = roi.Center;
         radius = roi.Radius;
-    else 
-        mask = createMask(roi);
-        stats = regionprops('table',mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
-            center = stats.Centroid;
-            diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
-            radius = diameter/2;
     end
-    exposed_area = nnz(mask);
     
-    close;
+    exposed_area = nnz(mask); % number of pixels selected in the mask
+    close; % close image
 end
 
 % Mid-level helper function to return the user-specified freehand, ellipse, or circle ROI
@@ -59,42 +55,19 @@ function roi = showAreaROI(img,area_fit_type,selection_type)
 end
 
 
-% High-level helper function to handle circular and freehand region drawing for a single video frame
-% function [area_mask, outer_region, shadow_mask, film_area] = userdrawROI(area_frame_cropped,area_fit_type)
-%     %set the total area mask
-%     roi = showAreaROI(area_frame_cropped,area_fit_type); %show the frame and return an roi that we can calculate things from
-%     area_mask = createMask(roi);
-%     
-%     outer_region = scaleMask(area_mask); % scale the mask and return the outer region
-%     
-%     %set the camera shadow area
-%     shadowROI = showShadowROI(area_frame_cropped);    
-%     shadow_mask = createMask(shadowROI);
-%     
-%     max_area = nnz(area_mask);
-%     camera_area = nnz(shadow_mask);
-%     film_area = max_area - camera_area; % exposed dome area, excluding the camera shadow
-%     
-%     close;
-% end
-% 
-% % Mid-level helper function to show the freehand or circle ROI
-% function roi = showAreaROI(totalareaframecropped,areaFitType)
-%     imshow(totalareaframecropped);                                 % Show area frame as total area input
-%     
-%     if (areaFitType == 1)
-%         xlabel('Draw circle around total area, adjust as needed, then double click when done!','FontSize',16,'FontName','Arial');
-%         roi = drawcircle('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
-%     else
-%         xlabel('Draw freehand around total area; double-click to close and double-click again to finish','FontSize',16,'FontName','Arial');
-%         roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
-%         while (isempty(roi.Position)) % repeat if the user deletes the ROI
-%             roi = drawassisted('Color','r','FaceAlpha',0.4,'LineWidth',1, 'InteractionsAllowed',"all");
-%         end
-%     end
-%     customWait(roi); % wait for double click
-% end
+%% PRIVATE HELPER FUNCTIONS
 
+% get cropping rectangle from area mask
+function crop_rect = getCropSize(dome_mask)
+
+    % get user-specified cropping rectangle
+    stats = regionprops(dome_mask,'BoundingBox'); % get rectangle coordinates of minimum bounding box
+    
+    min_coord = [stats.BoundingBox(1) stats.BoundingBox(2)] - 15; % leave a 15 pixel padding on all sides
+    width_height = [stats.BoundingBox(3) stats.BoundingBox(4)] + 30;
+    crop_rect = [min_coord width_height];
+    
+end
 
 function customWait(hROI) %general wait function
     l = addlistener(hROI,'ROIClicked',@clickCallback); % Listen for mouse clicks on the ROI
@@ -108,7 +81,6 @@ function clickCallback(~,evt)
         uiresume;
     end
 end
-
 
 % Scale the mask and return a binary mask of the symmetric difference of the scaled mask and
 %   the original mask. Conceptually, this represents the outer region only

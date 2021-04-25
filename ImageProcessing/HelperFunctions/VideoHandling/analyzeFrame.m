@@ -9,20 +9,20 @@ function wet_area_frac = analyzeFrame(vid,analys,fnum,params,outputs,output_vids
     
     %% MIGRATED ON APR 16 FROM WORKING HSV VERSION
    if (fnum > params.t0) %adjust this depending on how much noise your analysis picks up at the beginning. starting this later will lead to less noise
-        subtract_frame(analys.shadow) = 0; %clear every subtract_frame pixel inside the camera shadow
-        subtract_frame(~analys.area_mask) = 0; %apply area mask
+        subtract_frame(analys.shadow_mask) = 0; % clear every subtract_frame pixel inside the camera shadow
+        subtract_frame(~analys.dome_mask) = 0; % apply dome mask
         binarize_mask=imbinarize(subtract_frame);
     else
         bw_frame=imbinarize(subtract_frame); % "Blanket" method to suppress noise before area frame
-        binarize_mask = bw_frame.*analys.area_mask; % Add mask of overall circle specified from UI input
+        binarize_mask = bw_frame.*analys.dome_mask; % Add mask of overall dome specified from user input
     end
      
     bw_frame_mask_clean = bwareaopen(binarize_mask, params.rm_pix); % remove connected objects that are smaller than 250 pixels in size
     bw_frame_mask_clean = ~bwareaopen(~bw_frame_mask_clean,params.rm_pix); % remove holes that are smaller than 20 pixels in size
     
     hsv_frame=rgb2hsv(crop_frame); % convert to hsv image
-    hsv_frame(analys.shadow) = 0; % apply camera mask
-    hsv_frame(~analys.area_mask) = 0; % apply area mask
+    hsv_frame(analys.shadow_mask) = 0; % apply camera mask
+    hsv_frame(~analys.dome_mask) = 0; % apply area mask
     
     % Apply each color band's particular thresholds to the color band
 	hueMask = (hsv_frame(:,:,1) >= params.H_low) & (hsv_frame(:,:,1) <= params.H_high); %makes mask of the hue image within theshold values
@@ -42,7 +42,7 @@ function wet_area_frac = analyzeFrame(vid,analys,fnum,params,outputs,output_vids
 
     % Clean the image and count the area
     img_size = size(gray_frame);
-    [dewet_comp,wet_area_frac] = countArea(combined_mask,img_size,analys.film_radius,analys.film_center,analys.max_area);      
+    [dewet_comp,wet_area_frac] = countArea(combined_mask,img_size,analys.dome_radius,analys.dome_center,analys.max_area);      
 
     % Write final videos          
     writeOutputVids(gray_frame, crop_frame, orig_frame, HSV_mask, binarize_mask, dewet_comp,...

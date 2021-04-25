@@ -19,9 +19,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     
 
     %% NEW SECTION MIGRATED FROM APR 16 2021 WORKING HSV CODE
-    background_frame = read(vid,params.t0); % gets background frame in video (used for deleting background)
-    background_frame_gray = rgb2gray(background_frame); 
-    analys.bg_gray = imcrop(background_frame_gray,analys.crop_rect); % define new parameter in 'analys' struct
+     % gets background frame in video (used for deleting background)
         
     first_fnum = params.t0; % first and last frame to analyze
     last_fnum = min([vid.NumFrames max_analysis_frame]); % analyze until desired frame or end of video (whichever comes first)

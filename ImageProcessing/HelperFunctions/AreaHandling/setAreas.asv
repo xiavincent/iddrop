@@ -1,0 +1,56 @@
+% Set film mask and dome area from user-input
+%% OUTPUTS:
+% area_mask: user-specified mask to cover the film at 'area_frame_num'
+% outer_region: outer edge of 'area_mask' used to run the edge detection algorithm
+% shadow_mask: user-specified mask to cover the camera shadow
+% film_area: total area of film at 'area_frame_num' excluding the area of the camera shadow
+
+%% INPUTS:
+% TODO: describe input parameters
+
+%% FUNCTION:
+function [] = setAreas(video,area_frame_num,area_fit_type)
+    
+    area_frame = read(video,area_frame_num);        % Read user specified frame for area selection
+    [area_mask,exposed_area,film_center,film_radius] = userdrawROI(area_frame,area_fit_type); % Handle our area ROI drawing
+    
+    crop_rect = getCropSize(area_mask);
+    area_mask = 
+    area_frame_cropped = imcrop(area_frame,crop_rect); % Crop area frame
+    
+    [shadow_mask,shadow_area] = getShadow(area_frame_cropped); % find camera shadow automatically based on image intensity value
+    max_area = exposed_area - shadow_area; % ignore the camera shadow in our calculation of the maximum dome area
+    
+    bg_frame = read(vid,params.t0); % save the background frame to be used in the analysis
+    bg_frame_gray = rgb2gray(bg_frame);
+    bg_frame_gray = imcrop(bg_frame_gray,crop_rect); % crop the image to the correct dimensions
+    
+    
+    analys = fillAnalysStruct(area_mask,max_area,...
+                                shadow_mask,shadow_area,film_center,...
+                                film_radius,crop_rect,bg_frame_gray);
+end
+
+
+%% PRIVATE HELPER FUNCTION:
+
+% get cropping rectangle from area mask
+function crop_rect = getCropSize(dome_mask)
+
+    % get user-specified cropping rectangle
+    stats = regionprops(dome_mask,'BoundingBox'); % get rectangle coordinates of minimum bounding box
+    
+    min_coord = [stats.BoundingBox(1) stats.BoundingBox(2)] - 15; % leave a 15 pixel padding on all sides
+    width_height = [stats.BoundingBox(3) stats.BoundingBox(4)] + 30;
+    crop_rect = [min_coord width_height];
+
+end
+
+function analys = fillAnalysStruct(analys.area_mask,analys.max_area,analys.shadow,...
+    analys.shadow_area,analys.film_center,analys.film_radius,analys.crop_rect)
+
+
+end
+
+
+
