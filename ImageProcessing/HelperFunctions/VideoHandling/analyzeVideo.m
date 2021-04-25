@@ -17,7 +17,6 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     output_framerate = 20; %output frame rate
     output_vids = initVids(file_name_short, output_framerate, output); % create a struct to store output videos 
     
-
     %% NEW SECTION MIGRATED FROM APR 16 2021 WORKING HSV CODE
      % gets background frame in video (used for deleting background)
         
