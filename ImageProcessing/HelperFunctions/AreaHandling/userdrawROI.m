@@ -10,19 +10,12 @@ function [mask, center, radius, exposed_area, crop_rect] = userdrawROI(img,area_
     crop_rect = getCropSize(mask); % find a suitable cropping rectangle
     mask = imcrop(mask,crop_rect); % crop the mask
 
-    if (area_fit_type == 1) % find circular parameters of freehand fit
-        stats = regionprops('table',mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
-        center = stats.Centroid;
-        
-        diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
-        radius = diameter/2;
-    elseif (area_fit_type == 2) % find circular parameters of ellipse fit        
-        center = roi.Center;
-        radius = (roi.SemiAxes(1) + roi.SemiAxes(2))/2; % average the two semi-axes of the ellipse to get an estimate of its radius
-    elseif (area_fit_type == 3) % find circular parameters of circle fit
-        center = roi.Center;
-        radius = roi.Radius;
-    end
+    % find circular parameters of user area fit
+    stats = regionprops('table',mask,'Centroid','MajorAxisLength','MinorAxisLength'); % estimate the center and radius for the drawn region
+    center = stats.Centroid;
+
+    diameter = mean([stats.MajorAxisLength stats.MinorAxisLength],2);
+    radius = diameter/2;
     
     exposed_area = nnz(mask); % number of pixels selected in the mask
     close; % close image
@@ -65,7 +58,7 @@ function crop_rect = getCropSize(dome_mask)
     
     min_coord = [stats.BoundingBox(1) stats.BoundingBox(2)] - 15; % leave a 15 pixel padding on all sides
     width_height = [stats.BoundingBox(3) stats.BoundingBox(4)] + 30;
-    crop_rect = [min_coord width_height];
+    crop_rect = round([min_coord width_height]);
     
 end
 

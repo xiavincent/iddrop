@@ -22,12 +22,9 @@ function analys = setAreas(vid,area_frame_num,area_fit_type,t0_fnum)
     
     bg_frame = read(vid,t0_fnum); % save the background frame to be used in the analysis
     bg_frame_gray = rgb2gray(bg_frame); % convert to grayscale
-    
-    dome_mask_crop = imcrop(dome_mask,crop_rect); % crop the dome mask that was drawn
     bg_frame_gray_crop = imcrop(bg_frame_gray,crop_rect); % crop the background image
-    shadow_mask_crop = imcrop(shadow_mask,crop_rect); % crop the camera shadow mask
     
-    analys = fillAnalysStruct(dome_mask_crop,shadow_mask_crop,max_area,shadow_area,...
+    analys = fillAnalysStruct(dome_mask,shadow_mask,max_area,shadow_area,...
                                 dome_center,dome_radius,bg_frame_gray_crop,crop_rect); % return a struct that stores all the parameters
 end
 
