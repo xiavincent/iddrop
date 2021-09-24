@@ -1,6 +1,6 @@
 # Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
-i-DDrOP analysis of thin film dewetting patterns in videos using hydrophilic glass domes with lubricin/water as base media. 
+i-DDrOP analysis of thin film dewetting patterns in videos using hydrophilic glass domes with lubricin/water as base media. See "RebaseWorkingHSV" branch for most recent version of code that was last updated in April 2021 for analyzing data for the Novartis project.
 
 Main folders:
 - *VideoProcessing*: outputs a file containing the film's wet area for every time point.
