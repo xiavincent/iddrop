@@ -20,8 +20,10 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
     %% NEW SECTION MIGRATED FROM APR 16 2021 WORKING HSV CODE
      % gets background frame in video (used for deleting background)
         
-    first_fnum = params.t0; % first and last frame to analyze
-    last_fnum = min([vid.NumFrames max_analysis_frame]); % analyze until desired frame or end of video (whichever comes first)
+%     first_fnum = params.t0; % first and last frame to analyze
+    first_fnum = 40700;
+%     last_fnum = min([vid.NumFrames max_analysis_frame]); % analyze until desired frame or end of video (whichever comes first)
+    last_fnum = 40921;
     num_it = getNumIt(first_fnum,last_fnum,params.skip); % get the number of iterations we need
         
     wet_frac = ones(1, num_it); % normalized wet area for every frame index
