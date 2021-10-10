@@ -10,7 +10,7 @@
 %% Function
 function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,output)
 
-    analysis_timespan = 37*60; % analyze 10 min (600 sec) of video
+    analysis_timespan = 10*60; % analyze 10 min (600 sec) of video
     max_analysis_frame = round(analysis_timespan)*vid.FrameRate + params.t0; % maximum frame to analysis
 
     % Define output video parameters; open videos for writing
@@ -21,9 +21,7 @@ function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,outp
      % gets background frame in video (used for deleting background)
         
     first_fnum = params.t0; % first and last frame to analyze
-%     first_fnum = 38700;
     last_fnum = min([vid.NumFrames max_analysis_frame]); % analyze until desired frame or end of video (whichever comes first)
-%     last_fnum = 42921;
     num_it = getNumIt(first_fnum,last_fnum,params.skip); % get the number of iterations we need
         
     wet_frac = ones(1, num_it); % normalized wet area for every frame index
