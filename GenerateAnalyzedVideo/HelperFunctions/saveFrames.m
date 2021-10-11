@@ -19,7 +19,7 @@ end
 % shorten the video
 function end_time = getEndTime(shorten,t0_fnum,input_vid)
     if (shorten)
-        end_time = 600; % 10 min mark
+        end_time = 1800; % 30 min mark
     else
         end_time = (input_vid.NumFrames - t0_fnum)/input_vid.FrameRate; % end of video
     end
