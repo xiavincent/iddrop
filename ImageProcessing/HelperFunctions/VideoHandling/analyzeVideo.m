@@ -10,7 +10,7 @@
 %% Function
 function [wet_frac,num_it] = analyzeVideo(file_name_short,vid,analys,params,output)
 
-    analysis_timespan = 30*60; % analyze 30 min (600 sec) of video
+    analysis_timespan = 30*60; % analyze 30 min (1800 sec) of video
     max_analysis_frame = round(analysis_timespan)*vid.FrameRate + params.t0; % maximum frame to analysis
 
     % Define output video parameters; open videos for writing
