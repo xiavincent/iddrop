@@ -1,3 +1,5 @@
+[LEGACY VERSION: EDGE DETECTION ALGORITHM]
+
 # Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
 i-DDrOP analysis of thin film dewetting patterns in videos using hydrophilic glass domes with lubricin/water as base media. See "RebaseWorkingHSV" branch for most recent version of code that was last updated in April 2021 for analyzing data for the Novartis project.
