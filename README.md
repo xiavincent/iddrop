@@ -1,5 +1,6 @@
-# [LEGACY VERSION]
-## Hue-saturation-value based segmentation: see 'main' branch for edge detection algorithm
+## Hue-saturation-value based segmentation for use with Novartis project
+
+see 'main' branch for legacy edge detection algorithm
 
 ## Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
