@@ -1,11 +1,13 @@
 % create a mask of the film area from an RGB image, using the area_mask as a helper parameter
 function film_mask = findFilm(RGB_img,scaled_area_mask) 
-
+   
     grayscale_img = rgb2gray(RGB_img);
 
     edges = getEdges(grayscale_img); % get the edges
     edges = rmDomeTrace(edges,scaled_area_mask);
-    film_edges = closeEdges(edges);
+    
+    grow_bdry = 2; % number of pixels we expand edge boundaries
+    film_edges = closeEdges(edges,grow_bdry);
     
     filled_film = imfill(film_edges,'holes');
     
