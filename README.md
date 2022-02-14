@@ -1,5 +1,8 @@
-# [LEGACY VERSION]
-## Hue-saturation-value based segmentation: see 'main' branch for edge detection algorithm
+## Hue-saturation-value based segmentation for analyzing thin film breakup of model films supplemented with varying lipid composition mixtures
+see 'ImproveEdgeDetect' branch for a code version that includes the legacy edge detection algorithm.
+
+In contrast to the 'HonorsThesisCode_retainCenter' branch, this code version DOES NOT detect dry regions which are surrounded by liquid on all sides.
+
 
 ## Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
