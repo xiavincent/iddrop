@@ -1,5 +1,7 @@
-# [LEGACY VERSION]
-## Hue-saturation-value based segmentation: see 'main' branch for edge detection algorithm
+## Hue-saturation-value based segmentation code for analyzing model film breakup for lipid composition mixtures
+In contrast to the 'HonorsThesisCode' branch, this code also detects dry regions in the center of the film that are surrounded by liquid. This is good for analyzing videos that exhibit dewetting at the center of the film, but this detection of dry regions in the center of the film comes at the expense of increased noise in the analysis (i.e., false positive detection of dry regions)
+
+see 'main' branch for legacy edge detection algorithm
 
 ## Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
