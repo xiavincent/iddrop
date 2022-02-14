@@ -1,6 +1,8 @@
 ## Hue-saturation-value based segmentation for use with Novartis project
 
-see 'main' branch for legacy edge detection algorithm
+This code uses cutoff values for hue-saturation-value image channels to detect the dry regions of the dome and turn the image into a black and white image. It filters out abnormally small regions that might cause errors in the result and outputs a video that highlights the dry regions of the analysis. The default output frame rate is 20 fps, but this can be adjusted in the code. 
+
+See 'ImproveEdgeDetect' branch for the legacy edge detection algorithm, which offers an alternative method of analyzing these videos.
 
 ## Interfacial Dewetting and Drainage Optical Platform (i-DDrOP)
 
