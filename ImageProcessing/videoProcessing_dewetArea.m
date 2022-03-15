@@ -39,7 +39,9 @@ if(~output.animated_plot) % writes video of animated plot
     writeAnimatedPlot(file_name_short,output_framerate,area_output);
 end
 
-plotArea(area_output,file_name_short); % Create and format area plot
+plotArea(area_output,file_name_short); % Create and save area scatter plot
+plotDataAsLine({area_output},file_name_short); % Create and save a line plot
+
 
 
 %% Save parameters and data to output files
