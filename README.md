@@ -1,7 +1,7 @@
 ## Hue-saturation-value based segmentation for analyzing thin film breakup of model films supplemented with varying lipid composition mixtures
 see 'ImproveEdgeDetect' branch for a code version that includes the legacy edge detection algorithm.
 
-In contrast to the 'HonorsThesisCode' branch, this code version only analyzes the central 25% of the total area of the dome; this region is defined by shrinking the radius of the user-specified dome area by 50%. 
+In contrast to the 'HonorsThesisCode' branch, this code version only analyzes the central 56% of the total area of the dome; this region is defined by shrinking the radius of the user-specified dome area to 75% of its original area. 
 
 In contrast to the 'HonorsThesisCode_retainCenter' branch, this code version DOES NOT detect dry regions which are surrounded by liquid on all sides.
 
